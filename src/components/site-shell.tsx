@@ -1,7 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnnouncementTicker } from "@/components/announcement-ticker";
+import { MobileNavDrawer } from "@/components/mobile-nav-drawer";
 import { announcements, footerGroups, navItems } from "@/data/site";
+
+const utilityItems = [
+  { href: "/search", label: "Search" },
+  { href: "/wishlist", label: "Wishlist" },
+  { href: "/account", label: "Account" },
+  { href: "/cart", label: "Cart" },
+] as const;
 
 function LogoMark({ footer = false }: { footer?: boolean }) {
   return (
@@ -32,17 +40,8 @@ function Header() {
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-          <details className="mobile-drawer">
-            <summary aria-label="Open navigation">Menu</summary>
-            <div className="mobile-drawer__panel">
-              {navItems.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </details>
+        <div className="site-header__brand">
+          <MobileNavDrawer navItems={navItems} utilityItems={utilityItems} />
           <LogoMark />
         </div>
 
@@ -55,18 +54,16 @@ function Header() {
         </nav>
 
         <div className="utility-nav" aria-label="Utility navigation">
-          <Link href="/search" aria-label="Search">
-            <span className="utility-nav__label">Search</span>
-          </Link>
-          <Link href="/wishlist" aria-label="Wishlist">
-            <span className="utility-nav__label">Wishlist</span>
-          </Link>
-          <Link href="/account" aria-label="Account">
-            <span className="utility-nav__label">Account</span>
-          </Link>
-          <Link href="/cart" aria-label="Cart">
-            <span className="utility-nav__label">Cart</span>
-          </Link>
+          {utilityItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-label={item.label}
+              className={item.href === "/wishlist" || item.href === "/account" ? "utility-nav__link utility-nav__link--secondary" : "utility-nav__link"}
+            >
+              <span className="utility-nav__label">{item.label}</span>
+            </Link>
+          ))}
         </div>
       </div>
     </header>

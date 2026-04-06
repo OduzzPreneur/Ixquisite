@@ -1,6 +1,7 @@
 import { beginCheckoutAction } from "@/app/actions/checkout";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { formatPrice } from "@/data/site";
+import { getCheckoutDefaultsForCurrentUser } from "@/lib/account";
 import { getCurrentCart } from "@/lib/cart";
 
 export default async function CheckoutPage({
@@ -9,7 +10,7 @@ export default async function CheckoutPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const params = await searchParams;
-  const cart = await getCurrentCart();
+  const [cart, defaults] = await Promise.all([getCurrentCart(), getCheckoutDefaultsForCurrentUser()]);
   const deliveryFee = cart.items.length ? 8000 : 0;
 
   return (
@@ -27,34 +28,39 @@ export default async function CheckoutPage({
             <div className="form-grid">
               <div className="field">
                 <label htmlFor="full_name">Full name</label>
-                <input id="full_name" name="full_name" placeholder="Client Name" />
+                <input id="full_name" name="full_name" placeholder="Client Name" defaultValue={defaults.fullName} />
               </div>
               <div className="field">
                 <label htmlFor="email">Email</label>
-                <input id="email" name="email" placeholder="you@example.com" type="email" />
+                <input id="email" name="email" placeholder="you@example.com" type="email" defaultValue={defaults.email} />
               </div>
               <div className="field">
                 <label htmlFor="phone">Phone number</label>
-                <input id="phone" name="phone" placeholder="0800 000 0000" />
+                <input id="phone" name="phone" placeholder="0800 000 0000" defaultValue={defaults.phone} />
               </div>
               <div className="field">
                 <label htmlFor="city">City</label>
-                <input id="city" name="city" placeholder="Lagos" />
+                <input id="city" name="city" placeholder="Lagos" defaultValue={defaults.city} />
               </div>
               <div className="field" style={{ gridColumn: "1 / -1" }}>
                 <label htmlFor="shipping_address">Delivery address</label>
-                <textarea id="shipping_address" name="shipping_address" placeholder="Street, landmark, and notes" />
+                <textarea
+                  id="shipping_address"
+                  name="shipping_address"
+                  placeholder="Street, landmark, and notes"
+                  defaultValue={defaults.shippingAddress}
+                />
               </div>
               <div className="field">
                 <label htmlFor="shipping_method">Shipping method</label>
-                <select id="shipping_method" name="shipping_method" defaultValue="standard">
+                <select id="shipping_method" name="shipping_method" defaultValue={defaults.shippingMethod}>
                   <option value="standard">Standard delivery · 2-4 days</option>
                   <option value="express">Express delivery · 24-48 hours</option>
                 </select>
               </div>
               <div className="field">
                 <label htmlFor="payment_method">Payment</label>
-                <select id="payment_method" name="payment_method" defaultValue="paystack">
+                <select id="payment_method" name="payment_method" defaultValue={defaults.paymentMethod}>
                   <option value="paystack">Paystack card payment</option>
                 </select>
               </div>
@@ -64,7 +70,7 @@ export default async function CheckoutPage({
               <span className="pill-link">Secure payment flow</span>
               <span className="pill-link">Returns guidance visible</span>
             </div>
-            <button type="submit" className="button" style={{ width: "fit-content", marginTop: "1rem" }} disabled={!cart.items.length}>
+            <button type="submit" className="button button--mobile-full" style={{ width: "fit-content", marginTop: "1rem" }} disabled={!cart.items.length}>
               Continue to Paystack
             </button>
           </form>

@@ -5,13 +5,17 @@ import { ProductCard } from "@/components/ui";
 import { formatPrice } from "@/data/site";
 import { getCurrentCart } from "@/lib/cart";
 import { getProductsBySlugs } from "@/lib/catalog";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 
 export default async function CartPage() {
   const cart = await getCurrentCart();
-  const recommendations = await getProductsBySlugs([
-    "ivory-broadcloth-shirt",
-    "regent-silk-tie",
-    "heirloom-accessory-set",
+  const [recommendations, wishlistSlugs] = await Promise.all([
+    getProductsBySlugs([
+      "ivory-broadcloth-shirt",
+      "regent-silk-tie",
+      "heirloom-accessory-set",
+    ]),
+    getWishlistProductSlugsForCurrentUser(),
   ]);
 
   return (
@@ -35,7 +39,7 @@ export default async function CartPage() {
                         {item.selectedSize ? `Size ${item.selectedSize}` : "Standard"}
                         {item.selectedColor ? ` · ${item.selectedColor}` : ""}
                       </p>
-                      <div className="hero__actions" style={{ marginTop: "0.8rem" }}>
+                      <div className="hero__actions hero__actions--compact" style={{ marginTop: "0.8rem" }}>
                         <form action={updateCartItemQuantityAction}>
                           <input type="hidden" name="item_id" value={item.id} />
                           <input type="hidden" name="quantity" value={Math.max(1, item.quantity - 1)} />
@@ -106,7 +110,12 @@ export default async function CartPage() {
         </div>
         <div className="product-grid">
           {recommendations.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard
+              key={product.slug}
+              product={product}
+              wishlistState={wishlistSlugs.includes(product.slug) ? "saved" : "idle"}
+              wishlistNext="/cart"
+            />
           ))}
         </div>
       </section>

@@ -15,7 +15,7 @@ export default async function AccountOrdersPage() {
               <strong>{order.reference}</strong>
               <p className="muted">{order.status} · {order.payment_status}</p>
             </div>
-            <div style={{ display: "grid", gap: "0.5rem", justifyItems: "end" }}>
+            <div className="table-meta">
               <span>{formatPrice(order.total)}</span>
               <Link href={`/account/orders/${order.id}`} className="pill-link">View details</Link>
             </div>
