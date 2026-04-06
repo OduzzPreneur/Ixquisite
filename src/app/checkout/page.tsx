@@ -20,6 +20,7 @@ export default async function CheckoutPage({
         title="Low-friction checkout with visible trust."
         copy="Contact, delivery, shipping, payment, and review should sit in one calm flow with no unnecessary distractions."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]}
+        compactOnMobile
       />
       <section className="page-section">
         <div className="checkout-layout">

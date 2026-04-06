@@ -16,8 +16,10 @@ export async function beginCheckoutAction(formData: FormData) {
     redirect("/checkout?error=Complete%20the%20required%20checkout%20fields.");
   }
 
+  let checkout: Awaited<ReturnType<typeof createCheckoutOrder>>;
+
   try {
-    const checkout = await createCheckoutOrder({
+    checkout = await createCheckoutOrder({
       fullName,
       email,
       phone,
@@ -26,10 +28,10 @@ export async function beginCheckoutAction(formData: FormData) {
       shippingMethod,
       paymentMethod,
     });
-
-    redirect(checkout.authorizationUrl);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to initialize payment.";
     redirect(`/checkout?error=${encodeURIComponent(message)}`);
   }
+
+  redirect(checkout.authorizationUrl);
 }

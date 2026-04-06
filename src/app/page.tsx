@@ -33,7 +33,7 @@ export default async function Home() {
             <div className="hero__copy">
               <p className="eyebrow hero__mobile-hidden">Quiet luxury for professionals</p>
               <h1 className="display-title hero__mobile-hidden">Tailoring that removes the search.</h1>
-              <p className="section-copy">
+              <p className="section-copy hero__mobile-hidden-copy">
                 Ixquisite Menswear delivers premium suits, shirts, trousers, ties,
                 and accessories for men who want to look confident without moving
                 across multiple stores.

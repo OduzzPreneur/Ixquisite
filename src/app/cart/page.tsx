@@ -25,6 +25,7 @@ export default async function CartPage() {
         title="A calm, premium cart review."
         copy="The cart should feel decisive, with enough trust and cross-sell depth to finish the outfit without becoming noisy."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Cart" }]}
+        compactOnMobile
       />
       <section className="page-section">
         <div className="checkout-layout">

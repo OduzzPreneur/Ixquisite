@@ -336,23 +336,25 @@ export function UtilityPageHeader({
   title,
   copy,
   breadcrumbs,
+  compactOnMobile = false,
 }: {
   eyebrow: string;
   title: string;
   copy: string;
   breadcrumbs?: Array<{ label: string; href?: string }>;
+  compactOnMobile?: boolean;
 }) {
   return (
     <section className="page-section page-hero">
-      <div className="surface-panel">
+      <div className={`surface-panel utility-page-header${compactOnMobile ? " utility-page-header--compact-mobile" : ""}`}>
         {breadcrumbs ? <Breadcrumbs items={breadcrumbs} /> : null}
-        <p className="eyebrow" style={{ marginTop: breadcrumbs ? "1.2rem" : 0 }}>
+        <p className={`eyebrow utility-page-header__eyebrow${breadcrumbs ? "" : " utility-page-header__eyebrow--flush"}`}>
           {eyebrow}
         </p>
-        <h1 className="page-title" style={{ marginTop: "0.8rem" }}>
+        <h1 className="page-title utility-page-header__title">
           {title}
         </h1>
-        <p className="page-copy" style={{ marginTop: "0.9rem", maxWidth: "44rem" }}>
+        <p className="page-copy utility-page-header__copy">
           {copy}
         </p>
       </div>

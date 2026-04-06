@@ -73,7 +73,7 @@ export default async function ProductPage({
               />
             </div>
           </div>
-          <div className="support-card">
+          <div className="support-card product-detail-card">
             {query.error ? <p className="auth-notice auth-notice--error">{query.error}</p> : null}
             {query.message ? <p className="auth-notice auth-notice--success">{query.message}</p> : null}
             <div className="price-row">
