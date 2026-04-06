@@ -14,12 +14,18 @@ export default function TrackOrderPage() {
         <div className="feature-split">
           <div className="support-card">
             <div className="field">
-              <label>Order number</label>
-              <input placeholder="IXQ-24018" />
+              <label htmlFor="track_order_number">Order number</label>
+              <input id="track_order_number" name="order_number" placeholder="IXQ-24018" />
             </div>
             <div className="field">
-              <label>Email address</label>
-              <input placeholder="client@example.com" type="email" />
+              <label htmlFor="track_email">Email address</label>
+              <input
+                id="track_email"
+                name="email"
+                placeholder="client@example.com"
+                type="email"
+                autoComplete="email"
+              />
             </div>
             <button type="button" className="button" style={{ width: "fit-content" }}>
               Track delivery

@@ -1040,6 +1040,10 @@ main {
   .page-title { font-size: clamp(2.2rem, 10vw, 3.3rem); }
   .section-title { font-size: clamp(1.8rem, 8vw, 2.5rem); }
 
+  .hero__mobile-hidden {
+    display: none;
+  }
+
   .hero { padding-top: 0.65rem; }
 
   .hero__grid {
@@ -1152,6 +1156,10 @@ main {
   .product-grid,
   .trust-strip {
     grid-template-columns: 1fr;
+  }
+
+  .grid--mobile-duo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .newsletter-form .button,

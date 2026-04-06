@@ -81,7 +81,13 @@ function Footer() {
             and a wardrobe that feels composed from the first meeting to the last.
           </p>
           <form className="newsletter-form">
-            <input type="email" placeholder="Email for arrivals and private drops" />
+            <input
+              id="newsletter_email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="Email for arrivals and private drops"
+            />
             <button className="button" type="submit">
               Join VIP
             </button>

@@ -33,16 +33,26 @@ export default function ContactPage() {
           </div>
           <div className="support-card">
             <div className="field">
-              <label>Name</label>
-              <input placeholder="Your name" />
+              <label htmlFor="contact_name">Name</label>
+              <input id="contact_name" name="name" autoComplete="name" placeholder="Your name" />
             </div>
             <div className="field">
-              <label>Email</label>
-              <input placeholder="you@example.com" type="email" />
+              <label htmlFor="contact_email">Email</label>
+              <input
+                id="contact_email"
+                name="email"
+                placeholder="you@example.com"
+                type="email"
+                autoComplete="email"
+              />
             </div>
             <div className="field">
-              <label>Message</label>
-              <textarea placeholder="Sizing help, corporate order, or delivery question" />
+              <label htmlFor="contact_message">Message</label>
+              <textarea
+                id="contact_message"
+                name="message"
+                placeholder="Sizing help, corporate order, or delivery question"
+              />
             </div>
             <button type="button" className="button" style={{ width: "fit-content" }}>
               Send message

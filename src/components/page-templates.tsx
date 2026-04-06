@@ -248,8 +248,13 @@ export function SearchShell({
           </h1>
           <div className="form-grid" style={{ marginTop: "1.4rem" }}>
             <div className="field" style={{ gridColumn: "1 / -1" }}>
-              <label>Search terms</label>
-              <input defaultValue={query} placeholder="Brown double-breasted suit" />
+              <label htmlFor="search_query">Search terms</label>
+              <input
+                id="search_query"
+                name="q"
+                defaultValue={query}
+                placeholder="Brown double-breasted suit"
+              />
             </div>
           </div>
           <div className="pill-row" style={{ marginTop: "1rem" }}>

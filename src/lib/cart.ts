@@ -112,22 +112,32 @@ async function getCookieStore() {
   return cookies();
 }
 
-async function ensureCartToken() {
+async function getExistingCartToken() {
   const cookieStore = await getCookieStore();
-  const existing = cookieStore.get(CART_TOKEN_COOKIE)?.value;
+  return cookieStore.get(CART_TOKEN_COOKIE)?.value ?? null;
+}
+
+async function ensureCartToken() {
+  const existing = await getExistingCartToken();
 
   if (existing) {
     return existing;
   }
 
+  const cookieStore = await getCookieStore();
   const token = crypto.randomUUID();
-  cookieStore.set(CART_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * CART_COOKIE_DAYS,
-  });
+
+  try {
+    cookieStore.set(CART_TOKEN_COOKIE, token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * CART_COOKIE_DAYS,
+    });
+  } catch {
+    // Server Components cannot set cookies during render in Next 16.
+  }
 
   return token;
 }
@@ -159,14 +169,16 @@ async function clearLocalCartStorage() {
   });
 }
 
-async function getOrCreateSupabaseCart() {
+async function getOrCreateSupabaseCart(options?: { createIfMissing?: boolean }) {
   if (!hasSupabaseAdminConfig()) {
     return null;
   }
 
+  const { createIfMissing = true } = options ?? {};
   const admin = createSupabaseAdminClient();
   const user = await getAuthenticatedUser();
-  const token = await ensureCartToken();
+  const existingToken = await getExistingCartToken();
+  const token = existingToken ?? (createIfMissing ? await ensureCartToken() : null);
 
   if (!admin) {
     return null;
@@ -184,35 +196,47 @@ async function getOrCreateSupabaseCart() {
       return existingUserCart;
     }
 
-    const { data: guestCart } = await admin
-      .from("carts")
-      .select("id,cart_token,user_id,status")
-      .eq("status", "open")
-      .eq("cart_token", token)
-      .is("user_id", null)
-      .maybeSingle<SupabaseCart>();
-
-    if (guestCart) {
-      const { data: promoted } = await admin
+    if (token) {
+      const { data: guestCart } = await admin
         .from("carts")
-        .update({ user_id: user.id })
-        .eq("id", guestCart.id)
         .select("id,cart_token,user_id,status")
-        .single<SupabaseCart>();
+        .eq("status", "open")
+        .eq("cart_token", token)
+        .is("user_id", null)
+        .maybeSingle<SupabaseCart>();
 
-      return promoted ?? guestCart;
+      if (guestCart) {
+        const { data: promoted } = await admin
+          .from("carts")
+          .update({ user_id: user.id })
+          .eq("id", guestCart.id)
+          .select("id,cart_token,user_id,status")
+          .single<SupabaseCart>();
+
+        return promoted ?? guestCart;
+      }
+    }
+
+    if (!createIfMissing) {
+      return null;
     }
   }
 
-  const { data: existingGuestCart } = await admin
-    .from("carts")
-    .select("id,cart_token,user_id,status")
-    .eq("status", "open")
-    .eq(user ? "user_id" : "cart_token", user ? user.id : token)
-    .maybeSingle<SupabaseCart>();
+  if (token) {
+    const { data: existingGuestCart } = await admin
+      .from("carts")
+      .select("id,cart_token,user_id,status")
+      .eq("status", "open")
+      .eq(user ? "user_id" : "cart_token", user ? user.id : token)
+      .maybeSingle<SupabaseCart>();
 
-  if (existingGuestCart) {
-    return existingGuestCart;
+    if (existingGuestCart) {
+      return existingGuestCart;
+    }
+  }
+
+  if (!createIfMissing || !token) {
+    return null;
   }
 
   const { data: createdCart } = await admin
@@ -256,14 +280,14 @@ function mapSupabaseItems(items: SupabaseCartItem[]): LocalCartItem[] {
 
 export async function getCurrentCartContext(): Promise<CartContext> {
   if (hasSupabaseAdminConfig()) {
-    const cart = await getOrCreateSupabaseCart();
+    const cart = await getOrCreateSupabaseCart({ createIfMissing: false });
 
     if (cart) {
       const items = await readSupabaseCartItems(cart.id);
       return {
         state: await hydrateCart(mapSupabaseItems(items)),
         cartId: cart.id,
-        cartToken: cart.cart_token,
+        cartToken: cart.cart_token ?? (await getExistingCartToken()),
         source: "supabase",
       };
     }
@@ -273,7 +297,7 @@ export async function getCurrentCartContext(): Promise<CartContext> {
   return {
     state: await hydrateCart(items),
     cartId: null,
-    cartToken: await ensureCartToken(),
+    cartToken: await getExistingCartToken(),
     source: "cookie",
   };
 }

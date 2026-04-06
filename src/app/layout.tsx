@@ -18,6 +18,7 @@ const displayFont = localFont({
   ],
   variable: "--font-display",
   display: "swap",
+  preload: false,
   fallback: ["Georgia"],
 });
 
@@ -26,6 +27,7 @@ const bodyFont = localFont({
   variable: "--font-body",
   weight: "200 800",
   display: "swap",
+  preload: false,
   fallback: ["Arial"],
 });
 

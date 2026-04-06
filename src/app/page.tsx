@@ -31,8 +31,8 @@ export default async function Home() {
         <div className="hero__frame">
           <div className="hero__grid">
             <div className="hero__copy">
-              <p className="eyebrow">Quiet luxury for professionals</p>
-              <h1 className="display-title">Tailoring that removes the search.</h1>
+              <p className="eyebrow hero__mobile-hidden">Quiet luxury for professionals</p>
+              <h1 className="display-title hero__mobile-hidden">Tailoring that removes the search.</h1>
               <p className="section-copy">
                 Ixquisite Menswear delivers premium suits, shirts, trousers, ties,
                 and accessories for men who want to look confident without moving
@@ -75,7 +75,7 @@ export default async function Home() {
           <p className="eyebrow">Category shortcuts</p>
           <h2 className="section-title">Start from the wardrobe area that matters most.</h2>
         </div>
-        <div className="grid grid--5">
+        <div className="grid grid--5 grid--mobile-duo">
           {categories.map((category) => (
             <CategoryTile key={category.slug} category={category} />
           ))}
@@ -95,7 +95,7 @@ export default async function Home() {
             large retailer, but the edits stay narrow and premium.
           </p>
         </div>
-        <div className="grid grid--3">
+        <div className="grid grid--3 grid--mobile-duo">
           {occasions.map((occasion) => (
             <OccasionTile key={occasion.slug} occasion={occasion} />
           ))}
@@ -177,7 +177,7 @@ export default async function Home() {
             how to convert.
           </p>
         </div>
-        <div className="grid grid--3">
+        <div className="grid grid--3 grid--mobile-duo">
           {articles.map((article) => (
             <EditorialCard key={article.slug} article={article} />
           ))}
