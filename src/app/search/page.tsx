@@ -1,5 +1,6 @@
 import { SearchShell } from "@/components/page-templates";
 import { getProducts } from "@/lib/catalog";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 
 export default async function SearchPage({
   searchParams,
@@ -9,7 +10,10 @@ export default async function SearchPage({
   const params = await searchParams;
   const query = params.q?.trim() ?? "";
   const lowered = query.toLowerCase();
-  const products = await getProducts();
+  const [products, wishlistSlugs] = await Promise.all([
+    getProducts(),
+    getWishlistProductSlugsForCurrentUser(),
+  ]);
   const results = lowered
     ? products.filter(
         (product) =>
@@ -18,6 +22,5 @@ export default async function SearchPage({
           product.occasions.some((occasion) => occasion.includes(lowered.replace(/\s+/g, "-"))),
       )
     : products.slice(0, 6);
-
-  return <SearchShell query={query} results={results} />;
+  return <SearchShell query={query} results={results} wishlistSlugs={wishlistSlugs} />;
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { addToWishlistAction } from "@/app/actions/wishlist";
 import type {
   Article,
   Category,
@@ -183,28 +184,53 @@ export function OccasionTile({ occasion }: { occasion: Occasion }) {
   );
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  wishlistState = "idle",
+  wishlistNext = "/wishlist",
+}: {
+  product: Product;
+  wishlistState?: "idle" | "saved";
+  wishlistNext?: string;
+}) {
   return (
-    <Link href={`/product/${product.slug}`} className="product-card">
-      <VisualPanel
-        title={product.title}
-        kicker={product.category}
-        tone={product.tone}
-        size="portrait"
-        image={getVisualAsset(product.title)}
-      />
+    <article className="product-card">
+      <Link href={`/product/${product.slug}`}>
+        <VisualPanel
+          title={product.title}
+          kicker={product.category}
+          tone={product.tone}
+          size="portrait"
+          image={getVisualAsset(product.title)}
+        />
+      </Link>
       <div className="product-card__meta">
-        <div className="price-row">
-          <span className="product-card__title">{product.title}</span>
-          <strong>{formatPrice(product.price)}</strong>
-        </div>
-        <p className="product-card__copy">{product.blurb}</p>
-        <div className="price-row">
-          <span>{product.fit}</span>
-          <span>{product.colors.length} colours</span>
-        </div>
+        <Link href={`/product/${product.slug}`}>
+          <div className="price-row">
+            <span className="product-card__title">{product.title}</span>
+            <strong>{formatPrice(product.price)}</strong>
+          </div>
+          <p className="product-card__copy">{product.blurb}</p>
+          <div className="price-row">
+            <span>{product.fit}</span>
+            <span>{product.colors.length} colours</span>
+          </div>
+        </Link>
+        {wishlistState === "saved" ? (
+          <span className="pill-link" aria-label="Saved to wishlist">
+            Saved
+          </span>
+        ) : (
+          <form action={addToWishlistAction}>
+            <input type="hidden" name="product_slug" value={product.slug} />
+            <input type="hidden" name="next" value={wishlistNext} />
+            <button type="submit" className="pill-link">
+              Save
+            </button>
+          </form>
+        )}
       </div>
-    </Link>
+    </article>
   );
 }
 

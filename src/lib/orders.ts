@@ -80,6 +80,67 @@ function estimateDeliveryDate() {
   });
 }
 
+async function syncAddressFromCheckout(
+  userId: string | null,
+  payload: CheckoutPayload,
+  admin: ReturnType<typeof createSupabaseAdminClient>,
+) {
+  if (!userId || !admin) {
+    return;
+  }
+
+  const addressLine = payload.shippingAddress.trim();
+  if (!addressLine) {
+    return;
+  }
+
+  const label = payload.shippingMethod === "express" ? "Express delivery" : "Primary delivery";
+
+  const { data: existingAddresses } = await admin
+    .from("user_addresses")
+    .select("id,is_default,city")
+    .eq("user_id", userId)
+    .eq("address_line", addressLine)
+    .limit(10);
+
+  const existingAddress =
+    ((existingAddresses as Array<{ id: string; is_default: boolean; city: string | null }> | null) ?? []).find(
+      (address) => (address.city ?? "") === (payload.city || ""),
+    ) ?? null;
+
+  const { data: defaultAddress } = await admin
+    .from("user_addresses")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("is_default", true)
+    .limit(1)
+    .maybeSingle<{ id: string }>();
+
+  const isDefault = Boolean(existingAddress?.is_default || !defaultAddress);
+
+  if (isDefault) {
+    await admin.from("user_addresses").update({ is_default: false }).eq("user_id", userId);
+  }
+
+  const payloadToStore = {
+    user_id: userId,
+    label,
+    recipient_name: payload.fullName,
+    phone: payload.phone || null,
+    city: payload.city || null,
+    address_line: addressLine,
+    delivery_notes: null,
+    is_default: isDefault,
+  };
+
+  if (existingAddress?.id) {
+    await admin.from("user_addresses").update(payloadToStore).eq("id", existingAddress.id);
+    return;
+  }
+
+  await admin.from("user_addresses").insert(payloadToStore);
+}
+
 export async function createCheckoutOrder(payload: CheckoutPayload) {
   requirePaymentsReady();
 
@@ -99,6 +160,8 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
   const deliveryFee = 8000;
   const subtotal = cart.state.subtotal;
   const total = subtotal + deliveryFee;
+
+  await syncAddressFromCheckout(user?.id ?? null, payload, admin);
 
   const { data: createdOrder, error: orderError } = await admin
     .from("orders")

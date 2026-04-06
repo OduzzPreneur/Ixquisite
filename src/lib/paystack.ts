@@ -50,7 +50,11 @@ function getBaseUrl() {
     return `https://${vercelUrl}`;
   }
 
-  return "http://localhost:3000";
+  if (process.env.NODE_ENV !== "production") {
+    return "http://localhost:3000";
+  }
+
+  throw new Error("NEXT_PUBLIC_SITE_URL is required in production for Paystack callback URLs.");
 }
 
 async function paystackFetch<T>(path: string, init?: RequestInit): Promise<T> {

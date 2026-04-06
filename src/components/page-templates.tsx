@@ -14,6 +14,8 @@ export function ListingPage({
   visualKicker,
   breadcrumbs,
   products,
+  wishlistSlugs = [],
+  wishlistNext,
 }: {
   eyebrow: string;
   title: string;
@@ -23,6 +25,8 @@ export function ListingPage({
   visualKicker: string;
   breadcrumbs: Array<{ label: string; href?: string }>;
   products: Product[];
+  wishlistSlugs?: string[];
+  wishlistNext?: string;
 }) {
   return (
     <>
@@ -52,7 +56,12 @@ export function ListingPage({
             </div>
             <div className="product-grid">
               {products.map((product) => (
-                <ProductCard key={product.slug} product={product} />
+                <ProductCard
+                  key={product.slug}
+                  product={product}
+                  wishlistState={wishlistSlugs.includes(product.slug) ? "saved" : "idle"}
+                  wishlistNext={wishlistNext}
+                />
               ))}
             </div>
           </div>
@@ -220,7 +229,15 @@ export function HelpHub() {
   );
 }
 
-export function SearchShell({ query, results }: { query: string; results: Product[] }) {
+export function SearchShell({
+  query,
+  results,
+  wishlistSlugs = [],
+}: {
+  query: string;
+  results: Product[];
+  wishlistSlugs?: string[];
+}) {
   return (
     <>
       <section className="page-section page-hero">
@@ -261,7 +278,12 @@ export function SearchShell({ query, results }: { query: string; results: Produc
             {results.length ? (
               <div className="product-grid">
                 {results.map((product) => (
-                  <ProductCard key={product.slug} product={product} />
+                  <ProductCard
+                    key={product.slug}
+                    product={product}
+                    wishlistState={wishlistSlugs.includes(product.slug) ? "saved" : "idle"}
+                    wishlistNext={query ? `/search?q=${encodeURIComponent(query)}` : "/search"}
+                  />
                 ))}
               </div>
             ) : (

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ListingPage } from "@/components/page-templates";
 import { getCollection, getCollections, getProductsByCollection } from "@/lib/catalog";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 
 export async function generateStaticParams() {
   const collections = await getCollections();
@@ -9,7 +10,11 @@ export async function generateStaticParams() {
 
 export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const collection = await getCollection(slug);
+  const [collection, products, wishlistSlugs] = await Promise.all([
+    getCollection(slug),
+    getProductsByCollection(slug),
+    getWishlistProductSlugsForCurrentUser(),
+  ]);
 
   if (!collection) {
     notFound();
@@ -24,7 +29,9 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
       visualTitle={collection.title}
       visualKicker="Collection edit"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Collections", href: "/collections" }, { label: collection.title }]}
-      products={await getProductsByCollection(slug)}
+      products={products}
+      wishlistSlugs={wishlistSlugs}
+      wishlistNext={`/collection/${slug}`}
     />
   );
 }

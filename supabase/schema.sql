@@ -134,6 +134,28 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.user_addresses (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  label text not null,
+  recipient_name text,
+  phone text,
+  city text,
+  address_line text not null,
+  delivery_notes text,
+  is_default boolean not null default false,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.wishlist_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  product_slug text not null references public.products(slug) on delete cascade on update cascade,
+  created_at timestamptz not null default timezone('utc', now()),
+  unique (user_id, product_slug)
+);
+
 create table if not exists public.carts (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete set null,
@@ -217,6 +239,9 @@ create index if not exists product_occasions_occasion_slug_idx on public.product
 create index if not exists carts_user_id_idx on public.carts(user_id);
 create index if not exists carts_status_idx on public.carts(status);
 create index if not exists cart_items_cart_id_idx on public.cart_items(cart_id);
+create index if not exists user_addresses_user_id_idx on public.user_addresses(user_id);
+create index if not exists user_addresses_default_idx on public.user_addresses(user_id, is_default);
+create index if not exists wishlist_items_user_id_idx on public.wishlist_items(user_id);
 create index if not exists orders_user_id_idx on public.orders(user_id);
 create index if not exists orders_reference_idx on public.orders(reference);
 create index if not exists payments_order_id_idx on public.payments(order_id);
@@ -229,6 +254,8 @@ alter table public.product_occasions enable row level security;
 alter table public.articles enable row level security;
 alter table public.lookbook_looks enable row level security;
 alter table public.profiles enable row level security;
+alter table public.user_addresses enable row level security;
+alter table public.wishlist_items enable row level security;
 alter table public.carts enable row level security;
 alter table public.cart_items enable row level security;
 alter table public.orders enable row level security;
@@ -253,6 +280,20 @@ drop policy if exists "Users read own profile" on public.profiles;
 create policy "Users read own profile" on public.profiles for select using (auth.uid() = id);
 drop policy if exists "Users update own profile" on public.profiles;
 create policy "Users update own profile" on public.profiles for update using (auth.uid() = id);
+drop policy if exists "Users read own addresses" on public.user_addresses;
+create policy "Users read own addresses" on public.user_addresses for select using (auth.uid() = user_id);
+drop policy if exists "Users insert own addresses" on public.user_addresses;
+create policy "Users insert own addresses" on public.user_addresses for insert with check (auth.uid() = user_id);
+drop policy if exists "Users update own addresses" on public.user_addresses;
+create policy "Users update own addresses" on public.user_addresses for update using (auth.uid() = user_id);
+drop policy if exists "Users delete own addresses" on public.user_addresses;
+create policy "Users delete own addresses" on public.user_addresses for delete using (auth.uid() = user_id);
+drop policy if exists "Users read own wishlist" on public.wishlist_items;
+create policy "Users read own wishlist" on public.wishlist_items for select using (auth.uid() = user_id);
+drop policy if exists "Users insert own wishlist items" on public.wishlist_items;
+create policy "Users insert own wishlist items" on public.wishlist_items for insert with check (auth.uid() = user_id);
+drop policy if exists "Users delete own wishlist items" on public.wishlist_items;
+create policy "Users delete own wishlist items" on public.wishlist_items for delete using (auth.uid() = user_id);
 drop policy if exists "Users read own carts" on public.carts;
 create policy "Users read own carts" on public.carts for select using (auth.uid() = user_id);
 drop policy if exists "Users read own cart items" on public.cart_items;
@@ -287,6 +328,8 @@ drop trigger if exists set_lookbook_looks_updated_at on public.lookbook_looks;
 create trigger set_lookbook_looks_updated_at before update on public.lookbook_looks for each row execute function public.set_updated_at();
 drop trigger if exists set_profiles_updated_at on public.profiles;
 create trigger set_profiles_updated_at before update on public.profiles for each row execute function public.set_updated_at();
+drop trigger if exists set_user_addresses_updated_at on public.user_addresses;
+create trigger set_user_addresses_updated_at before update on public.user_addresses for each row execute function public.set_updated_at();
 drop trigger if exists set_carts_updated_at on public.carts;
 create trigger set_carts_updated_at before update on public.carts for each row execute function public.set_updated_at();
 drop trigger if exists set_cart_items_updated_at on public.cart_items;

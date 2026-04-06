@@ -1,8 +1,12 @@
 import { ListingPage } from "@/components/page-templates";
 import { getProducts } from "@/lib/catalog";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 
 export default async function NewInPage() {
-  const products = await getProducts();
+  const [products, wishlistSlugs] = await Promise.all([
+    getProducts(),
+    getWishlistProductSlugsForCurrentUser(),
+  ]);
 
   return (
     <ListingPage
@@ -14,6 +18,8 @@ export default async function NewInPage() {
       visualKicker="New season edit"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "New In" }]}
       products={products}
+      wishlistSlugs={wishlistSlugs}
+      wishlistNext="/new-in"
     />
   );
 }

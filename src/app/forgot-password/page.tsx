@@ -1,31 +1,39 @@
 import Link from "next/link";
-import { UtilityPageHeader } from "@/components/page-templates";
+import { requestPasswordResetAction } from "@/app/actions/auth";
+import { AuthPage } from "@/components/page-templates";
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; message?: string; next?: string }>;
+}) {
+  const params = await searchParams;
+  const nextQuery = params.next ? `?next=${encodeURIComponent(params.next)}` : "";
+
   return (
-    <>
-      <UtilityPageHeader
-        eyebrow="Password recovery"
-        title="Reset account access without contacting support."
-        copy="Password recovery is not wired yet. Once Supabase reset emails are configured, this page should post the email address and send a recovery link."
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Forgot password" }]}
-      />
-      <section className="page-section">
-        <div className="surface-panel">
-          <div className="field">
-            <label>Email</label>
-            <input placeholder="you@example.com" type="email" disabled />
-          </div>
-          <div className="hero__actions" style={{ marginTop: "1rem" }}>
-            <button className="button" type="button" disabled>
-              Reset coming next
-            </button>
-            <Link href="/sign-in" className="pill-link">
-              Return to sign in
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
+    <AuthPage
+      eyebrow="Password recovery"
+      title="Reset account access without contacting support."
+      copy="Enter the email on your account and we will send a secure reset link to your inbox."
+      fields={[
+        {
+          name: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "you@example.com",
+          autoComplete: "email",
+        },
+      ]}
+      cta="Send reset link"
+      action={requestPasswordResetAction}
+      next={params.next}
+      error={params.error}
+      message={params.message}
+      footer={
+        <p className="muted">
+          Remembered it? <Link href={`/sign-in${nextQuery}`}>Return to sign in</Link>
+        </p>
+      }
+    />
   );
 }

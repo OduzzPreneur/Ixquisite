@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ensureProfileForCurrentUser } from "@/lib/account";
 import { createSupabaseAuthServerClient } from "@/lib/supabase/auth-server";
 import { hasSupabaseConfig } from "@/lib/supabase/shared";
 
@@ -57,5 +58,10 @@ export async function GET(request: Request) {
     return NextResponse.redirect(buildSignInRedirect(requestUrl.origin, error.message, next));
   }
 
+  try {
+    await ensureProfileForCurrentUser();
+  } catch {
+    // OAuth sign-in should still complete if profile sync needs follow-up.
+  }
   return NextResponse.redirect(new URL(next, requestUrl.origin));
 }

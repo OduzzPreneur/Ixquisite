@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { getArticle, getArticles, getProductsBySlugs } from "@/lib/catalog";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 import { ProductCard } from "@/components/ui";
 
 const articleProductMap: Record<string, string[]> = {
@@ -23,7 +24,10 @@ export default async function StyleGuideArticlePage({ params }: { params: Promis
     notFound();
   }
 
-  const relatedProducts = await getProductsBySlugs(articleProductMap[slug] ?? []);
+  const [relatedProducts, wishlistSlugs] = await Promise.all([
+    getProductsBySlugs(articleProductMap[slug] ?? []),
+    getWishlistProductSlugsForCurrentUser(),
+  ]);
 
   return (
     <>
@@ -50,7 +54,12 @@ export default async function StyleGuideArticlePage({ params }: { params: Promis
             <h2 className="minor-title">Related products</h2>
             <div className="product-grid">
               {relatedProducts.map((product) => (
-                <ProductCard key={product.slug} product={product} />
+                <ProductCard
+                  key={product.slug}
+                  product={product}
+                  wishlistState={wishlistSlugs.includes(product.slug) ? "saved" : "idle"}
+                  wishlistNext={`/style-guide/${article.slug}`}
+                />
               ))}
             </div>
           </article>

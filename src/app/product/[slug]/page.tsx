@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { addToCartAction } from "@/app/actions/cart";
+import { addToWishlistAction, removeFromWishlistAction } from "@/app/actions/wishlist";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { formatPrice } from "@/data/site";
 import { getProduct, getProducts, getProductsBySlugs } from "@/lib/catalog";
 import { getVisualAsset } from "@/lib/visual-assets";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 import { ProductCard, VisualPanel } from "@/components/ui";
 
 export async function generateStaticParams() {
@@ -12,17 +14,28 @@ export async function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ error?: string; message?: string }>;
+}) {
   const { slug } = await params;
+  const query = await searchParams;
   const product = await getProduct(slug);
 
   if (!product) {
     notFound();
   }
 
-  const allProducts = await getProducts();
+  const [allProducts, completeLook, wishlistSlugs] = await Promise.all([
+    getProducts(),
+    getProductsBySlugs(product.completeTheLook),
+    getWishlistProductSlugsForCurrentUser(),
+  ]);
   const related = allProducts.filter((item) => item.category === product.category && item.slug !== product.slug).slice(0, 3);
-  const completeLook = await getProductsBySlugs(product.completeTheLook);
+  const isSaved = wishlistSlugs.includes(product.slug);
 
   return (
     <>
@@ -61,6 +74,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
           <div className="support-card">
+            {query.error ? <p className="auth-notice auth-notice--error">{query.error}</p> : null}
+            {query.message ? <p className="auth-notice auth-notice--success">{query.message}</p> : null}
             <div className="price-row">
               <h1 className="page-title" style={{ fontSize: "clamp(2.2rem, 4vw, 3.5rem)" }}>{product.title}</h1>
               <strong>{formatPrice(product.price)}</strong>
@@ -106,7 +121,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </div>
               <div className="hero__actions">
                 <button type="submit" className="button">Add to cart</button>
-                <Link href="/wishlist" className="pill-link">Save</Link>
+                <input type="hidden" name="next" value={`/product/${product.slug}`} />
+                <button
+                  type="submit"
+                  formAction={isSaved ? removeFromWishlistAction : addToWishlistAction}
+                  className="pill-link"
+                >
+                  {isSaved ? "Remove" : "Save"}
+                </button>
                 <Link href="/checkout" className="pill-link">Buy now</Link>
               </div>
             </form>
@@ -135,7 +157,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
         <div className="product-grid">
           {completeLook.map((item) => (
-            <ProductCard key={item.slug} product={item} />
+            <ProductCard
+              key={item.slug}
+              product={item}
+              wishlistState={wishlistSlugs.includes(item.slug) ? "saved" : "idle"}
+              wishlistNext={`/product/${product.slug}`}
+            />
           ))}
         </div>
       </section>
@@ -146,7 +173,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
         <div className="product-grid">
           {related.map((item) => (
-            <ProductCard key={item.slug} product={item} />
+            <ProductCard
+              key={item.slug}
+              product={item}
+              wishlistState={wishlistSlugs.includes(item.slug) ? "saved" : "idle"}
+              wishlistNext={`/product/${product.slug}`}
+            />
           ))}
         </div>
       </section>

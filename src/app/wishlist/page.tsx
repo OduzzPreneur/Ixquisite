@@ -1,14 +1,18 @@
 import Link from "next/link";
+import { removeFromWishlistAction } from "@/app/actions/wishlist";
 import { UtilityPageHeader } from "@/components/page-templates";
-import { getProductsBySlugs } from "@/lib/catalog";
 import { ProductCard } from "@/components/ui";
+import { getWishlistProductsForCurrentUser, getWishlistStateForCurrentUser } from "@/lib/wishlist";
 
-export default async function WishlistPage() {
-  const products = await getProductsBySlugs([
-    "midnight-commander-suit",
-    "cocoa-double-breasted-suit",
-    "ivory-broadcloth-shirt",
-    "heirloom-accessory-set",
+export default async function WishlistPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; message?: string }>;
+}) {
+  const [params, wishlistState, products] = await Promise.all([
+    searchParams,
+    getWishlistStateForCurrentUser(),
+    getWishlistProductsForCurrentUser(),
   ]);
 
   return (
@@ -20,17 +24,67 @@ export default async function WishlistPage() {
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Wishlist" }]}
       />
       <section className="page-section">
-        <div className="price-row" style={{ marginBottom: "1rem" }}>
-          <p className="muted">{products.length} saved pieces</p>
-          <Link href="/account" className="pill-link">
-            View in account
-          </Link>
-        </div>
-        <div className="product-grid">
-          {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
+        {params.error ? <p className="auth-notice auth-notice--error">{params.error}</p> : null}
+        {params.message ? <p className="auth-notice auth-notice--success">{params.message}</p> : null}
+
+        {!wishlistState.isAuthenticated ? (
+          <div className="empty-state surface-panel">
+            <div>
+              <h3 className="minor-title">Sign in to save pieces</h3>
+              <p className="body-copy" style={{ marginTop: "0.8rem" }}>
+                Your wishlist is tied to your account, so saved products stay available across visits.
+              </p>
+              <div className="hero__actions" style={{ marginTop: "1rem" }}>
+                <Link href="/sign-in?next=/wishlist" className="button">
+                  Sign in
+                </Link>
+                <Link href="/create-account?next=/wishlist" className="pill-link">
+                  Create account
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : products.length > 0 ? (
+          <>
+            <div className="price-row" style={{ marginBottom: "1rem" }}>
+              <p className="muted">{products.length} saved pieces</p>
+              <Link href="/account" className="pill-link">
+                View in account
+              </Link>
+            </div>
+            <div className="grid grid--3">
+              {products.map((product) => (
+                <article key={product.slug} className="cta-stack">
+                  <ProductCard product={product} wishlistState="saved" wishlistNext="/wishlist" />
+                  <form action={removeFromWishlistAction}>
+                    <input type="hidden" name="product_slug" value={product.slug} />
+                    <input type="hidden" name="next" value="/wishlist" />
+                    <button type="submit" className="pill-link">
+                      Remove
+                    </button>
+                  </form>
+                </article>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="empty-state surface-panel">
+            <div>
+              <h3 className="minor-title">No saved pieces yet</h3>
+              <p className="body-copy" style={{ marginTop: "0.8rem" }}>
+                Save products from any product card or product page and they will appear here.
+              </p>
+              <div className="hero__actions" style={{ marginTop: "1rem" }}>
+                <Link href="/new-in" className="button">
+                  Browse new arrivals
+                </Link>
+                <Link href="/category/suits" className="pill-link">
+                  Shop suits
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </>
   );

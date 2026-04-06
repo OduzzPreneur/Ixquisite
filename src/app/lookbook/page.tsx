@@ -2,11 +2,15 @@ import Link from "next/link";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { getLookbookLooks, getProductsBySlugs } from "@/lib/catalog";
 import { getVisualAsset } from "@/lib/visual-assets";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 import { ProductCard, VisualPanel } from "@/components/ui";
 
 export default async function LookbookPage() {
   const looks = await getLookbookLooks();
-  const featuredProducts = await getProductsBySlugs(looks.flatMap((look) => look.products).slice(0, 4));
+  const [featuredProducts, wishlistSlugs] = await Promise.all([
+    getProductsBySlugs(looks.flatMap((look) => look.products).slice(0, 4)),
+    getWishlistProductSlugsForCurrentUser(),
+  ]);
 
   return (
     <>
@@ -52,7 +56,12 @@ export default async function LookbookPage() {
         </div>
         <div className="product-grid">
           {featuredProducts.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard
+              key={product.slug}
+              product={product}
+              wishlistState={wishlistSlugs.includes(product.slug) ? "saved" : "idle"}
+              wishlistNext="/lookbook"
+            />
           ))}
         </div>
       </section>

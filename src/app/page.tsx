@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getHomePageData } from "@/lib/catalog";
 import { getVisualAsset } from "@/lib/visual-assets";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 import {
   CategoryTile,
   CollectionFeature,
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui";
 
 export default async function Home() {
-  const {
+  const [{
     categories,
     occasions,
     articles,
@@ -22,7 +23,7 @@ export default async function Home() {
     latestProducts,
     completeLook,
     completeLookProducts,
-  } = await getHomePageData();
+  }, wishlistSlugs] = await Promise.all([getHomePageData(), getWishlistProductSlugsForCurrentUser()]);
 
   return (
     <>
@@ -119,7 +120,12 @@ export default async function Home() {
         </div>
         <div className="product-grid">
           {latestProducts.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard
+              key={product.slug}
+              product={product}
+              wishlistState={wishlistSlugs.includes(product.slug) ? "saved" : "idle"}
+              wishlistNext="/"
+            />
           ))}
         </div>
       </section>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ListingPage } from "@/components/page-templates";
 import { getCategories, getCategory, getProductsByCategory } from "@/lib/catalog";
+import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 
 export async function generateStaticParams() {
   const categories = await getCategories();
@@ -9,7 +10,11 @@ export async function generateStaticParams() {
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const category = await getCategory(slug);
+  const [category, products, wishlistSlugs] = await Promise.all([
+    getCategory(slug),
+    getProductsByCategory(slug),
+    getWishlistProductSlugsForCurrentUser(),
+  ]);
 
   if (!category) {
     notFound();
@@ -24,7 +29,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       visualTitle={category.title}
       visualKicker="Category spotlight"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: category.title }]}
-      products={await getProductsByCategory(slug)}
+      products={products}
+      wishlistSlugs={wishlistSlugs}
+      wishlistNext={`/category/${slug}`}
     />
   );
 }
