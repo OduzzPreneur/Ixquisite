@@ -11,6 +11,25 @@ function getRedirectTarget(formData: FormData, fallback: string) {
   return typeof next === "string" && next.startsWith("/") ? next : fallback;
 }
 
+function buildCreateAccountRedirect(
+  messageType: "error" | "message",
+  message: string,
+  next: string,
+  email?: string,
+) {
+  const query = new URLSearchParams({ [messageType]: message });
+
+  if (next.startsWith("/")) {
+    query.set("next", next);
+  }
+
+  if (email) {
+    query.set("email", email);
+  }
+
+  return `/create-account?${query.toString()}`;
+}
+
 export async function signInAction(formData: FormData) {
   if (!hasSupabaseConfig()) {
     redirect("/sign-in?error=Add%20Supabase%20credentials%20to%20enable%20authentication.");
@@ -41,18 +60,27 @@ export async function signInAction(formData: FormData) {
 }
 
 export async function signUpAction(formData: FormData) {
+  const next = getRedirectTarget(formData, "/account");
+  const email = String(formData.get("email") ?? "").trim();
+
   if (!hasSupabaseConfig()) {
-    redirect("/create-account?error=Add%20Supabase%20credentials%20to%20enable%20sign%20up.");
+    redirect(
+      buildCreateAccountRedirect(
+        "error",
+        "Add Supabase credentials to enable sign up.",
+        next,
+        email,
+      ),
+    );
   }
 
   const fullName = String(formData.get("full_name") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const supabase = await createSupabaseAuthServerClient();
 
   if (!fullName || !email || !password || !supabase) {
-    redirect("/create-account?error=Complete%20all%20required%20fields.");
+    redirect(buildCreateAccountRedirect("error", "Complete all required fields.", next, email));
   }
 
   const { error } = await supabase.auth.signUp({
@@ -67,10 +95,22 @@ export async function signUpAction(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/create-account?error=${encodeURIComponent(error.message)}`);
+    redirect(buildCreateAccountRedirect("error", error.message, next, email));
   }
 
-  redirect("/sign-in?message=Account%20created.%20Sign%20in%20to%20continue.");
+  const signInQuery = new URLSearchParams({
+    message: "Account created. Sign in to continue.",
+  });
+
+  if (next.startsWith("/")) {
+    signInQuery.set("next", next);
+  }
+
+  if (email) {
+    signInQuery.set("email", email);
+  }
+
+  redirect(`/sign-in?${signInQuery.toString()}`);
 }
 
 export async function requestPasswordResetAction(formData: FormData) {

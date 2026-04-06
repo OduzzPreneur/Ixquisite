@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { PostCheckoutSignupPrompt } from "@/components/post-checkout-signup-prompt";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { formatPrice } from "@/data/site";
+import { getAuthenticatedUser } from "@/lib/auth";
 import { getOrderById, getOrderEtaLabel } from "@/lib/orders";
 
 export default async function OrderConfirmationPage({
@@ -9,8 +11,20 @@ export default async function OrderConfirmationPage({
   searchParams: Promise<{ order?: string; reference?: string }>;
 }) {
   const params = await searchParams;
-  const order = params.order ? await getOrderById(params.order) : null;
+  const [order, user] = await Promise.all([
+    params.order ? getOrderById(params.order) : null,
+    getAuthenticatedUser(),
+  ]);
   const eta = getOrderEtaLabel();
+  const orderReference = order?.reference ?? params.reference ?? null;
+  const isSuccessfulCheckout = order ? order.payment_status === "paid" || order.status === "confirmed" : false;
+  const signupPrompt = order && isSuccessfulCheckout && !user && !order.user_id && order.email && orderReference
+    ? {
+      orderReference,
+      email: order.email,
+      createAccountHref: `/create-account?email=${encodeURIComponent(order.email)}&next=${encodeURIComponent(`/account/orders/${order.id}`)}`,
+    }
+    : null;
 
   return (
     <>
@@ -25,7 +39,7 @@ export default async function OrderConfirmationPage({
           <div className="summary-list">
             <div>
               <h3 className="minor-title">Order number</h3>
-              <p className="body-copy">{order?.reference ?? params.reference ?? "Pending"}</p>
+              <p className="body-copy">{orderReference ?? "Pending"}</p>
             </div>
             <div>
               <h3 className="minor-title">Estimated delivery</h3>
@@ -50,6 +64,13 @@ export default async function OrderConfirmationPage({
           </div>
         </div>
       </section>
+      {signupPrompt ? (
+        <PostCheckoutSignupPrompt
+          orderReference={signupPrompt.orderReference}
+          email={signupPrompt.email}
+          createAccountHref={signupPrompt.createAccountHref}
+        />
+      ) : null}
     </>
   );
 }

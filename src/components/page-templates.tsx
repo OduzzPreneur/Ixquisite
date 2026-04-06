@@ -155,6 +155,7 @@ export function AuthPage({
     type: string;
     placeholder: string;
     autoComplete?: string;
+    defaultValue?: string;
   }>;
   cta: string;
   footer: ReactNode;
@@ -189,6 +190,7 @@ export function AuthPage({
                     type={field.type}
                     placeholder={field.placeholder}
                     autoComplete={field.autoComplete}
+                    defaultValue={field.defaultValue}
                   />
                 </div>
               ))}

@@ -5,10 +5,20 @@ import { signUpAction } from "@/app/actions/auth";
 export default async function CreateAccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; message?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; next?: string; email?: string }>;
 }) {
   const params = await searchParams;
-  const nextQuery = params.next ? `?next=${encodeURIComponent(params.next)}` : "";
+  const signInQuery = new URLSearchParams();
+
+  if (params.next) {
+    signInQuery.set("next", params.next);
+  }
+
+  if (params.email) {
+    signInQuery.set("email", params.email);
+  }
+
+  const nextQuery = signInQuery.size ? `?${signInQuery.toString()}` : "";
 
   return (
     <AuthPage
@@ -29,6 +39,7 @@ export default async function CreateAccountPage({
           type: "email",
           placeholder: "you@example.com",
           autoComplete: "email",
+          defaultValue: params.email ?? "",
         },
         {
           name: "phone",

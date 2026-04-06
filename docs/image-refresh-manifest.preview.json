@@ -1,0 +1,170 @@
+{
+  "version": "image-refresh-preview-v1",
+  "objective": "Replace repeated menswear placeholders with purpose-built photography that matches each commerce slot.",
+  "art_direction": {
+    "mood": "quiet luxury, premium menswear, modern West African corporate confidence",
+    "lighting": "soft daylight or controlled studio light with deep, clean contrast",
+    "constraints": [
+      "no logos or text inside images",
+      "no visible UI frames",
+      "no collage compositions",
+      "single dominant subject per image"
+    ]
+  },
+  "preview_set": [
+    {
+      "id": "hero-cocoa-ceremony",
+      "section": "Homepage Hero",
+      "slot_key": "Cocoa Ceremony Suit",
+      "current_src": "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+      "proposed_filename": "hero-cocoa-ceremony-v2.jpg",
+      "ratio": "4:5",
+      "prompt": "Photoreal menswear hero: Black male model in rich cocoa double-breasted suit, premium outdoor architecture background, calm negative space, high-end editorial, no logos, no text."
+    },
+    {
+      "id": "cat-suits",
+      "section": "Category Shortcuts",
+      "slot_key": "Suits",
+      "current_src": "/images/ixquisite/hero-teal-double-breasted.jpg",
+      "proposed_filename": "cat-suits-signature-v2.jpg",
+      "ratio": "3:4",
+      "prompt": "Photoreal category image for premium suits: clean full-body frame, strong tailoring silhouette, deep navy palette, luxury retail campaign look."
+    },
+    {
+      "id": "cat-shirts",
+      "section": "Category Shortcuts",
+      "slot_key": "Shirts",
+      "current_src": "/images/ixquisite/ivory-navy-look.jpg",
+      "proposed_filename": "cat-shirts-refined-v2.jpg",
+      "ratio": "3:4",
+      "prompt": "Photoreal category image for luxury dress shirts: crisp ivory shirt with subtle jacket layering, clean collar detail, premium catalog style."
+    },
+    {
+      "id": "cat-trousers",
+      "section": "Category Shortcuts",
+      "slot_key": "Trousers",
+      "current_src": "/images/ixquisite/taupe-double-breasted-look.jpg",
+      "proposed_filename": "cat-trousers-structure-v2.jpg",
+      "ratio": "3:4",
+      "prompt": "Photoreal category image for tailored trousers: lower-body emphasis with sharp crease and polished shoes, neutral upscale interior backdrop."
+    },
+    {
+      "id": "cat-ties",
+      "section": "Category Shortcuts",
+      "slot_key": "Ties",
+      "current_src": "/images/ixquisite/cocoa-suit-close.jpg",
+      "proposed_filename": "cat-ties-detail-v2.jpg",
+      "ratio": "3:4",
+      "prompt": "Photoreal category image for silk ties: close crop of tie knot and lapel in premium suit fabric, refined texture, luxury editorial close-up."
+    },
+    {
+      "id": "cat-accessories",
+      "section": "Category Shortcuts",
+      "slot_key": "Accessories",
+      "current_src": "/images/ixquisite/black-ceremony-suit.jpg",
+      "proposed_filename": "cat-accessories-finish-v2.jpg",
+      "ratio": "3:4",
+      "prompt": "Photoreal category image for mens accessories: cufflinks, pocket square, belt detail on tailored jacket, premium styling, minimal background."
+    },
+    {
+      "id": "occ-office",
+      "section": "Shop by Occasion",
+      "slot_key": "Office",
+      "current_src": "/images/ixquisite/navy-pinstripe-jacket.jpg",
+      "proposed_filename": "occ-office-authority-v2.jpg",
+      "ratio": "16:10",
+      "prompt": "Photoreal office menswear scene: structured suit in modern corporate interior, calm confident posture, no clutter, premium tone."
+    },
+    {
+      "id": "occ-executive",
+      "section": "Shop by Occasion",
+      "slot_key": "Executive",
+      "current_src": "/images/ixquisite/hero-teal-double-breasted.jpg",
+      "proposed_filename": "occ-executive-boardroom-v2.jpg",
+      "ratio": "16:10",
+      "prompt": "Photoreal executive boardroom look: double-breasted tailoring, polished luxury atmosphere, strong leadership portrait, no text."
+    },
+    {
+      "id": "occ-wedding-guest",
+      "section": "Shop by Occasion",
+      "slot_key": "Wedding Guest",
+      "current_src": "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+      "proposed_filename": "occ-wedding-guest-cocoa-v2.jpg",
+      "ratio": "16:10",
+      "prompt": "Photoreal wedding guest styling: warm cocoa tailored suit at elegant event venue, celebratory but refined mood, no crowd clutter."
+    },
+    {
+      "id": "col-boardroom-edit",
+      "section": "Collections",
+      "slot_key": "Boardroom Edit",
+      "current_src": "/images/ixquisite/hero-teal-double-breasted.jpg",
+      "proposed_filename": "col-boardroom-edit-v2.jpg",
+      "ratio": "21:9",
+      "prompt": "Photoreal collection hero for boardroom edit: navy and charcoal formal styling, architectural office corridor backdrop, cinematic premium framing."
+    },
+    {
+      "id": "col-executive-essentials",
+      "section": "Collections",
+      "slot_key": "Executive Essentials",
+      "current_src": "/images/ixquisite/ivory-navy-look.jpg",
+      "proposed_filename": "col-executive-essentials-v2.jpg",
+      "ratio": "21:9",
+      "prompt": "Photoreal collection hero for executive essentials: crisp ivory shirt and midnight tailoring, simple luxury interior, clean merchandising composition."
+    },
+    {
+      "id": "col-signature-neutrals",
+      "section": "Collections",
+      "slot_key": "Signature Neutrals",
+      "current_src": "/images/ixquisite/cocoa-suit-close.jpg",
+      "proposed_filename": "col-signature-neutrals-v2.jpg",
+      "ratio": "21:9",
+      "prompt": "Photoreal collection hero for signature neutrals: espresso and warm ivory palette, soft luxury lighting, premium editorial finish."
+    },
+    {
+      "id": "prd-midnight-main",
+      "section": "Product Detail",
+      "slot_key": "Midnight Commander Suit",
+      "current_src": "/images/ixquisite/navy-pinstripe-jacket.jpg",
+      "proposed_filename": "prd-midnight-commander-main-v2.jpg",
+      "ratio": "4:5",
+      "prompt": "Photoreal product hero for Midnight Commander Suit: full tailored look, neutral studio background, true fabric texture, ecommerce-ready framing."
+    },
+    {
+      "id": "prd-ivory-main",
+      "section": "Product Detail",
+      "slot_key": "Ivory Broadcloth Shirt",
+      "current_src": "/images/ixquisite/ivory-navy-look.jpg",
+      "proposed_filename": "prd-ivory-broadcloth-main-v2.jpg",
+      "ratio": "4:5",
+      "prompt": "Photoreal product hero for Ivory Broadcloth Shirt: sharp collar, premium cotton texture, clean studio background, catalog-grade lighting."
+    },
+    {
+      "id": "ed-brown-suit-guide",
+      "section": "Style Guide",
+      "slot_key": "How to Style a Brown Suit Without Losing Formality",
+      "current_src": "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+      "proposed_filename": "ed-brown-suit-guide-v2.jpg",
+      "ratio": "16:10",
+      "prompt": "Photoreal editorial image: refined brown suit styling scene with luxury city backdrop, magazine-grade composition, no text overlay."
+    },
+    {
+      "id": "ed-shirt-tie-guide",
+      "section": "Style Guide",
+      "slot_key": "Shirt and Tie Combinations That Always Look Expensive",
+      "current_src": "/images/ixquisite/cocoa-suit-close.jpg",
+      "proposed_filename": "ed-shirt-tie-guide-v2.jpg",
+      "ratio": "16:10",
+      "prompt": "Photoreal editorial close-up: premium shirt and tie pairings on tailored jacket, rich textile detail, elegant magazine crop."
+    }
+  ],
+  "next_phases": {
+    "phase_2_product_variants": [
+      "Generate detail and styled variants for all 8 core product SKUs (16 extra images).",
+      "Enforce consistent lighting per product family for carousel cohesion."
+    ],
+    "phase_3_lookbook_brand": [
+      "Refresh lookbook set: Boardroom Quiet Luxury, Ceremony in Cocoa, Travel Day Precision.",
+      "Replace generic brand-landscape fallback with two dedicated brand atmosphere plates."
+    ]
+  }
+}
