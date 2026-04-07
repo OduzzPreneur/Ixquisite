@@ -53,6 +53,16 @@ function redirectWithAdminMessage(path: string, key: "error" | "message", value:
   redirect(`${path}?${key}=${encodeURIComponent(value)}`);
 }
 
+function getAdminClientOrRedirect(path: string): NonNullable<ReturnType<typeof createSupabaseAdminClient>> {
+  const admin = createSupabaseAdminClient();
+
+  if (!admin) {
+    redirectWithAdminMessage(path, "error", "Admin data access is not configured.");
+  }
+
+  return admin;
+}
+
 function revalidateCatalogShell() {
   revalidatePath("/");
   revalidatePath("/new-in");
@@ -66,7 +76,7 @@ function revalidateCatalogShell() {
 export async function upsertCategoryAction(formData: FormData) {
   await requireAdminUser("/admin/categories");
 
-  const admin = createSupabaseAdminClient();
+  const admin = getAdminClientOrRedirect("/admin/categories");
   const previousSlug = normalizeField(formData.get("previous_slug"));
   const previousCategorySlug = normalizeField(formData.get("previous_category_slug"));
   const previousCollectionSlug = normalizeField(formData.get("previous_collection_slug"));
@@ -77,10 +87,6 @@ export async function upsertCategoryAction(formData: FormData) {
   const caption = normalizeField(formData.get("caption"));
   const tone = normalizeField(formData.get("tone"));
   const sortOrder = parseInteger(formData.get("sort_order"));
-
-  if (!admin) {
-    redirectWithAdminMessage("/admin/categories", "error", "Admin data access is not configured.");
-  }
 
   if (!slug || !title || !description || !caption) {
     redirectWithAdminMessage("/admin/categories", "error", "Slug, title, caption, and description are required.");
@@ -126,10 +132,10 @@ export async function upsertCategoryAction(formData: FormData) {
 export async function deleteCategoryAction(formData: FormData) {
   await requireAdminUser("/admin/categories");
 
-  const admin = createSupabaseAdminClient();
+  const admin = getAdminClientOrRedirect("/admin/categories");
   const slug = normalizeField(formData.get("slug"));
 
-  if (!admin || !slug) {
+  if (!slug) {
     redirectWithAdminMessage("/admin/categories", "error", "Choose a category to delete.");
   }
 
@@ -149,7 +155,7 @@ export async function deleteCategoryAction(formData: FormData) {
 export async function upsertProductAction(formData: FormData) {
   await requireAdminUser("/admin/products");
 
-  const admin = createSupabaseAdminClient();
+  const admin = getAdminClientOrRedirect("/admin/products");
   const previousSlug = normalizeField(formData.get("previous_slug"));
   const slug = normalizeField(formData.get("slug"));
   const title = normalizeField(formData.get("title"));
@@ -171,10 +177,6 @@ export async function upsertProductAction(formData: FormData) {
   const imageUrl = normalizeField(formData.get("image_url"));
   const imageAlt = normalizeField(formData.get("image_alt"));
   const imagePosition = normalizeField(formData.get("image_position"));
-
-  if (!admin) {
-    redirectWithAdminMessage("/admin/products", "error", "Admin data access is not configured.");
-  }
 
   if (!slug || !title || !categorySlug || !collectionSlug || !blurb || !description || !delivery || !fit || !availability) {
     redirectWithAdminMessage("/admin/products", "error", "Complete all required product fields.");
@@ -269,13 +271,13 @@ export async function upsertProductAction(formData: FormData) {
 export async function deleteProductAction(formData: FormData) {
   await requireAdminUser("/admin/products");
 
-  const admin = createSupabaseAdminClient();
+  const admin = getAdminClientOrRedirect("/admin/products");
   const slug = normalizeField(formData.get("slug"));
   const categorySlug = normalizeField(formData.get("category_slug"));
   const collectionSlug = normalizeField(formData.get("collection_slug"));
   const occasionSlugs = parseList(formData.get("occasion_slugs"));
 
-  if (!admin || !slug) {
+  if (!slug) {
     redirectWithAdminMessage("/admin/products", "error", "Choose a product to delete.");
   }
 
@@ -304,11 +306,7 @@ export async function deleteProductAction(formData: FormData) {
 export async function updateHomepageSettingsAction(formData: FormData) {
   await requireAdminUser("/admin/homepage");
 
-  const admin = createSupabaseAdminClient();
-
-  if (!admin) {
-    redirectWithAdminMessage("/admin/homepage", "error", "Admin data access is not configured.");
-  }
+  const admin = getAdminClientOrRedirect("/admin/homepage");
 
   try {
     const settings = mergeHomePageSettings({
