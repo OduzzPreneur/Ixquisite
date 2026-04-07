@@ -318,13 +318,13 @@ export async function getProductsByOccasion(slug: string) {
   return matches.length ? matches : fallbackGetProductsByOccasion(slug);
 }
 
-export async function getProductsBySlugs(slugs: string[]) {
+export async function getProductsBySlugs(slugs: readonly string[]) {
   const products = await getProducts();
   const mapped = slugs
     .map((slug) => products.find((item) => item.slug === slug))
     .filter((item): item is Product => Boolean(item));
 
-  return mapped.length ? mapped : fallbackGetProductsBySlugs(slugs);
+  return mapped.length ? mapped : fallbackGetProductsBySlugs([...slugs]);
 }
 
 export async function getHomePageData() {

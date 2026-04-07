@@ -60,7 +60,7 @@ function getAdminClientOrRedirect(path: string): NonNullable<ReturnType<typeof c
     redirectWithAdminMessage(path, "error", "Admin data access is not configured.");
   }
 
-  return admin;
+  return admin as NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
 }
 
 function revalidateCatalogShell() {
@@ -157,6 +157,9 @@ export async function upsertProductAction(formData: FormData) {
 
   const admin = getAdminClientOrRedirect("/admin/products");
   const previousSlug = normalizeField(formData.get("previous_slug"));
+  const previousCategorySlug = normalizeField(formData.get("previous_category_slug"));
+  const previousCollectionSlug = normalizeField(formData.get("previous_collection_slug"));
+  const previousOccasionSlugs = parseList(formData.get("previous_occasion_slugs"));
   const slug = normalizeField(formData.get("slug"));
   const title = normalizeField(formData.get("title"));
   const categorySlug = normalizeField(formData.get("category_slug"));
