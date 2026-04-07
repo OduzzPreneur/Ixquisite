@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { getHomePageData } from "@/lib/catalog";
 import { getVisualAsset } from "@/lib/visual-assets";
-import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 import {
   CategoryTile,
   CollectionFeature,
   EditorialCard,
+  LatestMosaic,
   OccasionTile,
   ProductCard,
   TrustStrip,
@@ -13,17 +13,18 @@ import {
 } from "@/components/ui";
 
 export default async function Home() {
-  const [{
+  const {
     categories,
     occasions,
     articles,
     trustPoints,
     featuredCollection,
     featuredProducts,
+    bestSellerProducts,
     latestProducts,
     completeLook,
     completeLookProducts,
-  }, wishlistSlugs] = await Promise.all([getHomePageData(), getWishlistProductSlugsForCurrentUser()]);
+  } = await getHomePageData();
 
   return (
     <>
@@ -70,17 +71,44 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="page-section">
-        <div className="section-head">
+      <section className="page-section category-shortcuts">
+        <div className="section-head category-shortcuts__head">
           <p className="eyebrow">Category shortcuts</p>
           <h2 className="section-title">Start from the wardrobe area that matters most.</h2>
         </div>
-        <div className="grid grid--5 grid--mobile-duo">
+        <div className="grid grid--5 grid--mobile-duo category-shortcuts__grid">
           {categories.map((category) => (
             <CategoryTile key={category.slug} category={category} />
           ))}
         </div>
       </section>
+
+      <section className="page-section">
+        <div className="section-head section-head--split">
+          <div>
+            <p className="eyebrow">Best sellers</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              The proven pieces clients reach for first.
+            </h2>
+          </div>
+          <div>
+            <p className="section-copy">
+              Start with the strongest suit, the cleanest shirt, and the finishing piece
+              that already earns repeat orders.
+            </p>
+            <Link href="/best-sellers" className="pill-link" style={{ marginTop: "1rem", width: "fit-content" }}>
+              View all best sellers
+            </Link>
+          </div>
+        </div>
+        <div className="product-grid">
+          {bestSellerProducts.map((product) => (
+            <ProductCard key={product.slug} product={product} wishlistNext="/best-sellers" />
+          ))}
+        </div>
+      </section>
+
+      <LatestMosaic products={latestProducts} />
 
       <section className="page-section">
         <div className="section-head section-head--split">
@@ -104,30 +132,6 @@ export default async function Home() {
 
       <section className="page-section">
         <CollectionFeature collection={featuredCollection} supporting={featuredProducts} />
-      </section>
-
-      <section className="page-section">
-        <div className="section-head section-head--split">
-          <div>
-            <p className="eyebrow">Best sellers and new in</p>
-            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
-              Compact merchandising, not endless clutter.
-            </h2>
-          </div>
-          <Link href="/new-in" className="pill-link" style={{ width: "fit-content", alignSelf: "end" }}>
-            View all arrivals
-          </Link>
-        </div>
-        <div className="product-grid">
-          {latestProducts.map((product) => (
-            <ProductCard
-              key={product.slug}
-              product={product}
-              wishlistState={wishlistSlugs.includes(product.slug) ? "saved" : "idle"}
-              wishlistNext="/"
-            />
-          ))}
-        </div>
       </section>
 
       <section className="page-section">

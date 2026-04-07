@@ -1,10 +1,10 @@
 import { ListingPage } from "@/components/page-templates";
-import { getProducts } from "@/lib/catalog";
+import { getNewInProducts } from "@/lib/catalog";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 
 export default async function NewInPage() {
   const [products, wishlistSlugs] = await Promise.all([
-    getProducts(),
+    getNewInProducts(),
     getWishlistProductSlugsForCurrentUser(),
   ]);
 

@@ -166,6 +166,46 @@ export function CategoryTile({ category }: { category: Category }) {
   );
 }
 
+export function LatestMosaic({ products }: { products: Product[] }) {
+  const latestProducts = products.slice(0, 6);
+  const usesMosaicLayout = latestProducts.length >= 6;
+
+  return (
+    <section className="page-section latest-mosaic">
+      <div className="section-head latest-mosaic__head">
+        <p className="eyebrow">Latest arrivals</p>
+        <h2 className="section-title">Shop by latest</h2>
+      </div>
+      <div className={cx("latest-mosaic__grid", !usesMosaicLayout && "latest-mosaic__grid--compact")}>
+        <Link href="/new-in" className="latest-mosaic__tile latest-mosaic__tile--lead">
+          <VisualPanel
+            title="Latest Arrivals"
+            tone="navy"
+            size="landscape"
+            image={getVisualAsset("Latest Arrivals")}
+            className="latest-mosaic__panel latest-mosaic__panel--lead"
+          />
+        </Link>
+        {latestProducts.map((product, index) => (
+          <Link
+            key={product.slug}
+            href={product.isPlaceholder ? "/new-in" : `/product/${product.slug}`}
+            className={cx("latest-mosaic__tile", usesMosaicLayout && `latest-mosaic__tile--slot-${index + 2}`)}
+          >
+            <VisualPanel
+              title={product.title}
+              tone={product.tone}
+              size="wide"
+              image={getVisualAsset(product.title)}
+              className="latest-mosaic__panel"
+            />
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function OccasionTile({ occasion }: { occasion: Occasion }) {
   return (
     <Link href={`/occasion/${occasion.slug}`} className="tile-link">

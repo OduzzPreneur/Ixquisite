@@ -69,6 +69,16 @@ const visualAssets: Record<string, VisualAsset> = {
     alt: "Editorial tailoring image for the boardroom collection.",
     position: "center 14%",
   },
+  "latest arrivals": {
+    src: "/images/ixquisite/brand-landscape.jpg",
+    alt: "Ixquisite Menswear brand image for latest arrivals.",
+    position: "center center",
+  },
+  "best sellers": {
+    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
+    alt: "Ixquisite Menswear tailoring image for best sellers.",
+    position: "center 14%",
+  },
   "executive essentials": {
     src: "/images/ixquisite/ivory-navy-look.jpg",
     alt: "Polished suiting and shirting for executive essentials.",
@@ -93,6 +103,11 @@ const visualAssets: Record<string, VisualAsset> = {
     src: "/images/ixquisite/brand-landscape.jpg",
     alt: "Ixquisite Menswear branded tailoring backdrop.",
     position: "center center",
+  },
+  "charcoal windowpane suit": {
+    src: "/images/ixquisite/charcoal-windowpane-suit-v1.png",
+    alt: "Charcoal windowpane double-breasted suit in a premium retail setting.",
+    position: "center 18%",
   },
   "cocoa double-breasted suit": {
     src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
@@ -183,6 +198,21 @@ const visualAssets: Record<string, VisualAsset> = {
     src: "/images/ixquisite/brand-landscape.jpg",
     alt: "Branded tailored composition with tie and lapel textures.",
     position: "center center",
+  },
+  "midnight velvet smoking jacket": {
+    src: "/images/ixquisite/midnight-velvet-smoking-jacket-v1.png",
+    alt: "Midnight velvet smoking jacket in an upscale interior setting.",
+    position: "center 18%",
+  },
+  "oxblood dinner jacket": {
+    src: "/images/ixquisite/oxblood-dinner-jacket-v1.png",
+    alt: "Oxblood dinner jacket styled for luxury eveningwear.",
+    position: "center 18%",
+  },
+  "forest pinstripe double-breasted suit": {
+    src: "/images/ixquisite/forest-pinstripe-double-breasted-suit-v1.png",
+    alt: "Forest green pinstripe double-breasted suit in a tailored showroom.",
+    position: "center 18%",
   },
   "heirloom accessory set": {
     src: "/images/ixquisite/black-ceremony-suit.jpg",

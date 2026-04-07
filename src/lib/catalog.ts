@@ -15,6 +15,7 @@ import {
   getProductsByOccasion as fallbackGetProductsByOccasion,
   getProductsBySlugs as fallbackGetProductsBySlugs,
   lookbookLooks as fallbackLookbookLooks,
+  newInPlaceholderProducts,
   occasions as fallbackOccasions,
   products as fallbackProducts,
   trustPoints,
@@ -59,6 +60,8 @@ type ProductRow = {
   availability: string;
   details: string[] | null;
   collection_slug: string;
+  is_new: boolean;
+  is_best_seller: boolean;
   complete_the_look: string[] | null;
   product_occasions?: Array<{ occasion_slug: string }> | null;
 };
@@ -120,6 +123,8 @@ function mapProduct(row: ProductRow): Product {
     availability: row.availability,
     details: row.details ?? [],
     collection: row.collection_slug,
+    isNew: row.is_new,
+    isBestSeller: row.is_best_seller,
     occasions: row.product_occasions?.map((entry) => entry.occasion_slug) ?? [],
     completeTheLook: row.complete_the_look ?? [],
   };
@@ -149,7 +154,7 @@ const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
       supabase
         .from("products")
         .select(
-          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,sizes,availability,details,collection_slug,complete_the_look,product_occasions(occasion_slug)",
+          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,sizes,availability,details,collection_slug,is_new,is_best_seller,complete_the_look,product_occasions(occasion_slug)",
         )
         .order("featured_rank", { ascending: true })
         .order("title", { ascending: true }),
@@ -220,6 +225,20 @@ export async function getProducts() {
   return (await loadStorefrontData()).products;
 }
 
+export async function getNewInProducts() {
+  const products = await getProducts();
+  const matches = products.filter((item) => item.isNew);
+
+  return matches.length ? matches : fallbackProducts.filter((item) => item.isNew);
+}
+
+export async function getBestSellerProducts() {
+  const products = await getProducts();
+  const matches = products.filter((item) => item.isBestSeller);
+
+  return matches.length ? matches : fallbackProducts.filter((item) => item.isBestSeller);
+}
+
 export async function getArticles() {
   return (await loadStorefrontData()).articles;
 }
@@ -273,17 +292,19 @@ export async function getProductsBySlugs(slugs: string[]) {
 }
 
 export async function getHomePageData() {
-  const [categories, occasions, collections, products, articles, lookbookLooks] = await Promise.all([
+  const [categories, occasions, collections, products, articles, lookbookLooks, newInProducts, bestSellerProducts] = await Promise.all([
     getCategories(),
     getOccasions(),
     getCollections(),
     getProducts(),
     getArticles(),
     getLookbookLooks(),
+    getNewInProducts(),
+    getBestSellerProducts(),
   ]);
 
   const featuredCollection = collections[0] ?? fallbackCollections[0];
-  const latestProducts = products.slice(0, 4);
+  const latestProducts = [...newInProducts, ...newInPlaceholderProducts].slice(0, 6);
   const featuredProducts = products.filter((product) => product.collection === featuredCollection.slug).slice(0, 3);
   const completeLook = lookbookLooks[0] ?? fallbackData.lookbookLooks[0];
   const completeLookProducts = await getProductsBySlugs(completeLook.products);
@@ -295,7 +316,8 @@ export async function getHomePageData() {
     trustPoints,
     featuredCollection,
     featuredProducts: featuredProducts.length ? featuredProducts : fallbackGetProductsByCollection(featuredCollection.slug).slice(0, 3),
-    latestProducts: latestProducts.length ? latestProducts : fallbackProducts.slice(0, 4),
+    bestSellerProducts: bestSellerProducts.slice(0, 3),
+    latestProducts: latestProducts.length ? latestProducts : fallbackProducts.filter((product) => product.isNew).slice(0, 6),
     completeLook,
     completeLookProducts,
   };
