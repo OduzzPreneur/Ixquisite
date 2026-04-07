@@ -45,6 +45,10 @@ create table if not exists public.categories (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+alter table public.categories add column if not exists image_url text;
+alter table public.categories add column if not exists image_alt text;
+alter table public.categories add column if not exists image_position text;
+
 create table if not exists public.occasions (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
@@ -55,6 +59,10 @@ create table if not exists public.occasions (
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
+
+alter table public.occasions add column if not exists image_url text;
+alter table public.occasions add column if not exists image_alt text;
+alter table public.occasions add column if not exists image_position text;
 
 create table if not exists public.collections (
   id uuid primary key default gen_random_uuid(),
@@ -67,6 +75,10 @@ create table if not exists public.collections (
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
+
+alter table public.collections add column if not exists image_url text;
+alter table public.collections add column if not exists image_alt text;
+alter table public.collections add column if not exists image_position text;
 
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),

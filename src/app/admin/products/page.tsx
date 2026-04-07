@@ -35,7 +35,7 @@ export default async function AdminProductsPage({
             </h2>
           </div>
           <p className="section-copy">
-            Image paths should point to files in `public/`, for example `/images/ixquisite/hero-teal-double-breasted.jpg`.
+            Image paths should point to files in `public/`, for example `/images/ixquisite/cocoa-double-breasted-suit.webp`.
           </p>
         </div>
         <ProductEditorForm

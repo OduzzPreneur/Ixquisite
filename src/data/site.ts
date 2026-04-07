@@ -13,6 +13,7 @@ export type Category = {
   caption: string;
   tone: Tone;
   sortOrder?: number;
+  image?: ProductImage;
 };
 
 export type Occasion = {
@@ -21,6 +22,7 @@ export type Occasion = {
   description: string;
   tone: Tone;
   sortOrder?: number;
+  image?: ProductImage;
 };
 
 export type Collection = {
@@ -30,6 +32,7 @@ export type Collection = {
   tone: Tone;
   cta: string;
   sortOrder?: number;
+  image?: ProductImage;
 };
 
 export type Product = {
@@ -132,9 +135,9 @@ export const defaultHomePageSettings: HomePageSettings = {
   heroPrimaryHref: "/category/suits",
   heroSecondaryLabel: "Explore Collection",
   heroSecondaryHref: "/collection/boardroom-edit",
-  heroVisualTitle: "Cocoa Ceremony Suit",
-  heroVisualSrc: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-  heroVisualAlt: "Model in a cocoa brown double-breasted suit outdoors.",
+  heroVisualTitle: "Cocoa Double-Breasted Suit",
+  heroVisualSrc: "/images/ixquisite/cocoa-double-breasted-suit.webp",
+  heroVisualAlt: "Model in a cocoa double-breasted suit with a clean ceremony-ready stance.",
   heroVisualPosition: "center 18%",
   heroMeta: ["Premium corporate wear", "Delivered in a few days", "Fit guidance available"],
   heroNoteTitle: "Hero product direction",
@@ -148,10 +151,10 @@ export const defaultHomePageSettings: HomePageSettings = {
   groomFeatureSecondaryLabel: "Wedding inquiry",
   groomFeatureSecondaryHref: "/wedding-inquiry",
   groomFeaturePills: ["Basic, Standard, Premium", "Direct buy + inquiry support", "Groomsmen coordination"],
-  groomFeatureImageTitle: "Groom's Package",
-  groomFeatureImageSrc: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-  groomFeatureImageAlt: "Premium groom styling in a brown ceremony suit.",
-  groomFeatureImagePosition: "center 18%",
+  groomFeatureImageTitle: "Groomsmen Coordination",
+  groomFeatureImageSrc: "/images/ixquisite/groomsmen-suit-group.webp",
+  groomFeatureImageAlt: "Coordinated groom and groomsmen tailoring in a ceremony lineup.",
+  groomFeatureImagePosition: "center 24%",
   featuredCollectionSlug: "boardroom-edit",
   completeLookSlug: "look-1",
   finalCtaEyebrow: "Final call",

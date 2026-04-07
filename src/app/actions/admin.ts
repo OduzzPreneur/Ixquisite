@@ -37,7 +37,7 @@ function assertInternalHref(value: string, label: string) {
 
 function assertPublicImagePath(value: string, label: string) {
   if (value && !value.startsWith("/")) {
-    throw new Error(`${label} must be a public path like /images/ixquisite/file.jpg.`);
+    throw new Error(`${label} must be a public path like /images/ixquisite/cocoa-double-breasted-suit.webp.`);
   }
 }
 

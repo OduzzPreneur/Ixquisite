@@ -1,0 +1,86 @@
+[
+  {
+    "slug": "midnight-commander-suit",
+    "title": "Midnight Commander Suit",
+    "image_url": "/images/ixquisite/midnight-commander-suit.webp",
+    "image_alt": "Royal blue double-breasted suit shown in a clean portrait crop.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "cocoa-double-breasted-suit",
+    "title": "Cocoa Double-Breasted Suit",
+    "image_url": "/images/ixquisite/cocoa-double-breasted-suit.webp",
+    "image_alt": "Cocoa double-breasted suit in a strong editorial portrait.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "ivory-broadcloth-shirt",
+    "title": "Ivory Broadcloth Shirt",
+    "image_url": "/images/ixquisite/ivory-broadcloth-shirt.webp",
+    "image_alt": "Ivory broadcloth shirt layered into a clean tailored look.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "slate-pinstripe-shirt",
+    "title": "Slate Pinstripe Shirt",
+    "image_url": "/images/ixquisite/slate-pinstripe-shirt.webp",
+    "image_alt": "Blue tailored styling used to represent the slate pinstripe shirt.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "tailored-ink-trouser",
+    "title": "Tailored Ink Trouser",
+    "image_url": "/images/ixquisite/tailored-ink-trouser.webp",
+    "image_alt": "Dark formal tailoring used to represent the tailored ink trouser.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "walnut-pleated-trouser",
+    "title": "Walnut Pleated Trouser",
+    "image_url": "/images/ixquisite/walnut-pleated-trouser.webp",
+    "image_alt": "Warm-toned pleated trouser styling in a full-length tailored frame.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "regent-silk-tie",
+    "title": "Regent Silk Tie",
+    "image_url": "/images/ixquisite/regent-silk-tie.webp",
+    "image_alt": "Close crop highlighting the regent silk tie in a formal look.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "heirloom-accessory-set",
+    "title": "Heirloom Accessory Set",
+    "image_url": "/images/ixquisite/heirloom-accessory-set.webp",
+    "image_alt": "Accessory-led black formalwear detail for the heirloom set.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "placeholder-charcoal-windowpane-suit",
+    "title": "Charcoal Windowpane Suit",
+    "image_url": "/images/ixquisite/charcoal-windowpane-suit.webp",
+    "image_alt": "Dark ceremony tailoring used to represent the charcoal windowpane suit.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "placeholder-midnight-velvet-smoking-jacket",
+    "title": "Midnight Velvet Smoking Jacket",
+    "image_url": "/images/ixquisite/midnight-velvet-smoking-jacket.webp",
+    "image_alt": "Dark formalwear detail used to represent the midnight velvet smoking jacket.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "placeholder-oxblood-dinner-jacket",
+    "title": "Oxblood Dinner Jacket",
+    "image_url": "/images/ixquisite/oxblood-dinner-jacket.webp",
+    "image_alt": "Burgundy dinner jacket portrait with ceremony-ready polish.",
+    "image_position": "center 18%"
+  },
+  {
+    "slug": "placeholder-forest-pinstripe-double-breasted-suit",
+    "title": "Forest Pinstripe Double-Breasted Suit",
+    "image_url": "/images/ixquisite/forest-pinstripe-double-breasted-suit.webp",
+    "image_alt": "Forest double-breasted tailoring with a rich, modern formal silhouette.",
+    "image_position": "center 18%"
+  }
+]

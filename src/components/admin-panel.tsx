@@ -278,7 +278,7 @@ export function ProductEditorForm({
             id="image_url"
             name="image_url"
             defaultValue={product?.image?.src ?? ""}
-            placeholder="/images/ixquisite/hero-teal-double-breasted.jpg"
+            placeholder="/images/ixquisite/cocoa-double-breasted-suit.webp"
           />
         </div>
         <div className="field">

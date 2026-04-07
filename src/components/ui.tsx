@@ -156,7 +156,7 @@ export function CategoryTile({ category }: { category: Category }) {
         kicker={category.caption}
         tone={category.tone}
         size="wide"
-        image={getVisualAsset(category.title)}
+        image={category.image ?? getVisualAsset(category.title)}
       />
       <div className="tile-link__meta">
         <h3 className="tile-link__title">{category.title}</h3>
@@ -214,7 +214,7 @@ export function OccasionTile({ occasion }: { occasion: Occasion }) {
         kicker="Curated occasion"
         tone={occasion.tone}
         size="wide"
-        image={getVisualAsset(occasion.title)}
+        image={occasion.image ?? getVisualAsset(occasion.title)}
       />
       <div className="tile-link__meta">
         <h3 className="tile-link__title">{occasion.title}</h3>
@@ -301,7 +301,7 @@ export function CollectionFeature({ collection, supporting }: { collection: Coll
         kicker="Featured collection"
         tone={collection.tone}
         size="landscape"
-        image={getVisualAsset(collection.title)}
+        image={collection.image ?? getVisualAsset(collection.title)}
       />
       <div className="detail-card" style={{ background: "transparent", border: "none", boxShadow: "none", padding: 0 }}>
         <p className="eyebrow">Featured collection</p>

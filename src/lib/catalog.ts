@@ -71,11 +71,41 @@ type ProductRow = {
   product_occasions?: Array<{ occasion_slug: string }> | null;
 };
 
-type CategoryRow = Category & { sort_order?: number | null };
+type CategoryRow = Category & {
+  sort_order?: number | null;
+  image_url?: string | null;
+  image_alt?: string | null;
+  image_position?: string | null;
+};
 
-type OccasionRow = Occasion & { sort_order?: number | null };
+type OccasionRow = Occasion & {
+  sort_order?: number | null;
+  image_url?: string | null;
+  image_alt?: string | null;
+  image_position?: string | null;
+};
 
-type CollectionRow = Collection & { sort_order?: number | null };
+type CollectionRow = Collection & {
+  sort_order?: number | null;
+  image_url?: string | null;
+  image_alt?: string | null;
+  image_position?: string | null;
+};
+
+function mapCatalogImage(row: {
+  image_url?: string | null;
+  image_alt?: string | null;
+  image_position?: string | null;
+  title: string;
+}) {
+  return row.image_url
+    ? {
+        src: row.image_url,
+        alt: row.image_alt ?? row.title,
+        position: row.image_position ?? undefined,
+      }
+    : undefined;
+}
 
 type ArticleRow = {
   slug: string;
@@ -161,9 +191,18 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
 
   const [categoriesResult, occasionsResult, collectionsResult, productsResult, articlesResult, lookbookResult] =
     await Promise.all([
-      supabase.from("categories").select("slug,title,description,caption,tone,sort_order").order("sort_order"),
-      supabase.from("occasions").select("slug,title,description,tone,sort_order").order("sort_order"),
-      supabase.from("collections").select("slug,title,description,tone,cta,sort_order").order("sort_order"),
+      supabase
+        .from("categories")
+        .select("slug,title,description,caption,tone,sort_order,image_url,image_alt,image_position")
+        .order("sort_order"),
+      supabase
+        .from("occasions")
+        .select("slug,title,description,tone,sort_order,image_url,image_alt,image_position")
+        .order("sort_order"),
+      supabase
+        .from("collections")
+        .select("slug,title,description,tone,cta,sort_order,image_url,image_alt,image_position")
+        .order("sort_order"),
       supabase
         .from("products")
         .select(
@@ -208,6 +247,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
         caption: category.caption,
         tone: category.tone,
         sortOrder: category.sort_order ?? 0,
+        image: mapCatalogImage(category),
       })) || fallbackData.categories,
     occasions:
       ((occasionsResult.data as OccasionRow[]) ?? []).map((occasion) => ({
@@ -216,6 +256,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
         description: occasion.description,
         tone: occasion.tone,
         sortOrder: occasion.sort_order ?? 0,
+        image: mapCatalogImage(occasion),
       })) || fallbackData.occasions,
     collections:
       ((collectionsResult.data as CollectionRow[]) ?? []).map((collection) => ({
@@ -225,6 +266,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
         tone: collection.tone,
         cta: collection.cta,
         sortOrder: collection.sort_order ?? 0,
+        image: mapCatalogImage(collection),
       })) || fallbackData.collections,
     products: ((productsResult.data as ProductRow[]) ?? []).map(mapProduct),
     articles: ((articlesResult.data as ArticleRow[]) ?? []).map((article) => ({

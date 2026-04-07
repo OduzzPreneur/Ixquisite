@@ -8,297 +8,301 @@ function normalize(key: string) {
   return key.trim().toLowerCase();
 }
 
+function asset(src: string, alt: string, position?: string): VisualAsset {
+  return { src, alt, position };
+}
+
 const visualAssets: Record<string, VisualAsset> = {
-  "cocoa ceremony suit": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Model in a cocoa brown double-breasted suit outdoors.",
-    position: "center 18%",
-  },
-  "suits": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Close portrait of a sharply tailored double-breasted suit.",
-    position: "center 14%",
-  },
-  "shirts": {
-    src: "/images/ixquisite/ivory-navy-look.jpg",
-    alt: "Tailored formal look with crisp shirting and sharp layering.",
-    position: "center 14%",
-  },
-  "trousers": {
-    src: "/images/ixquisite/taupe-double-breasted-look.jpg",
-    alt: "Tailored menswear look showing refined trouser lines.",
-    position: "center 18%",
-  },
-  "ties": {
-    src: "/images/ixquisite/cocoa-suit-close.jpg",
-    alt: "Close studio crop of a brown tailored suit with matching tie.",
-    position: "center 22%",
-  },
-  "accessories": {
-    src: "/images/ixquisite/black-ceremony-suit.jpg",
-    alt: "Formal black suit styled with lapel chain and accessories.",
-    position: "center 18%",
-  },
-  "office": {
-    src: "/images/ixquisite/navy-pinstripe-jacket.jpg",
-    alt: "Pinstripe double-breasted jacket styled for office dressing.",
-    position: "center 18%",
-  },
-  "executive": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Confident executive tailoring in a dark double-breasted suit.",
-    position: "center 14%",
-  },
-  "wedding guest": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Brown ceremony suit styled for a wedding guest look.",
-    position: "center 20%",
-  },
-  "groom's package": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Premium groom styling in a brown ceremony suit.",
-    position: "center 18%",
-  },
-  "your wedding look. perfectly handled.": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Premium groom styling in a cocoa ceremony suit.",
-    position: "center 18%",
-  },
-  "basic groom package": {
-    src: "/images/ixquisite/navy-pinstripe-jacket.jpg",
-    alt: "Dark formal suit styling for a basic groom package.",
-    position: "center 16%",
-  },
-  "standard groom package": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Refined brown ceremony suit for the standard groom package.",
-    position: "center 18%",
-  },
-  "premium groom package": {
-    src: "/images/ixquisite/black-ceremony-suit.jpg",
-    alt: "Premium black formalwear styling with ceremonial accessories.",
-    position: "center 18%",
-  },
-  "wedding inquiry": {
-    src: "/images/ixquisite/white-dinner-jacket.jpg",
-    alt: "Formal white dinner jacket for premium wedding inquiry support.",
-    position: "center 18%",
-  },
-  "dress your team": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Coordinated formalwear visual for groomsmen support.",
-    position: "center 14%",
-  },
-  "black tie": {
-    src: "/images/ixquisite/white-dinner-jacket.jpg",
-    alt: "White dinner jacket styled for formal evening wear.",
-    position: "center 18%",
-  },
-  "business travel": {
-    src: "/images/ixquisite/taupe-double-breasted-look.jpg",
-    alt: "Neutral tailored look suitable for polished travel dressing.",
-    position: "center 18%",
-  },
-  "boardroom edit": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Editorial tailoring image for the boardroom collection.",
-    position: "center 14%",
-  },
-  "latest arrivals": {
-    src: "/images/ixquisite/brand-landscape.jpg",
-    alt: "Ixquisite Menswear brand image for latest arrivals.",
-    position: "center center",
-  },
-  "best sellers": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Ixquisite Menswear tailoring image for best sellers.",
-    position: "center 14%",
-  },
-  "executive essentials": {
-    src: "/images/ixquisite/ivory-navy-look.jpg",
-    alt: "Polished suiting and shirting for executive essentials.",
-    position: "center 18%",
-  },
-  "signature neutrals": {
-    src: "/images/ixquisite/cocoa-suit-close.jpg",
-    alt: "Warm neutral tailoring in cocoa tones.",
-    position: "center 18%",
-  },
-  "midnight commander suit": {
-    src: "/images/ixquisite/navy-pinstripe-jacket.jpg",
-    alt: "Dark tailored suit with sharp lapels in a showroom setting.",
-    position: "center 20%",
-  },
-  "midnight commander suit::detail": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Close tailoring detail on a dark double-breasted suit.",
-    position: "center 12%",
-  },
-  "midnight commander suit::styled": {
-    src: "/images/ixquisite/brand-landscape.jpg",
-    alt: "Ixquisite Menswear branded tailoring backdrop.",
-    position: "center center",
-  },
-  "charcoal windowpane suit": {
-    src: "/images/ixquisite/charcoal-windowpane-suit-v1.png",
-    alt: "Charcoal windowpane double-breasted suit in a premium retail setting.",
-    position: "center 18%",
-  },
-  "cocoa double-breasted suit": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Brown double-breasted suit styled outdoors.",
-    position: "center 18%",
-  },
-  "cocoa double-breasted suit::detail": {
-    src: "/images/ixquisite/cocoa-suit-close.jpg",
-    alt: "Studio close-up of a cocoa brown double-breasted suit.",
-    position: "center 18%",
-  },
-  "cocoa double-breasted suit::styled": {
-    src: "/images/ixquisite/cocoa-suit-mannequin.jpg",
-    alt: "Brown double-breasted suit displayed on a mannequin.",
-    position: "center 16%",
-  },
-  "ivory broadcloth shirt": {
-    src: "/images/ixquisite/ivory-navy-look.jpg",
-    alt: "Ivory shirt layered beneath a polished tailored look.",
-    position: "center 18%",
-  },
-  "ivory broadcloth shirt::detail": {
-    src: "/images/ixquisite/white-dinner-jacket.jpg",
-    alt: "Crisp white shirting styled under formal tailoring.",
-    position: "center 16%",
-  },
-  "ivory broadcloth shirt::styled": {
-    src: "/images/ixquisite/white-three-piece.jpg",
-    alt: "Ivory three-piece tailoring with crisp formal shirt styling.",
-    position: "center 16%",
-  },
-  "slate pinstripe shirt": {
-    src: "/images/ixquisite/ivory-navy-look.jpg",
-    alt: "Structured formal look with subtle stripe influence.",
-    position: "center 16%",
-  },
-  "slate pinstripe shirt::detail": {
-    src: "/images/ixquisite/navy-pinstripe-jacket.jpg",
-    alt: "Pinstripe tailoring detail in a showroom environment.",
-    position: "center 18%",
-  },
-  "slate pinstripe shirt::styled": {
-    src: "/images/ixquisite/brand-landscape.jpg",
-    alt: "Ixquisite branded backdrop with tailored textures.",
-    position: "center center",
-  },
-  "tailored ink trouser": {
-    src: "/images/ixquisite/black-ceremony-suit.jpg",
-    alt: "Black tailored suit look showing clean trouser lines.",
-    position: "center 18%",
-  },
-  "tailored ink trouser::detail": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Close tailored detail from a dark formal look.",
-    position: "center 18%",
-  },
-  "tailored ink trouser::styled": {
-    src: "/images/ixquisite/ivory-navy-look.jpg",
-    alt: "Navy trouser styling paired with a light jacket.",
-    position: "center 18%",
-  },
-  "walnut pleated trouser": {
-    src: "/images/ixquisite/taupe-double-breasted-look.jpg",
-    alt: "Warm-toned tailored look with refined pleated trouser styling.",
-    position: "center 18%",
-  },
-  "walnut pleated trouser::detail": {
-    src: "/images/ixquisite/cocoa-suit-close.jpg",
-    alt: "Warm brown tailoring close-up with soft tonal depth.",
-    position: "center 22%",
-  },
-  "walnut pleated trouser::styled": {
-    src: "/images/ixquisite/cocoa-suit-mannequin.jpg",
-    alt: "Warm brown tailoring presented in a studio mannequin shot.",
-    position: "center 18%",
-  },
-  "regent silk tie": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Silk tie detail styled with a formal double-breasted suit.",
-    position: "center 10%",
-  },
-  "regent silk tie::detail": {
-    src: "/images/ixquisite/cocoa-suit-close.jpg",
-    alt: "Close-up of a tie and lapel pairing in brown tailoring.",
-    position: "center 16%",
-  },
-  "regent silk tie::styled": {
-    src: "/images/ixquisite/brand-landscape.jpg",
-    alt: "Branded tailored composition with tie and lapel textures.",
-    position: "center center",
-  },
-  "midnight velvet smoking jacket": {
-    src: "/images/ixquisite/midnight-velvet-smoking-jacket-v1.png",
-    alt: "Midnight velvet smoking jacket in an upscale interior setting.",
-    position: "center 18%",
-  },
-  "oxblood dinner jacket": {
-    src: "/images/ixquisite/oxblood-dinner-jacket-v1.png",
-    alt: "Oxblood dinner jacket styled for luxury eveningwear.",
-    position: "center 18%",
-  },
-  "forest pinstripe double-breasted suit": {
-    src: "/images/ixquisite/forest-pinstripe-double-breasted-suit-v1.png",
-    alt: "Forest green pinstripe double-breasted suit in a tailored showroom.",
-    position: "center 18%",
-  },
-  "heirloom accessory set": {
-    src: "/images/ixquisite/black-ceremony-suit.jpg",
-    alt: "Formal accessories styled on a black ceremony look.",
-    position: "center 18%",
-  },
-  "heirloom accessory set::detail": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Accessories and finishing details on a brown formal suit.",
-    position: "center 22%",
-  },
-  "heirloom accessory set::styled": {
-    src: "/images/ixquisite/white-dinner-jacket.jpg",
-    alt: "Accessory-friendly white dinner jacket formal styling.",
-    position: "center 18%",
-  },
-  "how to style a brown suit without losing formality": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Brown suit styling image for editorial guidance.",
-    position: "center 18%",
-  },
-  "shirt and tie combinations that always look expensive": {
-    src: "/images/ixquisite/cocoa-suit-close.jpg",
-    alt: "Tailored shirt and tie pairing in a studio portrait crop.",
-    position: "center 18%",
-  },
-  "the professional wardrobe essentials worth buying first": {
-    src: "/images/ixquisite/brand-landscape.jpg",
-    alt: "Ixquisite branded tailoring image for wardrobe essentials editorial.",
-    position: "center center",
-  },
-  "boardroom quiet luxury": {
-    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
-    alt: "Quiet luxury boardroom look in a dark double-breasted suit.",
-    position: "center 14%",
-  },
-  "ceremony in cocoa": {
-    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
-    alt: "Ceremony-ready cocoa tailoring outdoors.",
-    position: "center 18%",
-  },
-  "travel day precision": {
-    src: "/images/ixquisite/taupe-double-breasted-look.jpg",
-    alt: "Neutral precision tailoring suited to travel-day dressing.",
-    position: "center 18%",
-  },
-  "private fittings made simple": {
-    src: "/images/ixquisite/brand-landscape.jpg",
-    alt: "Ixquisite Menswear brand artwork over a tailored suit backdrop.",
-    position: "center center",
-  },
+  "cocoa ceremony suit": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit.webp",
+    "Model in a cocoa double-breasted suit with a clean ceremony-ready stance.",
+    "center 18%",
+  ),
+  suits: asset(
+    "/images/ixquisite/midnight-commander-suit.webp",
+    "Royal blue double-breasted tailoring presented as a sharp suiting hero.",
+    "center 18%",
+  ),
+  shirts: asset(
+    "/images/ixquisite/ivory-broadcloth-shirt.webp",
+    "Crisp shirting layered under polished blue tailoring.",
+    "center 18%",
+  ),
+  trousers: asset(
+    "/images/ixquisite/walnut-pleated-trouser.webp",
+    "Full-length tailoring shot showing clean trouser lines and soft structure.",
+    "center 18%",
+  ),
+  ties: asset(
+    "/images/ixquisite/regent-silk-tie.webp",
+    "Close crop of tie, lapel, and shirt textures in formalwear styling.",
+    "center 18%",
+  ),
+  accessories: asset(
+    "/images/ixquisite/heirloom-accessory-set.webp",
+    "Black formalwear detail with accessory-led styling and refined finishes.",
+    "center 18%",
+  ),
+  office: asset(
+    "/images/ixquisite/midnight-commander-suit-styled.webp",
+    "Structured blue tailoring suited to office dressing and daily authority.",
+    "center 18%",
+  ),
+  executive: asset(
+    "/images/ixquisite/midnight-commander-suit.webp",
+    "Executive tailoring in a rich blue double-breasted silhouette.",
+    "center 18%",
+  ),
+  "wedding guest": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
+    "Cocoa tailoring styled for polished wedding guest dressing.",
+    "center 18%",
+  ),
+  "groom's package": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit.webp",
+    "Refined groom-ready tailoring in a cocoa double-breasted suit.",
+    "center 18%",
+  ),
+  "your wedding look. perfectly handled.": asset(
+    "/images/ixquisite/oxblood-dinner-jacket.webp",
+    "Ceremony-first burgundy tailoring styled for a groom package hero.",
+    "center 18%",
+  ),
+  "basic groom package": asset(
+    "/images/ixquisite/midnight-commander-suit.webp",
+    "Entry package styling anchored by sharp blue formal tailoring.",
+    "center 18%",
+  ),
+  "standard groom package": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit.webp",
+    "Standard groom package styling in warm cocoa tailoring.",
+    "center 18%",
+  ),
+  "premium groom package": asset(
+    "/images/ixquisite/oxblood-dinner-jacket.webp",
+    "Premium groom package styling with a rich burgundy dinner jacket.",
+    "center 18%",
+  ),
+  "wedding inquiry": asset(
+    "/images/ixquisite/groomsmen-suit-group-alt.webp",
+    "Coordinated ceremony tailoring for wedding inquiries and group support.",
+    "center 24%",
+  ),
+  "dress your team": asset(
+    "/images/ixquisite/groomsmen-suit-group.webp",
+    "Coordinated groom and groomsmen tailoring in a ceremony lineup.",
+    "center 24%",
+  ),
+  "black tie": asset(
+    "/images/ixquisite/charcoal-windowpane-suit.webp",
+    "Dark formal tailoring for black-tie and evening dressing.",
+    "center 18%",
+  ),
+  "business travel": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
+    "Full-length tailoring with enough structure for polished travel days.",
+    "center 18%",
+  ),
+  "boardroom edit": asset(
+    "/images/ixquisite/midnight-commander-suit-styled.webp",
+    "Boardroom collection image anchored by precise blue tailoring.",
+    "center 18%",
+  ),
+  "latest arrivals": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
+    "New-arrivals tailoring shot with strong silhouette and clean framing.",
+    "center 18%",
+  ),
+  "best sellers": asset(
+    "/images/ixquisite/midnight-commander-suit.webp",
+    "Best-selling tailoring presented through a strong blue suit portrait.",
+    "center 18%",
+  ),
+  "executive essentials": asset(
+    "/images/ixquisite/ivory-broadcloth-shirt-styled.webp",
+    "Executive wardrobe essentials centered on crisp shirting and tailoring.",
+    "center 18%",
+  ),
+  "signature neutrals": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-detail.webp",
+    "Warm neutral tailoring detail in cocoa and soft ceremony tones.",
+    "center 18%",
+  ),
+  "midnight commander suit": asset(
+    "/images/ixquisite/midnight-commander-suit.webp",
+    "Royal blue double-breasted suit shown in a clean portrait crop.",
+    "center 18%",
+  ),
+  "midnight commander suit::detail": asset(
+    "/images/ixquisite/midnight-commander-suit-detail.webp",
+    "Close tailoring detail from the midnight commander suit.",
+    "center 18%",
+  ),
+  "midnight commander suit::styled": asset(
+    "/images/ixquisite/midnight-commander-suit-styled.webp",
+    "Styled blue tailoring shot for the midnight commander suit.",
+    "center 18%",
+  ),
+  "charcoal windowpane suit": asset(
+    "/images/ixquisite/charcoal-windowpane-suit.webp",
+    "Dark ceremony tailoring used to represent the charcoal windowpane suit.",
+    "center 18%",
+  ),
+  "cocoa double-breasted suit": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit.webp",
+    "Cocoa double-breasted suit in a strong editorial portrait.",
+    "center 18%",
+  ),
+  "cocoa double-breasted suit::detail": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-detail.webp",
+    "Close detail of the cocoa suit's lapel, tie, and shirt pairing.",
+    "center 18%",
+  ),
+  "cocoa double-breasted suit::styled": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
+    "Full-length styling of the cocoa double-breasted suit.",
+    "center 18%",
+  ),
+  "ivory broadcloth shirt": asset(
+    "/images/ixquisite/ivory-broadcloth-shirt.webp",
+    "Ivory broadcloth shirt layered into a clean tailored look.",
+    "center 18%",
+  ),
+  "ivory broadcloth shirt::detail": asset(
+    "/images/ixquisite/ivory-broadcloth-shirt-detail.webp",
+    "Detail crop of shirting and lapel textures for the ivory broadcloth shirt.",
+    "center 18%",
+  ),
+  "ivory broadcloth shirt::styled": asset(
+    "/images/ixquisite/ivory-broadcloth-shirt-styled.webp",
+    "Styled ceremony look featuring the ivory broadcloth shirt.",
+    "center 18%",
+  ),
+  "slate pinstripe shirt": asset(
+    "/images/ixquisite/slate-pinstripe-shirt.webp",
+    "Blue tailored styling used to represent the slate pinstripe shirt.",
+    "center 18%",
+  ),
+  "slate pinstripe shirt::detail": asset(
+    "/images/ixquisite/slate-pinstripe-shirt-detail.webp",
+    "Pinstripe-inspired tailoring detail for the slate shirt product view.",
+    "center 18%",
+  ),
+  "slate pinstripe shirt::styled": asset(
+    "/images/ixquisite/slate-pinstripe-shirt-styled.webp",
+    "Styled product image for the slate pinstripe shirt.",
+    "center 18%",
+  ),
+  "tailored ink trouser": asset(
+    "/images/ixquisite/tailored-ink-trouser.webp",
+    "Dark formal tailoring used to represent the tailored ink trouser.",
+    "center 18%",
+  ),
+  "tailored ink trouser::detail": asset(
+    "/images/ixquisite/tailored-ink-trouser-detail.webp",
+    "Trouser and jacket detail for the tailored ink trouser styling.",
+    "center 18%",
+  ),
+  "tailored ink trouser::styled": asset(
+    "/images/ixquisite/tailored-ink-trouser-styled.webp",
+    "Full-length styling for the tailored ink trouser.",
+    "center 18%",
+  ),
+  "walnut pleated trouser": asset(
+    "/images/ixquisite/walnut-pleated-trouser.webp",
+    "Warm-toned pleated trouser styling in a full-length tailored frame.",
+    "center 18%",
+  ),
+  "walnut pleated trouser::detail": asset(
+    "/images/ixquisite/walnut-pleated-trouser-detail.webp",
+    "Close detail of warm tailoring textures for the walnut pleated trouser.",
+    "center 18%",
+  ),
+  "walnut pleated trouser::styled": asset(
+    "/images/ixquisite/walnut-pleated-trouser-styled.webp",
+    "Styled warm tailoring image for the walnut pleated trouser.",
+    "center 18%",
+  ),
+  "regent silk tie": asset(
+    "/images/ixquisite/regent-silk-tie.webp",
+    "Close crop highlighting the regent silk tie in a formal look.",
+    "center 18%",
+  ),
+  "regent silk tie::detail": asset(
+    "/images/ixquisite/regent-silk-tie-detail.webp",
+    "Detailed tie and lapel texture for the regent silk tie.",
+    "center 18%",
+  ),
+  "regent silk tie::styled": asset(
+    "/images/ixquisite/regent-silk-tie-styled.webp",
+    "Styled tailored composition used for the regent silk tie.",
+    "center 18%",
+  ),
+  "midnight velvet smoking jacket": asset(
+    "/images/ixquisite/midnight-velvet-smoking-jacket.webp",
+    "Dark formalwear detail used to represent the midnight velvet smoking jacket.",
+    "center 18%",
+  ),
+  "oxblood dinner jacket": asset(
+    "/images/ixquisite/oxblood-dinner-jacket.webp",
+    "Burgundy dinner jacket portrait with ceremony-ready polish.",
+    "center 18%",
+  ),
+  "forest pinstripe double-breasted suit": asset(
+    "/images/ixquisite/forest-pinstripe-double-breasted-suit.webp",
+    "Forest double-breasted tailoring with a rich, modern formal silhouette.",
+    "center 18%",
+  ),
+  "heirloom accessory set": asset(
+    "/images/ixquisite/heirloom-accessory-set.webp",
+    "Accessory-led black formalwear detail for the heirloom set.",
+    "center 18%",
+  ),
+  "heirloom accessory set::detail": asset(
+    "/images/ixquisite/heirloom-accessory-set-detail.webp",
+    "Burgundy detail crop showing accessory textures and finishing points.",
+    "center 18%",
+  ),
+  "heirloom accessory set::styled": asset(
+    "/images/ixquisite/heirloom-accessory-set-styled.webp",
+    "Styled black formalwear image for the heirloom accessory set.",
+    "center 18%",
+  ),
+  "how to style a brown suit without losing formality": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
+    "Editorial brown-suit styling image with a formal, balanced silhouette.",
+    "center 18%",
+  ),
+  "shirt and tie combinations that always look expensive": asset(
+    "/images/ixquisite/regent-silk-tie-detail.webp",
+    "Editorial close-up of shirt, tie, and lapel textures.",
+    "center 18%",
+  ),
+  "the professional wardrobe essentials worth buying first": asset(
+    "/images/ixquisite/midnight-commander-suit-styled.webp",
+    "Wardrobe-essentials editorial image anchored by clean blue tailoring.",
+    "center 18%",
+  ),
+  "boardroom quiet luxury": asset(
+    "/images/ixquisite/midnight-commander-suit-styled.webp",
+    "Quiet luxury boardroom look built around strong blue tailoring.",
+    "center 18%",
+  ),
+  "ceremony in cocoa": asset(
+    "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
+    "Ceremony-ready cocoa tailoring in a full-length editorial frame.",
+    "center 18%",
+  ),
+  "travel day precision": asset(
+    "/images/ixquisite/forest-pinstripe-double-breasted-suit.webp",
+    "Travel-day tailoring with depth, structure, and a confident stance.",
+    "center 18%",
+  ),
+  "private fittings made simple": asset(
+    "/images/ixquisite/midnight-commander-suit-styled.webp",
+    "Tailoring-led image for private fittings and guided wardrobe support.",
+    "center 18%",
+  ),
 };
 
 export function getVisualAsset(key: string) {
