@@ -31,7 +31,13 @@ export default async function AccountAddressesPage({
         <div className="form-grid">
           <div className="field">
             <label htmlFor="label">Label</label>
-            <input id="label" name="label" defaultValue="Primary delivery" placeholder="Primary delivery" />
+            <input
+              id="label"
+              name="label"
+              defaultValue="Primary delivery"
+              placeholder="Primary delivery"
+              autoComplete="off"
+            />
           </div>
           <div className="field">
             <label htmlFor="recipient_name">Recipient name</label>
@@ -40,15 +46,23 @@ export default async function AccountAddressesPage({
               name="recipient_name"
               defaultValue={profile?.fullName ?? ""}
               placeholder="Client Name"
+              autoComplete="name"
             />
           </div>
           <div className="field">
             <label htmlFor="phone">Phone</label>
-            <input id="phone" name="phone" defaultValue={profile?.phone ?? ""} placeholder="+234 800 000 0000" />
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              defaultValue={profile?.phone ?? ""}
+              placeholder="+234 800 000 0000"
+              autoComplete="tel"
+            />
           </div>
           <div className="field">
             <label htmlFor="city">City</label>
-            <input id="city" name="city" placeholder="Lagos" />
+            <input id="city" name="city" placeholder="Lagos" autoComplete="address-level2" />
           </div>
           <div className="field" style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="address_line">Address</label>
@@ -56,6 +70,7 @@ export default async function AccountAddressesPage({
               id="address_line"
               name="address_line"
               placeholder="Street address, building, landmark"
+              autoComplete="street-address"
             />
           </div>
           <div className="field" style={{ gridColumn: "1 / -1" }}>
@@ -64,6 +79,7 @@ export default async function AccountAddressesPage({
               id="delivery_notes"
               name="delivery_notes"
               placeholder="Optional delivery note"
+              autoComplete="off"
             />
           </div>
         </div>
@@ -95,27 +111,53 @@ export default async function AccountAddressesPage({
                 <div className="form-grid">
                   <div className="field">
                     <label htmlFor={`label-${address.id}`}>Label</label>
-                    <input id={`label-${address.id}`} name="label" defaultValue={address.label} />
+                    <input id={`label-${address.id}`} name="label" defaultValue={address.label} autoComplete="off" />
                   </div>
                   <div className="field">
                     <label htmlFor={`recipient-${address.id}`}>Recipient</label>
-                    <input id={`recipient-${address.id}`} name="recipient_name" defaultValue={address.recipientName} />
+                    <input
+                      id={`recipient-${address.id}`}
+                      name="recipient_name"
+                      defaultValue={address.recipientName}
+                      autoComplete="name"
+                    />
                   </div>
                   <div className="field">
                     <label htmlFor={`phone-${address.id}`}>Phone</label>
-                    <input id={`phone-${address.id}`} name="phone" defaultValue={address.phone} />
+                    <input
+                      id={`phone-${address.id}`}
+                      name="phone"
+                      type="tel"
+                      defaultValue={address.phone}
+                      autoComplete="tel"
+                    />
                   </div>
                   <div className="field">
                     <label htmlFor={`city-${address.id}`}>City</label>
-                    <input id={`city-${address.id}`} name="city" defaultValue={address.city ?? ""} />
+                    <input
+                      id={`city-${address.id}`}
+                      name="city"
+                      defaultValue={address.city ?? ""}
+                      autoComplete="address-level2"
+                    />
                   </div>
                   <div className="field" style={{ gridColumn: "1 / -1" }}>
                     <label htmlFor={`address-${address.id}`}>Address</label>
-                    <textarea id={`address-${address.id}`} name="address_line" defaultValue={address.addressLine} />
+                    <textarea
+                      id={`address-${address.id}`}
+                      name="address_line"
+                      defaultValue={address.addressLine}
+                      autoComplete="street-address"
+                    />
                   </div>
                   <div className="field" style={{ gridColumn: "1 / -1" }}>
                     <label htmlFor={`notes-${address.id}`}>Delivery notes</label>
-                    <textarea id={`notes-${address.id}`} name="delivery_notes" defaultValue={address.notes ?? ""} />
+                    <textarea
+                      id={`notes-${address.id}`}
+                      name="delivery_notes"
+                      defaultValue={address.notes ?? ""}
+                      autoComplete="off"
+                    />
                   </div>
                 </div>
                 <label className="muted" style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem" }}>

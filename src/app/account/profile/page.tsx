@@ -31,7 +31,14 @@ export default async function AccountProfilePage({
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input id="email" value={profile?.email ?? ""} readOnly aria-readonly="true" />
+            <input
+              id="email"
+              type="email"
+              value={profile?.email ?? ""}
+              readOnly
+              aria-readonly="true"
+              autoComplete="email"
+            />
           </div>
           <div className="field">
             <label htmlFor="phone">Phone</label>

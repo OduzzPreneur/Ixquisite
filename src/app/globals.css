@@ -398,6 +398,30 @@ main {
   z-index: 1;
 }
 
+.checkout-layout > :last-child {
+  z-index: 2;
+}
+
+.checkout-form-card {
+  z-index: 3;
+}
+
+.checkout-submit-button {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+}
+
+.cart-summary-card {
+  position: relative;
+  z-index: 3;
+}
+
+.cart-summary-card__cta {
+  position: relative;
+  z-index: 1;
+}
+
 .account-layout {
   grid-template-columns: 16rem minmax(0, 1fr);
   align-items: start;

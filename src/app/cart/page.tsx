@@ -76,7 +76,7 @@ export default async function CartPage() {
               </div>
             )}
           </div>
-          <div className="checkout-card">
+          <div className="checkout-card cart-summary-card">
             <h3 className="minor-title">Order summary</h3>
             <div className="table-like" style={{ marginTop: "1rem" }}>
               <article>
@@ -98,7 +98,7 @@ export default async function CartPage() {
               <strong>Total</strong>
               <strong>{formatPrice(cart.subtotal + (cart.items.length ? 8000 : 0))}</strong>
             </div>
-            <Link href="/checkout" className="button" style={{ width: "100%", marginTop: "1rem" }}>
+            <Link href="/checkout" className="button cart-summary-card__cta" style={{ width: "100%", marginTop: "1rem" }}>
               Proceed to checkout
             </Link>
           </div>

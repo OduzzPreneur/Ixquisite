@@ -15,7 +15,12 @@ export default function TrackOrderPage() {
           <div className="support-card">
             <div className="field">
               <label htmlFor="track_order_number">Order number</label>
-              <input id="track_order_number" name="order_number" placeholder="IXQ-24018" />
+              <input
+                id="track_order_number"
+                name="order_number"
+                placeholder="IXQ-24018"
+                autoComplete="off"
+              />
             </div>
             <div className="field">
               <label htmlFor="track_email">Email address</label>

@@ -256,6 +256,7 @@ export function SearchShell({
                 name="q"
                 defaultValue={query}
                 placeholder="Brown double-breasted suit"
+                autoComplete="off"
               />
             </div>
           </div>

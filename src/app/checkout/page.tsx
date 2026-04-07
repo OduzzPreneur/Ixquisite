@@ -24,24 +24,50 @@ export default async function CheckoutPage({
       />
       <section className="page-section">
         <div className="checkout-layout">
-          <form action={beginCheckoutAction} className="support-card">
+          <form action={beginCheckoutAction} className="support-card checkout-form-card">
             {params.error ? <p className="auth-notice auth-notice--error">{params.error}</p> : null}
             <div className="form-grid">
               <div className="field">
                 <label htmlFor="full_name">Full name</label>
-                <input id="full_name" name="full_name" placeholder="Client Name" defaultValue={defaults.fullName} />
+                <input
+                  id="full_name"
+                  name="full_name"
+                  placeholder="Client Name"
+                  defaultValue={defaults.fullName}
+                  autoComplete="name"
+                />
               </div>
               <div className="field">
                 <label htmlFor="email">Email</label>
-                <input id="email" name="email" placeholder="you@example.com" type="email" defaultValue={defaults.email} />
+                <input
+                  id="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  type="email"
+                  defaultValue={defaults.email}
+                  autoComplete="email"
+                />
               </div>
               <div className="field">
                 <label htmlFor="phone">Phone number</label>
-                <input id="phone" name="phone" placeholder="0800 000 0000" defaultValue={defaults.phone} />
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="0800 000 0000"
+                  defaultValue={defaults.phone}
+                  autoComplete="tel"
+                />
               </div>
               <div className="field">
                 <label htmlFor="city">City</label>
-                <input id="city" name="city" placeholder="Lagos" defaultValue={defaults.city} />
+                <input
+                  id="city"
+                  name="city"
+                  placeholder="Lagos"
+                  defaultValue={defaults.city}
+                  autoComplete="address-level2"
+                />
               </div>
               <div className="field" style={{ gridColumn: "1 / -1" }}>
                 <label htmlFor="shipping_address">Delivery address</label>
@@ -50,6 +76,7 @@ export default async function CheckoutPage({
                   name="shipping_address"
                   placeholder="Street, landmark, and notes"
                   defaultValue={defaults.shippingAddress}
+                  autoComplete="street-address"
                 />
               </div>
               <div className="field">
@@ -71,7 +98,12 @@ export default async function CheckoutPage({
               <span className="pill-link">Secure payment flow</span>
               <span className="pill-link">Returns guidance visible</span>
             </div>
-            <button type="submit" className="button button--mobile-full" style={{ width: "fit-content", marginTop: "1rem" }} disabled={!cart.items.length}>
+            <button
+              type="submit"
+              className="button button--mobile-full checkout-submit-button"
+              style={{ marginTop: "1rem" }}
+              disabled={!cart.items.length}
+            >
               Continue to Paystack
             </button>
           </form>
