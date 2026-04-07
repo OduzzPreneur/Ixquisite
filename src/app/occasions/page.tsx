@@ -14,11 +14,18 @@ export default async function OccasionsPage() {
       />
       <section className="page-section">
         <SectionCardGrid
-          items={occasions.map((occasion) => ({
-            title: occasion.title,
-            copy: occasion.description,
-            href: `/occasion/${occasion.slug}`,
-          }))}
+          items={[
+            ...occasions.map((occasion) => ({
+              title: occasion.title,
+              copy: occasion.description,
+              href: `/occasion/${occasion.slug}`,
+            })),
+            {
+              title: "Groom's Full Package",
+              copy: "A dedicated wedding hub with curated package tiers, guided look-building, and inquiry support for custom ceremony needs.",
+              href: "/groom-package",
+            },
+          ]}
         />
       </section>
     </>

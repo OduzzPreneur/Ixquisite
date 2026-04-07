@@ -53,7 +53,7 @@ export default async function ProductPage({
               kicker="Front view"
               tone={product.tone}
               size="portrait"
-              image={getVisualAsset(product.title)}
+              image={product.image ?? getVisualAsset(product.title)}
               preload
             />
             <div className="gallery-stack">

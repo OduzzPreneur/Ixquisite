@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getAuthenticatedUser } from "@/lib/auth";
-import { clearCart, getCurrentCartContext } from "@/lib/cart";
+import { addItemToCart, clearCart, getCurrentCartContext } from "@/lib/cart";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase/admin";
 import {
   buildPaystackCallbackUrl,
@@ -11,6 +11,7 @@ import {
   verifyPaystackTransaction,
 } from "@/lib/paystack";
 import { accountOrders as fallbackOrders } from "@/data/site";
+import { getProduct } from "@/lib/catalog";
 
 export type CheckoutPayload = {
   fullName: string;
@@ -58,6 +59,12 @@ type StoredOrderItem = {
 
 type OrderDetail = StoredOrder & {
   items: StoredOrderItem[];
+};
+
+export type PaymentSummary = {
+  label: string;
+  detail: string;
+  helper: string;
 };
 
 function requirePaymentsReady() {
@@ -252,6 +259,88 @@ export async function getOrderByReference(reference: string) {
   return data ?? null;
 }
 
+export async function getTrackedOrder(reference: string, email?: string | null) {
+  const normalizedReference = reference.trim();
+  const normalizedEmail = email?.trim().toLowerCase() || null;
+
+  if (!normalizedReference) {
+    return null;
+  }
+
+  if (!hasSupabaseAdminConfig()) {
+    const fallback = fallbackOrders.find((order) => order.id.toLowerCase() === normalizedReference.toLowerCase());
+    if (!fallback) {
+      return null;
+    }
+
+    return {
+      id: fallback.id,
+      reference: fallback.id,
+      status: fallback.status.toLowerCase().replace(/\s+/g, "_"),
+      payment_status: fallback.status === "Delivered" ? "paid" : "pending",
+      total: fallback.total,
+      subtotal: fallback.total,
+      delivery_fee: 0,
+      email: "client@example.com",
+      full_name: "Client Name",
+      phone: null,
+      city: null,
+      shipping_address: null,
+      shipping_method: null,
+      payment_method: "paystack",
+      currency: "NGN",
+      paid_at: null,
+      created_at: new Date().toISOString(),
+      user_id: null,
+      cart_id: null,
+      items: fallback.items.map((title, index) => ({
+        id: `${fallback.id}-${index}`,
+        order_id: fallback.id,
+        product_slug: title.toLowerCase().replace(/\s+/g, "-"),
+        product_title: title,
+        unit_price: Math.round(fallback.total / fallback.items.length),
+        quantity: 1,
+        selected_size: null,
+        selected_color: null,
+        line_total: Math.round(fallback.total / fallback.items.length),
+      })),
+    } satisfies OrderDetail;
+  }
+
+  const admin = createSupabaseAdminClient();
+  if (!admin) {
+    return null;
+  }
+
+  const signedInUser = await getAuthenticatedUser();
+  let query = admin.from("orders").select("*").eq("reference", normalizedReference).limit(1);
+
+  if (signedInUser) {
+    query = query.eq("user_id", signedInUser.id);
+  } else if (normalizedEmail) {
+    query = query.ilike("email", normalizedEmail);
+  } else {
+    return null;
+  }
+
+  const { data: order } = await query.maybeSingle<StoredOrder>();
+
+  if (!order) {
+    return null;
+  }
+
+  const { data: items } = await admin
+    .from("order_items")
+    .select("*")
+    .eq("order_id", order.id)
+    .order("created_at", { ascending: true });
+
+  return {
+    ...order,
+    items: (items as StoredOrderItem[] | null) ?? [],
+  } satisfies OrderDetail;
+}
+
 export async function getOrderById(orderId: string) {
   const admin = createSupabaseAdminClient();
   if (!admin) {
@@ -387,6 +476,40 @@ export async function getOrderForCurrentUser(orderId: string) {
   } satisfies OrderDetail;
 }
 
+export async function reorderItemsFromOrder(orderId: string) {
+  const order = await getOrderForCurrentUser(orderId);
+
+  if (!order) {
+    throw new Error("Order not found.");
+  }
+
+  let addedCount = 0;
+  let unavailableCount = 0;
+
+  for (const item of order.items) {
+    if (!item.product_slug) {
+      unavailableCount += 1;
+      continue;
+    }
+
+    const product = await getProduct(item.product_slug);
+    if (!product) {
+      unavailableCount += 1;
+      continue;
+    }
+
+    await addItemToCart({
+      productSlug: item.product_slug,
+      quantity: item.quantity,
+      selectedSize: item.selected_size,
+      selectedColor: item.selected_color,
+    });
+    addedCount += 1;
+  }
+
+  return { order, addedCount, unavailableCount };
+}
+
 export async function finalizePaystackPayment(reference: string) {
   requirePaymentsReady();
 
@@ -439,4 +562,55 @@ export async function finalizePaystackPayment(reference: string) {
 
 export function getOrderEtaLabel() {
   return estimateDeliveryDate();
+}
+
+export function getTrackingStages(status: string, paymentStatus: string) {
+  const normalizedStatus = status.toLowerCase();
+  const normalizedPayment = paymentStatus.toLowerCase();
+
+  if (normalizedStatus === "payment_failed" || normalizedPayment === "failed") {
+    return ["Payment issue", "Awaiting resolution"];
+  }
+
+  if (normalizedStatus === "delivered") {
+    return ["Confirmed", "In transit", "Delivered"];
+  }
+
+  if (normalizedStatus === "in_transit" || normalizedStatus === "shipped") {
+    return ["Confirmed", "In transit", "Out for delivery next"];
+  }
+
+  if (normalizedStatus === "confirmed" || normalizedPayment === "paid") {
+    return ["Confirmed", "Preparing dispatch", "Tracking available soon"];
+  }
+
+  return ["Awaiting payment", "Confirmation pending"];
+}
+
+export async function getPaymentSummariesForCurrentUser(): Promise<PaymentSummary[]> {
+  const orders = await getOrdersForCurrentUser();
+
+  if (!orders.length) {
+    return [
+      {
+        label: "No saved payment instruments",
+        detail: "Ixquisite uses secure Paystack checkout and does not expose or store raw card details in the account area.",
+        helper: "Your next completed order will surface the payment method used.",
+      },
+    ];
+  }
+
+  const latestOrder = orders[0];
+  const paymentMethods = [...new Set(orders.map((order) => order.payment_method || "paystack"))];
+
+  return paymentMethods.map((method) => {
+    const matching = orders.find((order) => (order.payment_method || "paystack") === method) ?? latestOrder;
+    const normalizedMethod = method === "paystack" ? "Paystack checkout" : method;
+
+    return {
+      label: normalizedMethod,
+      detail: `Last used on order ${matching.reference}. Status: ${matching.payment_status}.`,
+      helper: "Stored payment methods are represented as payment history only. Raw card details are not retained in Ixquisite.",
+    };
+  });
 }

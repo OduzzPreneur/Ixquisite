@@ -196,7 +196,7 @@ export function LatestMosaic({ products }: { products: Product[] }) {
               title={product.title}
               tone={product.tone}
               size="wide"
-              image={getVisualAsset(product.title)}
+              image={product.image ?? getVisualAsset(product.title)}
               className="latest-mosaic__panel"
             />
           </Link>
@@ -241,7 +241,7 @@ export function ProductCard({
           kicker={product.category}
           tone={product.tone}
           size="portrait"
-          image={getVisualAsset(product.title)}
+          image={product.image ?? getVisualAsset(product.title)}
         />
       </Link>
       <div className="product-card__meta">

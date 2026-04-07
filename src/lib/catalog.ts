@@ -1,10 +1,10 @@
 import "server-only";
 
-import { cache } from "react";
 import {
   articles as fallbackArticles,
   categories as fallbackCategories,
   collections as fallbackCollections,
+  defaultHomePageSettings,
   getArticle as fallbackGetArticle,
   getCategory as fallbackGetCategory,
   getCollection as fallbackGetCollection,
@@ -26,6 +26,7 @@ import {
   type Product,
   type Tone,
 } from "@/data/site";
+import { getHomePageSettings } from "@/lib/homepage";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 
 type LookbookLook = {
@@ -60,9 +61,13 @@ type ProductRow = {
   availability: string;
   details: string[] | null;
   collection_slug: string;
+  featured_rank?: number | null;
   is_new: boolean;
   is_best_seller: boolean;
   complete_the_look: string[] | null;
+  image_url?: string | null;
+  image_alt?: string | null;
+  image_position?: string | null;
   product_occasions?: Array<{ occasion_slug: string }> | null;
 };
 
@@ -125,8 +130,16 @@ function mapProduct(row: ProductRow): Product {
     collection: row.collection_slug,
     isNew: row.is_new,
     isBestSeller: row.is_best_seller,
+    featuredRank: row.featured_rank ?? 100,
     occasions: row.product_occasions?.map((entry) => entry.occasion_slug) ?? [],
     completeTheLook: row.complete_the_look ?? [],
+    image: row.image_url
+      ? {
+          src: row.image_url,
+          alt: row.image_alt ?? row.title,
+          position: row.image_position ?? undefined,
+        }
+      : undefined,
   };
 }
 
@@ -135,7 +148,7 @@ function withFallback<T>(label: string, fallback: T, error: unknown) {
   return fallback;
 }
 
-const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
+const loadStorefrontData = async (): Promise<StorefrontData> => {
   if (!hasSupabaseConfig()) {
     return fallbackData;
   }
@@ -154,7 +167,7 @@ const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
       supabase
         .from("products")
         .select(
-          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,sizes,availability,details,collection_slug,is_new,is_best_seller,complete_the_look,product_occasions(occasion_slug)",
+          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,sizes,availability,details,collection_slug,featured_rank,is_new,is_best_seller,complete_the_look,image_url,image_alt,image_position,product_occasions(occasion_slug)",
         )
         .order("featured_rank", { ascending: true })
         .order("title", { ascending: true }),
@@ -187,9 +200,32 @@ const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
   }
 
   return {
-    categories: (categoriesResult.data as CategoryRow[]) ?? fallbackData.categories,
-    occasions: (occasionsResult.data as OccasionRow[]) ?? fallbackData.occasions,
-    collections: (collectionsResult.data as CollectionRow[]) ?? fallbackData.collections,
+    categories:
+      ((categoriesResult.data as CategoryRow[]) ?? []).map((category) => ({
+        slug: category.slug,
+        title: category.title,
+        description: category.description,
+        caption: category.caption,
+        tone: category.tone,
+        sortOrder: category.sort_order ?? 0,
+      })) || fallbackData.categories,
+    occasions:
+      ((occasionsResult.data as OccasionRow[]) ?? []).map((occasion) => ({
+        slug: occasion.slug,
+        title: occasion.title,
+        description: occasion.description,
+        tone: occasion.tone,
+        sortOrder: occasion.sort_order ?? 0,
+      })) || fallbackData.occasions,
+    collections:
+      ((collectionsResult.data as CollectionRow[]) ?? []).map((collection) => ({
+        slug: collection.slug,
+        title: collection.title,
+        description: collection.description,
+        tone: collection.tone,
+        cta: collection.cta,
+        sortOrder: collection.sort_order ?? 0,
+      })) || fallbackData.collections,
     products: ((productsResult.data as ProductRow[]) ?? []).map(mapProduct),
     articles: ((articlesResult.data as ArticleRow[]) ?? []).map((article) => ({
       slug: article.slug,
@@ -207,7 +243,7 @@ const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
       products: look.product_slugs ?? [],
     })),
   };
-});
+};
 
 export async function getCategories() {
   return (await loadStorefrontData()).categories;
@@ -292,7 +328,7 @@ export async function getProductsBySlugs(slugs: string[]) {
 }
 
 export async function getHomePageData() {
-  const [categories, occasions, collections, products, articles, lookbookLooks, newInProducts, bestSellerProducts] = await Promise.all([
+  const [categories, occasions, collections, products, articles, lookbookLooks, newInProducts, bestSellerProducts, settings] = await Promise.all([
     getCategories(),
     getOccasions(),
     getCollections(),
@@ -301,15 +337,23 @@ export async function getHomePageData() {
     getLookbookLooks(),
     getNewInProducts(),
     getBestSellerProducts(),
+    getHomePageSettings(),
   ]);
 
-  const featuredCollection = collections[0] ?? fallbackCollections[0];
+  const featuredCollection =
+    collections.find((collection) => collection.slug === settings.featuredCollectionSlug) ??
+    collections[0] ??
+    fallbackCollections[0];
   const latestProducts = [...newInProducts, ...newInPlaceholderProducts].slice(0, 6);
   const featuredProducts = products.filter((product) => product.collection === featuredCollection.slug).slice(0, 3);
-  const completeLook = lookbookLooks[0] ?? fallbackData.lookbookLooks[0];
+  const completeLook =
+    lookbookLooks.find((look) => look.slug === settings.completeLookSlug) ??
+    lookbookLooks[0] ??
+    fallbackData.lookbookLooks[0];
   const completeLookProducts = await getProductsBySlugs(completeLook.products);
 
   return {
+    settings: settings ?? defaultHomePageSettings,
     categories,
     occasions,
     articles,

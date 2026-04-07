@@ -1,6 +1,14 @@
+import { submitContactRequestAction } from "@/app/actions/support";
 import { UtilityPageHeader } from "@/components/page-templates";
+import { getAccountProfileForCurrentUser } from "@/lib/account";
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; message?: string }>;
+}) {
+  const [params, profile] = await Promise.all([searchParams, getAccountProfileForCurrentUser()]);
+
   return (
     <>
       <UtilityPageHeader
@@ -31,10 +39,18 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-          <div className="support-card">
+          <form action={submitContactRequestAction} className="support-card">
+            {params.error ? <p className="auth-notice auth-notice--error">{params.error}</p> : null}
+            {params.message ? <p className="auth-notice auth-notice--success">{params.message}</p> : null}
             <div className="field">
               <label htmlFor="contact_name">Name</label>
-              <input id="contact_name" name="name" autoComplete="name" placeholder="Your name" />
+              <input
+                id="contact_name"
+                name="name"
+                autoComplete="name"
+                placeholder="Your name"
+                defaultValue={profile?.fullName ?? ""}
+              />
             </div>
             <div className="field">
               <label htmlFor="contact_email">Email</label>
@@ -44,6 +60,7 @@ export default function ContactPage() {
                 placeholder="you@example.com"
                 type="email"
                 autoComplete="email"
+                defaultValue={profile?.email ?? ""}
               />
             </div>
             <div className="field">
@@ -54,10 +71,10 @@ export default function ContactPage() {
                 placeholder="Sizing help, corporate order, or delivery question"
               />
             </div>
-            <button type="button" className="button" style={{ width: "fit-content" }}>
+            <button type="submit" className="button" style={{ width: "fit-content" }}>
               Send message
             </button>
-          </div>
+          </form>
         </div>
       </section>
     </>

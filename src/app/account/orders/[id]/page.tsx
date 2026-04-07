@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { reorderOrderItemsAction } from "@/app/actions/orders";
 import { AccountShell } from "@/components/page-templates";
 import { formatPrice } from "@/data/site";
 import { getOrderForCurrentUser } from "@/lib/orders";
 
-export default async function AccountOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AccountOrderDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
   const { id } = await params;
-  const order = await getOrderForCurrentUser(id);
+  const [order, query] = await Promise.all([getOrderForCurrentUser(id), searchParams]);
 
   if (!order) {
     notFound();
@@ -14,6 +21,7 @@ export default async function AccountOrderDetailPage({ params }: { params: Promi
 
   return (
     <AccountShell title={`Order ${order.reference}`} copy="Single-order pages should keep shipping, payment, and reorder paths close together.">
+      {query.error ? <p className="auth-notice auth-notice--error">{query.error}</p> : null}
       <div className="summary-list">
         <div>
           <h3 className="minor-title">Status</h3>
@@ -47,8 +55,11 @@ export default async function AccountOrderDetailPage({ params }: { params: Promi
         ))}
       </div>
       <div className="hero__actions" style={{ marginTop: "1.4rem" }}>
-        <Link href="/track-order" className="button">Track delivery</Link>
-        <Link href="/cart" className="pill-link">Reorder</Link>
+        <Link href={`/track-order?reference=${encodeURIComponent(order.reference)}`} className="button">Track delivery</Link>
+        <form action={reorderOrderItemsAction}>
+          <input type="hidden" name="order_id" value={order.id} />
+          <button type="submit" className="pill-link">Reorder</button>
+        </form>
       </div>
     </AccountShell>
   );

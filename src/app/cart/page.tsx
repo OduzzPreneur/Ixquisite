@@ -7,9 +7,14 @@ import { getCurrentCart } from "@/lib/cart";
 import { getProductsBySlugs } from "@/lib/catalog";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 
-export default async function CartPage() {
+export default async function CartPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ message?: string; error?: string }>;
+}) {
   const cart = await getCurrentCart();
-  const [recommendations, wishlistSlugs] = await Promise.all([
+  const [params, recommendations, wishlistSlugs] = await Promise.all([
+    searchParams,
     getProductsBySlugs([
       "ivory-broadcloth-shirt",
       "regent-silk-tie",
@@ -28,6 +33,8 @@ export default async function CartPage() {
         compactOnMobile
       />
       <section className="page-section">
+        {params.error ? <p className="auth-notice auth-notice--error">{params.error}</p> : null}
+        {params.message ? <p className="auth-notice auth-notice--success">{params.message}</p> : null}
         <div className="checkout-layout">
           <div className="support-card">
             {cart.items.length ? (

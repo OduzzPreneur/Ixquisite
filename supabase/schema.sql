@@ -92,6 +92,10 @@ create table if not exists public.products (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+alter table public.products add column if not exists image_url text;
+alter table public.products add column if not exists image_alt text;
+alter table public.products add column if not exists image_position text;
+
 create table if not exists public.product_occasions (
   product_slug text not null references public.products(slug) on delete cascade on update cascade,
   occasion_slug text not null references public.occasions(slug) on delete cascade on update cascade,
@@ -232,6 +236,36 @@ create table if not exists public.payments (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.contact_requests (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  name text not null,
+  email text not null,
+  message text not null,
+  status text not null default 'new',
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.wedding_inquiries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  name text not null,
+  email text not null,
+  timeline text,
+  message text not null,
+  status text not null default 'new',
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.homepage_settings (
+  id text primary key default 'default',
+  content jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 create unique index if not exists cart_items_identity_idx on public.cart_items (cart_id, product_slug, coalesce(selected_size, ''), coalesce(selected_color, ''));
 create index if not exists products_category_slug_idx on public.products(category_slug);
 create index if not exists products_collection_slug_idx on public.products(collection_slug);
@@ -245,6 +279,8 @@ create index if not exists wishlist_items_user_id_idx on public.wishlist_items(u
 create index if not exists orders_user_id_idx on public.orders(user_id);
 create index if not exists orders_reference_idx on public.orders(reference);
 create index if not exists payments_order_id_idx on public.payments(order_id);
+create index if not exists contact_requests_email_idx on public.contact_requests(email);
+create index if not exists wedding_inquiries_email_idx on public.wedding_inquiries(email);
 
 alter table public.categories enable row level security;
 alter table public.occasions enable row level security;
@@ -261,6 +297,9 @@ alter table public.cart_items enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 alter table public.payments enable row level security;
+alter table public.contact_requests enable row level security;
+alter table public.wedding_inquiries enable row level security;
+alter table public.homepage_settings enable row level security;
 
 drop policy if exists "Public read categories" on public.categories;
 create policy "Public read categories" on public.categories for select using (true);
@@ -310,6 +349,8 @@ drop policy if exists "Users read own payments" on public.payments;
 create policy "Users read own payments" on public.payments for select using (
   exists (select 1 from public.orders where public.orders.id = payments.order_id and public.orders.user_id = auth.uid())
 );
+drop policy if exists "Public read homepage settings" on public.homepage_settings;
+create policy "Public read homepage settings" on public.homepage_settings for select using (true);
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user_profile();
@@ -338,3 +379,9 @@ drop trigger if exists set_orders_updated_at on public.orders;
 create trigger set_orders_updated_at before update on public.orders for each row execute function public.set_updated_at();
 drop trigger if exists set_payments_updated_at on public.payments;
 create trigger set_payments_updated_at before update on public.payments for each row execute function public.set_updated_at();
+drop trigger if exists set_contact_requests_updated_at on public.contact_requests;
+create trigger set_contact_requests_updated_at before update on public.contact_requests for each row execute function public.set_updated_at();
+drop trigger if exists set_wedding_inquiries_updated_at on public.wedding_inquiries;
+create trigger set_wedding_inquiries_updated_at before update on public.wedding_inquiries for each row execute function public.set_updated_at();
+drop trigger if exists set_homepage_settings_updated_at on public.homepage_settings;
+create trigger set_homepage_settings_updated_at before update on public.homepage_settings for each row execute function public.set_updated_at();

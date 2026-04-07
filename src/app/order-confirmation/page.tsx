@@ -55,7 +55,10 @@ export default async function OrderConfirmationPage({
             </div>
           </div>
           <div className="hero__actions" style={{ marginTop: "1.5rem" }}>
-            <Link href="/track-order" className="button">
+            <Link
+              href={orderReference ? `/track-order?reference=${encodeURIComponent(orderReference)}` : "/track-order"}
+              className="button"
+            >
               Track order
             </Link>
             <Link href="/new-in" className="pill-link">

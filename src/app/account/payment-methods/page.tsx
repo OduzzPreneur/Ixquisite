@@ -1,17 +1,19 @@
 import { AccountShell } from "@/components/page-templates";
+import { getPaymentSummariesForCurrentUser } from "@/lib/orders";
 
-export default function AccountPaymentMethodsPage() {
+export default async function AccountPaymentMethodsPage() {
+  const paymentSummaries = await getPaymentSummariesForCurrentUser();
+
   return (
-    <AccountShell title="Saved payment methods" copy="Payment references can be surfaced here without exposing raw card data.">
+    <AccountShell title="Payment methods" copy="Ixquisite surfaces truthful payment history and method usage without storing or exposing raw card details.">
       <div className="grid grid--2">
-        <article className="support-card">
-          <h3 className="minor-title">Paystack card</h3>
-          <p className="body-copy">Visa ending in 2045 · Default payment method</p>
-        </article>
-        <article className="support-card">
-          <h3 className="minor-title">Bank transfer</h3>
-          <p className="body-copy">Manual confirmation enabled for premium requests.</p>
-        </article>
+        {paymentSummaries.map((summary) => (
+          <article key={summary.label} className="support-card">
+            <h3 className="minor-title">{summary.label}</h3>
+            <p className="body-copy">{summary.detail}</p>
+            <p className="muted" style={{ marginTop: "0.75rem" }}>{summary.helper}</p>
+          </article>
+        ))}
       </div>
     </AccountShell>
   );

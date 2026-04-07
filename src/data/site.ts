@@ -1,11 +1,18 @@
 export type Tone = "navy" | "espresso" | "stone" | "slate" | "ink" | "gold";
 
+export type ProductImage = {
+  src: string;
+  alt: string;
+  position?: string;
+};
+
 export type Category = {
   slug: string;
   title: string;
   description: string;
   caption: string;
   tone: Tone;
+  sortOrder?: number;
 };
 
 export type Occasion = {
@@ -13,6 +20,7 @@ export type Occasion = {
   title: string;
   description: string;
   tone: Tone;
+  sortOrder?: number;
 };
 
 export type Collection = {
@@ -21,6 +29,7 @@ export type Collection = {
   description: string;
   tone: Tone;
   cta: string;
+  sortOrder?: number;
 };
 
 export type Product = {
@@ -40,9 +49,11 @@ export type Product = {
   collection: string;
   isNew: boolean;
   isBestSeller: boolean;
+  featuredRank?: number;
   isPlaceholder?: boolean;
   occasions: string[];
   completeTheLook: string[];
+  image?: ProductImage;
 };
 
 export type Article = {
@@ -54,11 +65,103 @@ export type Article = {
   category: string;
 };
 
+export type GroomPackageTier = {
+  slug: "basic" | "standard" | "premium";
+  title: string;
+  priceLabel: string;
+  description: string;
+  included: string[];
+  benefits: string[];
+  defaultSuit: string;
+  defaultShirt: string;
+  defaultTie: string;
+  includesAccessory: boolean;
+  recommended?: boolean;
+};
+
+export type HomePageSettings = {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroCopy: string;
+  heroPrimaryLabel: string;
+  heroPrimaryHref: string;
+  heroSecondaryLabel: string;
+  heroSecondaryHref: string;
+  heroVisualTitle: string;
+  heroVisualSrc: string;
+  heroVisualAlt: string;
+  heroVisualPosition: string;
+  heroMeta: string[];
+  heroNoteTitle: string;
+  heroNoteCopy: string;
+  groomFeatureEyebrow: string;
+  groomFeatureTitle: string;
+  groomFeatureCopy: string;
+  groomFeaturePrimaryLabel: string;
+  groomFeaturePrimaryHref: string;
+  groomFeatureSecondaryLabel: string;
+  groomFeatureSecondaryHref: string;
+  groomFeaturePills: string[];
+  groomFeatureImageTitle: string;
+  groomFeatureImageSrc: string;
+  groomFeatureImageAlt: string;
+  groomFeatureImagePosition: string;
+  featuredCollectionSlug: string;
+  completeLookSlug: string;
+  finalCtaEyebrow: string;
+  finalCtaTitle: string;
+  finalCtaCopy: string;
+  finalCtaPrimaryLabel: string;
+  finalCtaPrimaryHref: string;
+  finalCtaSecondaryLabel: string;
+  finalCtaSecondaryHref: string;
+};
+
 export const announcements = [
   "Delivery in a few days",
   "Fit guidance built in",
   "Premium corporate wear without the search",
 ] as const;
+
+export const defaultHomePageSettings: HomePageSettings = {
+  heroEyebrow: "Quiet luxury for professionals",
+  heroTitle: "Tailoring that removes the search.",
+  heroCopy:
+    "Ixquisite Menswear delivers premium suits, shirts, trousers, ties, and accessories for men who want to look confident without moving across multiple stores.",
+  heroPrimaryLabel: "Shop Suits",
+  heroPrimaryHref: "/category/suits",
+  heroSecondaryLabel: "Explore Collection",
+  heroSecondaryHref: "/collection/boardroom-edit",
+  heroVisualTitle: "Cocoa Ceremony Suit",
+  heroVisualSrc: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+  heroVisualAlt: "Model in a cocoa brown double-breasted suit outdoors.",
+  heroVisualPosition: "center 18%",
+  heroMeta: ["Premium corporate wear", "Delivered in a few days", "Fit guidance available"],
+  heroNoteTitle: "Hero product direction",
+  heroNoteCopy: "Refined, suit-led, and image-dominant without discount-store noise.",
+  groomFeatureEyebrow: "Groom's Full Package",
+  groomFeatureTitle: "Wedding dressing, handled as one premium decision.",
+  groomFeatureCopy:
+    "A ceremony-first bundle for grooms who want the suit, shirt, tie, and finishing details coordinated without restarting the search from scratch.",
+  groomFeaturePrimaryLabel: "Explore groom package",
+  groomFeaturePrimaryHref: "/groom-package",
+  groomFeatureSecondaryLabel: "Wedding inquiry",
+  groomFeatureSecondaryHref: "/wedding-inquiry",
+  groomFeaturePills: ["Basic, Standard, Premium", "Direct buy + inquiry support", "Groomsmen coordination"],
+  groomFeatureImageTitle: "Groom's Package",
+  groomFeatureImageSrc: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+  groomFeatureImageAlt: "Premium groom styling in a brown ceremony suit.",
+  groomFeatureImagePosition: "center 18%",
+  featuredCollectionSlug: "boardroom-edit",
+  completeLookSlug: "look-1",
+  finalCtaEyebrow: "Final call",
+  finalCtaTitle: "Shop the latest collection or join the private arrivals list.",
+  finalCtaCopy: "New tailoring drops, ceremony edits, and quiet essentials for men who prefer less noise.",
+  finalCtaPrimaryLabel: "View collections",
+  finalCtaPrimaryHref: "/collections",
+  finalCtaSecondaryLabel: "Join VIP",
+  finalCtaSecondaryHref: "/create-account",
+};
 
 export const navItems = [
   { href: "/new-in", label: "New In" },
@@ -80,6 +183,7 @@ export const footerGroups = [
       { href: "/new-in", label: "New In" },
       { href: "/category/suits", label: "Suits" },
       { href: "/collections", label: "Collections" },
+      { href: "/groom-package", label: "Groom's Package" },
       { href: "/lookbook", label: "Lookbook" },
     ],
   },
@@ -105,8 +209,10 @@ export const footerGroups = [
     title: "Policies",
     links: [
       { href: "/faq", label: "FAQs" },
-      { href: "/shipping", label: "Delivery Policy" },
-      { href: "/returns", label: "Refund Policy" },
+      { href: "/delivery-policy", label: "Delivery Policy" },
+      { href: "/refund-policy", label: "Refund Policy" },
+      { href: "/privacy-policy", label: "Privacy Policy" },
+      { href: "/terms-and-conditions", label: "Terms & Conditions" },
       { href: "/track-order", label: "Order Tracking" },
     ],
   },
@@ -552,6 +658,7 @@ export const searchSuggestions = [
   "White formal shirt",
   "Executive accessories",
   "Wedding guest suit",
+  "Groom package",
 ];
 
 export const faqItems = [
@@ -596,6 +703,147 @@ export const accountOrders = [
     total: 58000,
     items: ["Ivory Broadcloth Shirt", "Tailored Ink Trouser"],
     eta: "Delivered Mar 28",
+  },
+];
+
+export const groomPackageIntro = {
+  eyebrow: "Wedding hub",
+  title: "Your Wedding Look. Perfectly Handled.",
+  description:
+    "Groom dressing should feel decisive, coordinated, and elevated. Ixquisite packages the suit, shirt, tie, and finishing details into one calm premium flow, with direct purchase for standard bundles and support for everything custom.",
+};
+
+export const groomPackageReasons = [
+  {
+    title: "No store-hopping",
+    copy: "The full ceremony look is curated in one place so the groom does not need to piece the outfit together across multiple stores.",
+  },
+  {
+    title: "Coordinated formalwear",
+    copy: "Suit, shirt, tie, and finishing pieces are matched to read as one look rather than separate purchases.",
+  },
+  {
+    title: "Groom-first support",
+    copy: "Sizing help, wedding color guidance, and escalation into inquiry keep pressure low when timing matters most.",
+  },
+];
+
+export const groomPackageTiers: GroomPackageTier[] = [
+  {
+    slug: "basic",
+    title: "Basic Groom Package",
+    priceLabel: "From NGN 244,500",
+    description: "A clean entry into ceremony dressing built around the essential tailored uniform.",
+    included: ["Suit", "Shirt", "Tie"],
+    benefits: ["Ready-to-buy", "Measured formal styling", "Delivered in a few days"],
+    defaultSuit: "midnight-commander-suit",
+    defaultShirt: "ivory-broadcloth-shirt",
+    defaultTie: "regent-silk-tie",
+    includesAccessory: false,
+  },
+  {
+    slug: "standard",
+    title: "Standard Groom Package",
+    priceLabel: "From NGN 271,000",
+    description: "The default ceremony package with finishing accessories and built-in styling support.",
+    included: ["Suit", "Shirt", "Tie", "Pocket square and finishing set"],
+    benefits: ["Recommended package", "Styling support", "Balanced value and polish"],
+    defaultSuit: "cocoa-double-breasted-suit",
+    defaultShirt: "ivory-broadcloth-shirt",
+    defaultTie: "regent-silk-tie",
+    includesAccessory: true,
+    recommended: true,
+  },
+  {
+    slug: "premium",
+    title: "Premium Groom Package",
+    priceLabel: "From NGN 271,000 + premium support",
+    description: "The full outfit with finishing pieces, priority handling, and stylist-led reassurance around the final look.",
+    included: ["Suit", "Shirt", "Tie", "Accessory bundle", "Priority delivery", "Styling consultation"],
+    benefits: ["High-touch support", "Priority handling", "Ceremony-ready finishing"],
+    defaultSuit: "cocoa-double-breasted-suit",
+    defaultShirt: "ivory-broadcloth-shirt",
+    defaultTie: "regent-silk-tie",
+    includesAccessory: true,
+  },
+];
+
+export const groomPackageIncluded = [
+  "Suit",
+  "Shirt",
+  "Tie or ceremony neckwear",
+  "Pocket square and finishing accessory",
+  "Fit support before checkout",
+];
+
+export const groomPackageAddOns = [
+  "Accessory bundle",
+  "Extra shirt",
+  "Lapel pin",
+  "Personalized packaging",
+  "Priority delivery",
+];
+
+export const groomBuilderOptions = {
+  suits: ["midnight-commander-suit", "cocoa-double-breasted-suit"],
+  shirts: ["ivory-broadcloth-shirt"],
+  ties: ["regent-silk-tie"],
+  accessories: ["heirloom-accessory-set"],
+} as const;
+
+export const groomPackageBundleNotes = [
+  "Standard and Premium include the accessory set by default because it carries the pocket square and finishing details together.",
+  "Custom ceremony colours, multiple groomsmen, or non-standard sizing should go through the wedding inquiry flow.",
+];
+
+export const groomAccessoryBundle = {
+  title: "Accessories Bundle",
+  description:
+    "Use one finishing bundle instead of sourcing ceremony details separately. The current edit stays focused on cufflinks, lapel finishing, and a coordinated pocket square.",
+  items: ["Heirloom accessory set", "Belt support through inquiry", "Watch recommendation only as a premium add-on"],
+};
+
+export const groomSupportTopics = [
+  "Unsure fit or size guidance",
+  "Wedding theme and colour matching",
+  "Consultation for premium package clients",
+  "Urgent delivery or wedding-party coordination",
+];
+
+export const groomCoordinationPoints = [
+  "Coordinated outfits for groom and groomsmen",
+  "Bulk pricing for wedding parties",
+  "Colour matching support for theme alignment",
+  "Inquiry-led team dressing support",
+];
+
+export const weddingDeliveryPoints = [
+  {
+    title: "Delivery timeline clarity",
+    copy: "Standard packages remain ready-to-buy and inherit the same few-days delivery promise where stock is available.",
+  },
+  {
+    title: "What happens after order",
+    copy: "Premium package clients receive confirmation, styling follow-up, and clearer support around the final ceremony look.",
+  },
+  {
+    title: "Fit and exchange support",
+    copy: "Sizing routes, product fit notes, and direct inquiry paths reduce ceremony-risk before purchase.",
+  },
+];
+
+export const groomTrustStory = [
+  {
+    title: "Ceremony-ready, not costume-like",
+    copy: "The groom hub keeps the same Ixquisite restraint so wedding dressing feels elevated rather than theatrical.",
+  },
+  {
+    title: "Built from real catalog pieces",
+    copy: "The packages are grounded in the same premium suiting, shirting, and accessories already trusted across the store.",
+  },
+  {
+    title: "Hybrid purchase model",
+    copy: "Direct-buy works for standard bundles, while custom coordination stays routed through inquiry where the team can actually support it well.",
   },
 ];
 

@@ -14,6 +14,7 @@ import {
 
 export default async function Home() {
   const {
+    settings,
     categories,
     occasions,
     articles,
@@ -32,39 +33,43 @@ export default async function Home() {
         <div className="hero__frame">
           <div className="hero__grid">
             <div className="hero__copy">
-              <p className="eyebrow hero__mobile-hidden">Quiet luxury for professionals</p>
-              <h1 className="display-title hero__mobile-hidden">Tailoring that removes the search.</h1>
+              <p className="eyebrow hero__mobile-hidden">{settings.heroEyebrow}</p>
+              <h1 className="display-title hero__mobile-hidden">{settings.heroTitle}</h1>
               <p className="section-copy hero__mobile-hidden-copy">
-                Ixquisite Menswear delivers premium suits, shirts, trousers, ties,
-                and accessories for men who want to look confident without moving
-                across multiple stores.
+                {settings.heroCopy}
               </p>
               <div className="hero__actions">
-                <Link href="/category/suits" className="button">
-                  Shop Suits
+                <Link href={settings.heroPrimaryHref} className="button">
+                  {settings.heroPrimaryLabel}
                 </Link>
-                <Link href="/collection/boardroom-edit" className="button-ghost">
-                  Explore Collection
+                <Link href={settings.heroSecondaryHref} className="button-ghost">
+                  {settings.heroSecondaryLabel}
                 </Link>
               </div>
               <div className="hero__meta">
-                <span className="tag">Premium corporate wear</span>
-                <span className="tag">Delivered in a few days</span>
-                <span className="tag">Fit guidance available</span>
+                {settings.heroMeta.map((item) => (
+                  <span key={item} className="tag">
+                    {item}
+                  </span>
+                ))}
               </div>
             </div>
             <div className="hero__visual">
               <VisualPanel
-                title="Cocoa Ceremony Suit"
+                title={settings.heroVisualTitle}
                 kicker="Ixquisite signature"
                 tone="espresso"
                 size="hero"
-                image={getVisualAsset("Cocoa Ceremony Suit")}
+                image={{
+                  src: settings.heroVisualSrc,
+                  alt: settings.heroVisualAlt,
+                  position: settings.heroVisualPosition,
+                }}
                 preload
               />
               <div className="hero__note">
-                <strong>Hero product direction</strong>
-                Refined, suit-led, and image-dominant without discount-store noise.
+                <strong>{settings.heroNoteTitle}</strong>
+                {settings.heroNoteCopy}
               </div>
             </div>
           </div>
@@ -131,6 +136,46 @@ export default async function Home() {
       </section>
 
       <section className="page-section">
+        <div className="feature-split surface-panel">
+          <VisualPanel
+            title={settings.groomFeatureImageTitle}
+            kicker="Ceremony hub"
+            tone="espresso"
+            size="landscape"
+            image={{
+              src: settings.groomFeatureImageSrc,
+              alt: settings.groomFeatureImageAlt,
+              position: settings.groomFeatureImagePosition,
+            }}
+          />
+          <div className="detail-card" style={{ background: "transparent", border: "none", boxShadow: "none", padding: 0 }}>
+            <p className="eyebrow">{settings.groomFeatureEyebrow}</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              {settings.groomFeatureTitle}
+            </h2>
+            <p className="section-copy">
+              {settings.groomFeatureCopy}
+            </p>
+            <div className="pill-row">
+              {settings.groomFeaturePills.map((item) => (
+                <span key={item} className="pill-link">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <div className="hero__actions">
+              <Link href={settings.groomFeaturePrimaryHref} className="button">
+                {settings.groomFeaturePrimaryLabel}
+              </Link>
+              <Link href={settings.groomFeatureSecondaryHref} className="pill-link">
+                {settings.groomFeatureSecondaryLabel}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="page-section">
         <CollectionFeature collection={featuredCollection} supporting={featuredProducts} />
       </section>
 
@@ -192,21 +237,19 @@ export default async function Home() {
         <div className="cta-banner">
           <div>
             <p className="eyebrow" style={{ color: "rgba(240, 231, 215, 0.78)" }}>
-              Final call
+              {settings.finalCtaEyebrow}
             </p>
             <h2 className="section-title" style={{ marginTop: "0.7rem" }}>
-              Shop the latest collection or join the private arrivals list.
+              {settings.finalCtaTitle}
             </h2>
-            <p style={{ marginTop: "0.9rem" }}>
-              New tailoring drops, ceremony edits, and quiet essentials for men who prefer less noise.
-            </p>
+            <p style={{ marginTop: "0.9rem" }}>{settings.finalCtaCopy}</p>
           </div>
           <div className="hero__actions">
-            <Link href="/collections" className="button">
-              View collections
+            <Link href={settings.finalCtaPrimaryHref} className="button">
+              {settings.finalCtaPrimaryLabel}
             </Link>
-            <Link href="/create-account" className="button-ghost">
-              Join VIP
+            <Link href={settings.finalCtaSecondaryHref} className="button-ghost">
+              {settings.finalCtaSecondaryLabel}
             </Link>
           </div>
         </div>

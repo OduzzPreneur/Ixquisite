@@ -54,6 +54,41 @@ const visualAssets: Record<string, VisualAsset> = {
     alt: "Brown ceremony suit styled for a wedding guest look.",
     position: "center 20%",
   },
+  "groom's package": {
+    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+    alt: "Premium groom styling in a brown ceremony suit.",
+    position: "center 18%",
+  },
+  "your wedding look. perfectly handled.": {
+    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+    alt: "Premium groom styling in a cocoa ceremony suit.",
+    position: "center 18%",
+  },
+  "basic groom package": {
+    src: "/images/ixquisite/navy-pinstripe-jacket.jpg",
+    alt: "Dark formal suit styling for a basic groom package.",
+    position: "center 16%",
+  },
+  "standard groom package": {
+    src: "/images/ixquisite/cocoa-outdoor-brown-suit.jpg",
+    alt: "Refined brown ceremony suit for the standard groom package.",
+    position: "center 18%",
+  },
+  "premium groom package": {
+    src: "/images/ixquisite/black-ceremony-suit.jpg",
+    alt: "Premium black formalwear styling with ceremonial accessories.",
+    position: "center 18%",
+  },
+  "wedding inquiry": {
+    src: "/images/ixquisite/white-dinner-jacket.jpg",
+    alt: "Formal white dinner jacket for premium wedding inquiry support.",
+    position: "center 18%",
+  },
+  "dress your team": {
+    src: "/images/ixquisite/hero-teal-double-breasted.jpg",
+    alt: "Coordinated formalwear visual for groomsmen support.",
+    position: "center 14%",
+  },
   "black tie": {
     src: "/images/ixquisite/white-dinner-jacket.jpg",
     alt: "White dinner jacket styled for formal evening wear.",
