@@ -20,6 +20,7 @@ function cx(...parts: Array<string | false | null | undefined>) {
 const panelSizes: Record<NonNullable<VisualPanelProps["size"]>, string> = {
   hero: "(max-width: 1100px) 100vw, 42vw",
   portrait: "(max-width: 1100px) 100vw, (max-width: 1440px) 33vw, 24vw",
+  occasion: "(max-width: 1100px) 100vw, (max-width: 1440px) 33vw, 26vw",
   wide: "(max-width: 1100px) 100vw, 28vw",
   landscape: "(max-width: 1100px) 100vw, 38vw",
   compact: "(max-width: 1100px) 100vw, 24vw",
@@ -29,7 +30,7 @@ type VisualPanelProps = {
   title: string;
   kicker?: string;
   tone: Tone;
-  size?: "hero" | "portrait" | "wide" | "landscape" | "compact";
+  size?: "hero" | "portrait" | "occasion" | "wide" | "landscape" | "compact";
   className?: string;
   image?: VisualAsset;
   preload?: boolean;
@@ -213,7 +214,7 @@ export function OccasionTile({ occasion }: { occasion: Occasion }) {
         title={occasion.title}
         kicker="Curated occasion"
         tone={occasion.tone}
-        size="wide"
+        size="occasion"
         image={occasion.image ?? getVisualAsset(occasion.title)}
       />
       <div className="tile-link__meta">

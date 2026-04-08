@@ -1,4 +1,7 @@
-import { SectionCardGrid, UtilityPageHeader } from "@/components/page-templates";
+import Link from "next/link";
+import { UtilityPageHeader } from "@/components/page-templates";
+import { OccasionTile, VisualPanel } from "@/components/ui";
+import { getVisualAsset } from "@/lib/visual-assets";
 import { getOccasions } from "@/lib/catalog";
 
 export default async function OccasionsPage() {
@@ -9,24 +12,56 @@ export default async function OccasionsPage() {
       <UtilityPageHeader
         eyebrow="Occasions"
         title="Start from the room you are dressing for."
-        copy="Occasion-led entry points reduce friction and make menswear shopping feel guided instead of overwhelming."
+        copy="Occasion-led shopping should feel like a guided edit, with each dress code anchored by a real look instead of a text-only menu."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Occasions" }]}
       />
       <section className="page-section">
-        <SectionCardGrid
-          items={[
-            ...occasions.map((occasion) => ({
-              title: occasion.title,
-              copy: occasion.description,
-              href: `/occasion/${occasion.slug}`,
-            })),
-            {
-              title: "Groom's Full Package",
-              copy: "A dedicated wedding hub with curated package tiers, guided look-building, and inquiry support for custom ceremony needs.",
-              href: "/groom-package",
-            },
-          ]}
-        />
+        <div className="section-head section-head--split">
+          <div>
+            <p className="eyebrow">Dress-code edits</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Choose the room, then narrow the wardrobe.
+            </h2>
+          </div>
+          <p className="section-copy">
+            These edits are built to reduce the catalog into a smaller visual decision,
+            whether you need daily office structure, wedding polish, or after-dark formality.
+          </p>
+        </div>
+        <div className="grid grid--3 grid--mobile-duo">
+          {occasions.map((occasion) => (
+            <OccasionTile key={occasion.slug} occasion={occasion} />
+          ))}
+        </div>
+      </section>
+      <section className="page-section">
+        <div className="feature-split surface-panel" style={{ padding: "clamp(1.3rem, 2vw, 1.8rem)" }}>
+          <VisualPanel
+            title="Groom's Full Package"
+            kicker="Ceremony support"
+            tone="espresso"
+            size="landscape"
+            image={getVisualAsset("Dress your team")}
+          />
+          <div className="detail-card" style={{ background: "transparent", border: "none", boxShadow: "none", padding: 0 }}>
+            <p className="eyebrow">Wedding extension</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Build the groom look, then coordinate the rest of the line-up.
+            </h2>
+            <p className="section-copy">
+              The groom package takes the same occasion-first logic into full ceremony planning,
+              with package tiers, coordinated finishing pieces, and inquiry support for group dressing.
+            </p>
+            <div className="hero__actions">
+              <Link href="/groom-package" className="button">
+                Explore groom package
+              </Link>
+              <Link href="/wedding-inquiry" className="pill-link">
+                Start wedding inquiry
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
     </>
   );

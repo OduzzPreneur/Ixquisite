@@ -46,17 +46,17 @@ const visualAssets: Record<string, VisualAsset> = {
   office: asset(
     "/images/ixquisite/midnight-commander-suit-styled.webp",
     "Structured blue tailoring suited to office dressing and daily authority.",
-    "center 18%",
+    "center 24%",
   ),
   executive: asset(
     "/images/ixquisite/midnight-commander-suit.webp",
     "Executive tailoring in a rich blue double-breasted silhouette.",
-    "center 18%",
+    "center 16%",
   ),
   "wedding guest": asset(
     "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
     "Cocoa tailoring styled for polished wedding guest dressing.",
-    "center 18%",
+    "center 24%",
   ),
   "groom's package": asset(
     "/images/ixquisite/cocoa-double-breasted-suit.webp",
@@ -96,12 +96,12 @@ const visualAssets: Record<string, VisualAsset> = {
   "black tie": asset(
     "/images/ixquisite/charcoal-windowpane-suit.webp",
     "Dark formal tailoring for black-tie and evening dressing.",
-    "center 18%",
+    "center 16%",
   ),
   "business travel": asset(
     "/images/ixquisite/cocoa-double-breasted-suit-styled.webp",
     "Full-length tailoring with enough structure for polished travel days.",
-    "center 18%",
+    "center 24%",
   ),
   "boardroom edit": asset(
     "/images/ixquisite/midnight-commander-suit-styled.webp",

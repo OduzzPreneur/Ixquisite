@@ -662,6 +662,10 @@ main {
   aspect-ratio: 0.74;
 }
 
+.visual-panel--occasion {
+  aspect-ratio: 0.92;
+}
+
 .visual-panel--wide {
   aspect-ratio: 1.55;
 }
