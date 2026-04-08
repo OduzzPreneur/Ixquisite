@@ -97,6 +97,9 @@ create table if not exists public.products (
   sizes text[] not null default '{}',
   availability text not null,
   details text[] not null default '{}',
+  card_features text[] not null default '{}',
+  rating_value numeric(2,1) not null default 4.8,
+  review_count integer not null default 0,
   complete_the_look text[] not null default '{}',
   featured_rank integer not null default 100,
   is_new boolean not null default false,
@@ -108,6 +111,9 @@ create table if not exists public.products (
 alter table public.products add column if not exists image_url text;
 alter table public.products add column if not exists image_alt text;
 alter table public.products add column if not exists image_position text;
+alter table public.products add column if not exists card_features text[] not null default '{}';
+alter table public.products add column if not exists rating_value numeric(2,1) not null default 4.8;
+alter table public.products add column if not exists review_count integer not null default 0;
 
 create table if not exists public.product_occasions (
   product_slug text not null references public.products(slug) on delete cascade on update cascade,

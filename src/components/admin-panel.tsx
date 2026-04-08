@@ -7,6 +7,28 @@ function serializeList(value?: string[]) {
   return value?.join("\n") ?? "";
 }
 
+function AdminFormSectionHeader({
+  eyebrow,
+  title,
+  copy,
+}: {
+  eyebrow: string;
+  title: string;
+  copy?: string;
+}) {
+  return (
+    <div className="admin-form-section__header">
+      <div>
+        <p className="eyebrow">{eyebrow}</p>
+        <h2 className="minor-title" style={{ marginTop: "0.6rem" }}>
+          {title}
+        </h2>
+      </div>
+      {copy ? <p className="section-copy admin-form-section__copy">{copy}</p> : null}
+    </div>
+  );
+}
+
 export function AdminPageHeader({
   eyebrow,
   title,
@@ -143,173 +165,254 @@ export function ProductEditorForm({
       {product?.occasions?.length ? (
         <input type="hidden" name="previous_occasion_slugs" value={product.occasions.join(",")} />
       ) : null}
-      <div className="form-grid">
-        <div className="field">
-          <label htmlFor="slug">Slug</label>
-          <input id="slug" name="slug" defaultValue={product?.slug ?? ""} placeholder="midnight-commander-suit" required />
+      <section className="surface-panel admin-form-section">
+        <AdminFormSectionHeader
+          eyebrow="Catalog identity"
+          title="Core record"
+          copy="Set the title, slug, pricing, and the top-level storefront state for this product."
+        />
+        <div className="form-grid">
+          <div className="field">
+            <label htmlFor="slug">Slug</label>
+            <input id="slug" name="slug" defaultValue={product?.slug ?? ""} placeholder="midnight-commander-suit" required />
+          </div>
+          <div className="field">
+            <label htmlFor="title">Title</label>
+            <input id="title" name="title" defaultValue={product?.title ?? ""} placeholder="Midnight Commander Suit" required />
+          </div>
+          <div className="field">
+            <label htmlFor="price">Price (kobo)</label>
+            <input id="price" name="price" type="number" min="0" defaultValue={String(product?.price ?? 0)} required />
+          </div>
+          <div className="field">
+            <label htmlFor="availability">Availability</label>
+            <input id="availability" name="availability" defaultValue={product?.availability ?? ""} placeholder="In stock" required />
+          </div>
+          <div className="field">
+            <label htmlFor="tone">Tone</label>
+            <select id="tone" name="tone" defaultValue={product?.tone ?? "navy"}>
+              {toneOptions.map((tone) => (
+                <option key={tone} value={tone}>
+                  {tone}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="featured_rank">Featured rank</label>
+            <input
+              id="featured_rank"
+              name="featured_rank"
+              type="number"
+              defaultValue={String(product?.featuredRank ?? 100)}
+            />
+          </div>
         </div>
-        <div className="field">
-          <label htmlFor="title">Title</label>
-          <input id="title" name="title" defaultValue={product?.title ?? ""} placeholder="Midnight Commander Suit" required />
+      </section>
+
+      <section className="surface-panel admin-form-section">
+        <AdminFormSectionHeader
+          eyebrow="Merchandising"
+          title="Placement and flags"
+          copy="Control where the product appears across navigation lanes, occasion editing, and promotional lists."
+        />
+        <div className="form-grid">
+          <div className="field">
+            <label htmlFor="category_slug">Category</label>
+            <select id="category_slug" name="category_slug" defaultValue={product?.category ?? categories[0]?.slug ?? ""}>
+              {categories.map((category) => (
+                <option key={category.slug} value={category.slug}>
+                  {category.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="collection_slug">Collection</label>
+            <select id="collection_slug" name="collection_slug" defaultValue={product?.collection ?? collections[0]?.slug ?? ""}>
+              {collections.map((collection) => (
+                <option key={collection.slug} value={collection.slug}>
+                  {collection.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field field--span-2">
+            <label htmlFor="occasion_slugs">Occasion slugs</label>
+            <textarea
+              id="occasion_slugs"
+              name="occasion_slugs"
+              defaultValue={serializeList(product?.occasions)}
+              placeholder={occasions.map((occasion) => occasion.slug).join("\n")}
+            />
+            <p className="admin-field-hint">One slug per line. These control the “Shop by occasion” links and occasion detail pages.</p>
+          </div>
+          <div className="field field--span-2">
+            <label htmlFor="complete_the_look">Complete the look</label>
+            <textarea
+              id="complete_the_look"
+              name="complete_the_look"
+              defaultValue={serializeList(product?.completeTheLook)}
+              placeholder={"ivory-broadcloth-shirt\nregent-silk-tie"}
+            />
+            <p className="admin-field-hint">Add related product slugs, one per line, to power the companion recommendations.</p>
+          </div>
         </div>
-        <div className="field">
-          <label htmlFor="category_slug">Category</label>
-          <select id="category_slug" name="category_slug" defaultValue={product?.category ?? categories[0]?.slug ?? ""}>
-            {categories.map((category) => (
-              <option key={category.slug} value={category.slug}>
-                {category.title}
-              </option>
-            ))}
-          </select>
+        <div className="admin-checklist admin-checklist--grid">
+          <label className="admin-checkbox">
+            <input type="checkbox" name="is_new" defaultChecked={product?.isNew ?? false} />
+            <span>Show in New In</span>
+          </label>
+          <label className="admin-checkbox">
+            <input type="checkbox" name="is_best_seller" defaultChecked={product?.isBestSeller ?? false} />
+            <span>Show in Best Sellers</span>
+          </label>
         </div>
-        <div className="field">
-          <label htmlFor="collection_slug">Collection</label>
-          <select id="collection_slug" name="collection_slug" defaultValue={product?.collection ?? collections[0]?.slug ?? ""}>
-            {collections.map((collection) => (
-              <option key={collection.slug} value={collection.slug}>
-                {collection.title}
-              </option>
-            ))}
-          </select>
+      </section>
+
+      <section className="surface-panel admin-form-section">
+        <AdminFormSectionHeader
+          eyebrow="Storefront copy"
+          title="Description and selling points"
+          copy="These fields appear in product listings and product detail pages, so keep them concise and specific."
+        />
+        <div className="form-grid">
+          <div className="field field--span-2">
+            <label htmlFor="blurb">Short blurb</label>
+            <textarea
+              id="blurb"
+              name="blurb"
+              defaultValue={product?.blurb ?? ""}
+              placeholder="A deep navy two-piece designed to hold structure from morning briefings to evening dinners."
+              required
+            />
+          </div>
+          <div className="field field--span-2">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              defaultValue={product?.description ?? ""}
+              placeholder="Half-canvas tailoring, a clean shoulder, and subtle sheen make this the dependable hero of the wardrobe."
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="delivery">Delivery copy</label>
+            <input id="delivery" name="delivery" defaultValue={product?.delivery ?? ""} placeholder="Delivered in 2-4 days" required />
+          </div>
+          <div className="field">
+            <label htmlFor="fit">Fit</label>
+            <input id="fit" name="fit" defaultValue={product?.fit ?? ""} placeholder="Structured slim fit" required />
+          </div>
+          <div className="field">
+            <label htmlFor="rating_value">Rating</label>
+            <input
+              id="rating_value"
+              name="rating_value"
+              type="number"
+              min="0"
+              max="5"
+              step="0.1"
+              defaultValue={String(product?.ratingValue ?? 4.8)}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="review_count">Review count</label>
+            <input
+              id="review_count"
+              name="review_count"
+              type="number"
+              min="0"
+              defaultValue={String(product?.reviewCount ?? 0)}
+            />
+          </div>
+          <div className="field field--span-2">
+            <label htmlFor="card_features">Card features</label>
+            <textarea
+              id="card_features"
+              name="card_features"
+              defaultValue={serializeList(product?.cardFeatures)}
+              placeholder={"Tailored fit\nPremium fabric"}
+            />
+            <p className="admin-field-hint">Keep this to two short lines. These appear directly under the rating row on the product card.</p>
+          </div>
         </div>
-        <div className="field">
-          <label htmlFor="tone">Tone</label>
-          <select id="tone" name="tone" defaultValue={product?.tone ?? "navy"}>
-            {toneOptions.map((tone) => (
-              <option key={tone} value={tone}>
-                {tone}
-              </option>
-            ))}
-          </select>
+      </section>
+
+      <section className="surface-panel admin-form-section">
+        <AdminFormSectionHeader
+          eyebrow="Specifications"
+          title="Options and detail lists"
+          copy="Use one line per value so the storefront can convert each list cleanly into chips and detail bullets."
+        />
+        <div className="form-grid">
+          <div className="field">
+            <label htmlFor="colors">Colours</label>
+            <textarea
+              id="colors"
+              name="colors"
+              defaultValue={serializeList(product?.colors)}
+              placeholder={"Midnight Navy\nGraphite"}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="sizes">Sizes</label>
+            <textarea
+              id="sizes"
+              name="sizes"
+              defaultValue={serializeList(product?.sizes)}
+              placeholder={"48\n50\n52"}
+            />
+          </div>
+          <div className="field field--span-2">
+            <label htmlFor="details">Details</label>
+            <textarea
+              id="details"
+              name="details"
+              defaultValue={serializeList(product?.details)}
+              placeholder={"Wool blend\nHalf-canvas front\nDouble vent"}
+            />
+          </div>
         </div>
-        <div className="field">
-          <label htmlFor="price">Price (kobo)</label>
-          <input id="price" name="price" type="number" min="0" defaultValue={String(product?.price ?? 0)} required />
+      </section>
+
+      <section className="surface-panel admin-form-section">
+        <AdminFormSectionHeader
+          eyebrow="Visuals"
+          title="Product imagery"
+          copy="Use paths inside `public/`. These fields feed the product card, product page, and any featured merchandising placements."
+        />
+        <div className="form-grid">
+          <div className="field field--span-2">
+            <label htmlFor="image_url">Product image path</label>
+            <input
+              id="image_url"
+              name="image_url"
+              defaultValue={product?.image?.src ?? ""}
+              placeholder="/images/ixquisite/cocoa-double-breasted-suit.webp"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="image_alt">Image alt</label>
+            <input
+              id="image_alt"
+              name="image_alt"
+              defaultValue={product?.image?.alt ?? ""}
+              placeholder="Model in a sharply tailored double-breasted suit."
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="image_position">Image position</label>
+            <input
+              id="image_position"
+              name="image_position"
+              defaultValue={product?.image?.position ?? ""}
+              placeholder="center 18%"
+            />
+          </div>
         </div>
-        <div className="field">
-          <label htmlFor="featured_rank">Featured rank</label>
-          <input
-            id="featured_rank"
-            name="featured_rank"
-            type="number"
-            defaultValue={String(product?.featuredRank ?? 100)}
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="availability">Availability</label>
-          <input id="availability" name="availability" defaultValue={product?.availability ?? ""} placeholder="In stock" required />
-        </div>
-        <div className="field field--span-2">
-          <label htmlFor="blurb">Short blurb</label>
-          <textarea
-            id="blurb"
-            name="blurb"
-            defaultValue={product?.blurb ?? ""}
-            placeholder="A deep navy two-piece designed to hold structure from morning briefings to evening dinners."
-            required
-          />
-        </div>
-        <div className="field field--span-2">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            defaultValue={product?.description ?? ""}
-            placeholder="Half-canvas tailoring, a clean shoulder, and subtle sheen make this the dependable hero of the wardrobe."
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="delivery">Delivery copy</label>
-          <input id="delivery" name="delivery" defaultValue={product?.delivery ?? ""} placeholder="Delivered in 2-4 days" required />
-        </div>
-        <div className="field">
-          <label htmlFor="fit">Fit</label>
-          <input id="fit" name="fit" defaultValue={product?.fit ?? ""} placeholder="Structured slim fit" required />
-        </div>
-        <div className="field">
-          <label htmlFor="colors">Colours</label>
-          <textarea
-            id="colors"
-            name="colors"
-            defaultValue={serializeList(product?.colors)}
-            placeholder={"Midnight Navy\nGraphite"}
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="sizes">Sizes</label>
-          <textarea
-            id="sizes"
-            name="sizes"
-            defaultValue={serializeList(product?.sizes)}
-            placeholder={"48\n50\n52"}
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="details">Details</label>
-          <textarea
-            id="details"
-            name="details"
-            defaultValue={serializeList(product?.details)}
-            placeholder={"Wool blend\nHalf-canvas front\nDouble vent"}
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="complete_the_look">Complete the look</label>
-          <textarea
-            id="complete_the_look"
-            name="complete_the_look"
-            defaultValue={serializeList(product?.completeTheLook)}
-            placeholder={"ivory-broadcloth-shirt\nregent-silk-tie"}
-          />
-        </div>
-        <div className="field field--span-2">
-          <label htmlFor="occasion_slugs">Occasion slugs</label>
-          <textarea
-            id="occasion_slugs"
-            name="occasion_slugs"
-            defaultValue={serializeList(product?.occasions)}
-            placeholder={occasions.map((occasion) => occasion.slug).join("\n")}
-          />
-        </div>
-        <div className="field field--span-2">
-          <label htmlFor="image_url">Product image path</label>
-          <input
-            id="image_url"
-            name="image_url"
-            defaultValue={product?.image?.src ?? ""}
-            placeholder="/images/ixquisite/cocoa-double-breasted-suit.webp"
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="image_alt">Image alt</label>
-          <input
-            id="image_alt"
-            name="image_alt"
-            defaultValue={product?.image?.alt ?? ""}
-            placeholder="Model in a sharply tailored double-breasted suit."
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="image_position">Image position</label>
-          <input
-            id="image_position"
-            name="image_position"
-            defaultValue={product?.image?.position ?? ""}
-            placeholder="center 18%"
-          />
-        </div>
-      </div>
-      <div className="admin-checklist">
-        <label className="admin-checkbox">
-          <input type="checkbox" name="is_new" defaultChecked={product?.isNew ?? false} />
-          <span>Show in New In</span>
-        </label>
-        <label className="admin-checkbox">
-          <input type="checkbox" name="is_best_seller" defaultChecked={product?.isBestSeller ?? false} />
-          <span>Show in Best Sellers</span>
-        </label>
-      </div>
+      </section>
       <div className="hero__actions">
         <button type="submit" className="button">
           {submitLabel}

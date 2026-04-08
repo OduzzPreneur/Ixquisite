@@ -19,7 +19,7 @@ export default async function ProductPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ error?: string; message?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; color?: string; size?: string }>;
 }) {
   const { slug } = await params;
   const query = await searchParams;
@@ -36,6 +36,8 @@ export default async function ProductPage({
   ]);
   const related = allProducts.filter((item) => item.category === product.category && item.slug !== product.slug).slice(0, 3);
   const isSaved = wishlistSlugs.includes(product.slug);
+  const selectedSize = query.size && product.sizes.includes(query.size) ? query.size : (product.sizes[0] ?? "");
+  const selectedColor = query.color && product.colors.includes(query.color) ? query.color : (product.colors[0] ?? "");
 
   return (
     <>
@@ -91,7 +93,7 @@ export default async function ProductPage({
               <input type="hidden" name="product_slug" value={product.slug} />
               <div className="field">
                 <label htmlFor="selected_size">Size</label>
-                <select id="selected_size" name="selected_size" defaultValue={product.sizes[0] ?? ""}>
+                <select id="selected_size" name="selected_size" defaultValue={selectedSize}>
                   {product.sizes.map((size) => (
                     <option key={size} value={size}>
                       {size}
@@ -101,7 +103,7 @@ export default async function ProductPage({
               </div>
               <div className="field">
                 <label htmlFor="selected_color">Colour</label>
-                <select id="selected_color" name="selected_color" defaultValue={product.colors[0] ?? ""}>
+                <select id="selected_color" name="selected_color" defaultValue={selectedColor}>
                   {product.colors.map((color) => (
                     <option key={color} value={color}>
                       {color}

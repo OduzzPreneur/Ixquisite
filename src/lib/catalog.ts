@@ -60,6 +60,9 @@ type ProductRow = {
   sizes: string[] | null;
   availability: string;
   details: string[] | null;
+  card_features: string[] | null;
+  rating_value: number | null;
+  review_count: number | null;
   collection_slug: string;
   featured_rank?: number | null;
   is_new: boolean;
@@ -157,6 +160,9 @@ function mapProduct(row: ProductRow): Product {
     sizes: row.sizes ?? [],
     availability: row.availability,
     details: row.details ?? [],
+    cardFeatures: row.card_features ?? [row.fit, ...(row.details ?? [])].filter(Boolean).slice(0, 2),
+    ratingValue: row.rating_value ?? 4.8,
+    reviewCount: row.review_count ?? 0,
     collection: row.collection_slug,
     isNew: row.is_new,
     isBestSeller: row.is_best_seller,
@@ -206,7 +212,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
       supabase
         .from("products")
         .select(
-          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,sizes,availability,details,collection_slug,featured_rank,is_new,is_best_seller,complete_the_look,image_url,image_alt,image_position,product_occasions(occasion_slug)",
+          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,sizes,availability,details,card_features,rating_value,review_count,collection_slug,featured_rank,is_new,is_best_seller,complete_the_look,image_url,image_alt,image_position,product_occasions(occasion_slug)",
         )
         .order("featured_rank", { ascending: true })
         .order("title", { ascending: true }),

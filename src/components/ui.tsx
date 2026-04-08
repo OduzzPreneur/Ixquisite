@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { addToWishlistAction } from "@/app/actions/wishlist";
 import type {
   Article,
   Category,
@@ -10,7 +9,7 @@ import type {
   Product,
   Tone,
 } from "@/data/site";
-import { formatPrice } from "@/data/site";
+import { ProductCardCommerce } from "@/components/product-card-commerce";
 import { getVisualAsset, type VisualAsset } from "@/lib/visual-assets";
 
 function cx(...parts: Array<string | false | null | undefined>) {
@@ -245,32 +244,7 @@ export function ProductCard({
           image={product.image ?? getVisualAsset(product.title)}
         />
       </Link>
-      <div className="product-card__meta">
-        <Link href={`/product/${product.slug}`}>
-          <div className="price-row">
-            <span className="product-card__title">{product.title}</span>
-            <strong>{formatPrice(product.price)}</strong>
-          </div>
-          <p className="product-card__copy">{product.blurb}</p>
-          <div className="price-row">
-            <span>{product.fit}</span>
-            <span>{product.colors.length} colours</span>
-          </div>
-        </Link>
-        {wishlistState === "saved" ? (
-          <span className="pill-link" aria-label="Saved to wishlist">
-            Saved
-          </span>
-        ) : (
-          <form action={addToWishlistAction}>
-            <input type="hidden" name="product_slug" value={product.slug} />
-            <input type="hidden" name="next" value={wishlistNext} />
-            <button type="submit" className="pill-link">
-              Save
-            </button>
-          </form>
-        )}
-      </div>
+      <ProductCardCommerce product={product} wishlistState={wishlistState} wishlistNext={wishlistNext} />
     </article>
   );
 }

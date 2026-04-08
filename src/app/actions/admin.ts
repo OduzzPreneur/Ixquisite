@@ -29,6 +29,11 @@ function parseInteger(value: FormDataEntryValue | null, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function parseDecimal(value: FormDataEntryValue | null, fallback = 0) {
+  const parsed = Number.parseFloat(normalizeField(value));
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 function assertInternalHref(value: string, label: string) {
   if (!value.startsWith("/")) {
     throw new Error(`${label} must start with /.`);
@@ -175,11 +180,14 @@ export async function upsertProductAction(formData: FormData) {
   const colors = parseList(formData.get("colors"));
   const sizes = parseList(formData.get("sizes"));
   const details = parseList(formData.get("details"));
+  const cardFeatures = parseList(formData.get("card_features"));
   const completeTheLook = parseList(formData.get("complete_the_look"));
   const occasionSlugs = parseList(formData.get("occasion_slugs"));
   const imageUrl = normalizeField(formData.get("image_url"));
   const imageAlt = normalizeField(formData.get("image_alt"));
   const imagePosition = normalizeField(formData.get("image_position"));
+  const ratingValue = parseDecimal(formData.get("rating_value"), 4.8);
+  const reviewCount = parseInteger(formData.get("review_count"));
 
   if (!slug || !title || !categorySlug || !collectionSlug || !blurb || !description || !delivery || !fit || !availability) {
     redirectWithAdminMessage("/admin/products", "error", "Complete all required product fields.");
@@ -187,6 +195,14 @@ export async function upsertProductAction(formData: FormData) {
 
   if (price < 0) {
     redirectWithAdminMessage("/admin/products", "error", "Price must be zero or greater.");
+  }
+
+  if (ratingValue < 0 || ratingValue > 5) {
+    redirectWithAdminMessage("/admin/products", "error", "Rating must be between 0 and 5.");
+  }
+
+  if (reviewCount < 0) {
+    redirectWithAdminMessage("/admin/products", "error", "Review count must be zero or greater.");
   }
 
   try {
@@ -207,6 +223,9 @@ export async function upsertProductAction(formData: FormData) {
       sizes,
       availability,
       details,
+      card_features: cardFeatures,
+      rating_value: Math.round(ratingValue * 10) / 10,
+      review_count: reviewCount,
       complete_the_look: completeTheLook,
       featured_rank: featuredRank,
       is_new: parseBoolean(formData.get("is_new")),
