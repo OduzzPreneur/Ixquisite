@@ -3,8 +3,10 @@ import Link from "next/link";
 import { AnnouncementTicker } from "@/components/announcement-ticker";
 import { MobileNavDrawer } from "@/components/mobile-nav-drawer";
 import { announcements, footerGroups, navItems } from "@/data/site";
+import { emailHasAdminAccess } from "@/lib/admin";
+import { getAuthenticatedUser } from "@/lib/auth";
 
-const utilityItems = [
+const baseUtilityItems = [
   { href: "/search", label: "Search" },
   { href: "/wishlist", label: "Wishlist" },
   { href: "/account", label: "Account" },
@@ -36,7 +38,12 @@ function AnnouncementBar() {
   );
 }
 
-function Header() {
+async function Header() {
+  const user = await getAuthenticatedUser();
+  const utilityItems = emailHasAdminAccess(user?.email)
+    ? [{ href: "/admin", label: "Admin" }, ...baseUtilityItems]
+    : baseUtilityItems;
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -59,7 +66,11 @@ function Header() {
               key={item.href}
               href={item.href}
               aria-label={item.label}
-              className={item.href === "/wishlist" || item.href === "/account" ? "utility-nav__link utility-nav__link--secondary" : "utility-nav__link"}
+              className={
+                item.href === "/wishlist" || item.href === "/account" || item.href === "/admin"
+                  ? "utility-nav__link utility-nav__link--secondary"
+                  : "utility-nav__link"
+              }
             >
               <span className="utility-nav__label">{item.label}</span>
             </Link>
@@ -114,7 +125,7 @@ function Footer() {
   );
 }
 
-export function SiteChrome({ children }: { children: React.ReactNode }) {
+export async function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="site-shell">
       <AnnouncementBar />

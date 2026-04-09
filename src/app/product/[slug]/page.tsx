@@ -1,13 +1,10 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { addToCartAction } from "@/app/actions/cart";
-import { addToWishlistAction, removeFromWishlistAction } from "@/app/actions/wishlist";
+import { ProductDetailExperience } from "@/components/product-detail-experience";
 import { UtilityPageHeader } from "@/components/page-templates";
-import { formatPrice } from "@/data/site";
 import { getProduct, getProducts, getProductsBySlugs } from "@/lib/catalog";
 import { getVisualAsset } from "@/lib/visual-assets";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
-import { ProductCard, VisualPanel } from "@/components/ui";
+import { ProductCard } from "@/components/ui";
 
 export async function generateStaticParams() {
   const products = await getProducts();
@@ -36,8 +33,9 @@ export default async function ProductPage({
   ]);
   const related = allProducts.filter((item) => item.category === product.category && item.slug !== product.slug).slice(0, 3);
   const isSaved = wishlistSlugs.includes(product.slug);
+  const swatchLabels = product.swatches.map((swatch) => swatch.label);
   const selectedSize = query.size && product.sizes.includes(query.size) ? query.size : (product.sizes[0] ?? "");
-  const selectedColor = query.color && product.colors.includes(query.color) ? query.color : (product.colors[0] ?? "");
+  const selectedColor = query.color && swatchLabels.includes(query.color) ? query.color : (swatchLabels[0] ?? product.colors[0] ?? "");
 
   return (
     <>
@@ -48,109 +46,17 @@ export default async function ProductPage({
         breadcrumbs={[{ label: "Home", href: "/" }, { label: product.category, href: `/category/${product.category}` }, { label: product.title }]}
       />
       <section className="page-section">
-        <div className="detail-layout">
-          <div className="gallery-grid">
-            <VisualPanel
-              title={product.title}
-              kicker="Front view"
-              tone={product.tone}
-              size="portrait"
-              image={product.image ?? getVisualAsset(product.title)}
-              preload
-            />
-            <div className="gallery-stack">
-              <VisualPanel
-                title="Fabric detail"
-                kicker="Close-up"
-                tone={product.tone}
-                size="wide"
-                image={getVisualAsset(`${product.title}::detail`)}
-              />
-              <VisualPanel
-                title="Styled full look"
-                kicker="Look pairing"
-                tone={product.tone}
-                size="wide"
-                image={getVisualAsset(`${product.title}::styled`)}
-              />
-            </div>
-          </div>
-          <div className="support-card product-detail-card">
-            {query.error ? <p className="auth-notice auth-notice--error">{query.error}</p> : null}
-            {query.message ? <p className="auth-notice auth-notice--success">{query.message}</p> : null}
-            <div className="price-row">
-              <h1 className="page-title" style={{ fontSize: "clamp(2.2rem, 4vw, 3.5rem)" }}>{product.title}</h1>
-              <strong>{formatPrice(product.price)}</strong>
-            </div>
-            <p className="body-copy">{product.blurb}</p>
-            <div className="pill-row">
-              <span className="pill-link">{product.availability}</span>
-              <span className="pill-link">{product.delivery}</span>
-              <span className="pill-link">{product.fit}</span>
-            </div>
-
-            <form action={addToCartAction} className="cta-stack">
-              <input type="hidden" name="product_slug" value={product.slug} />
-              <div className="field">
-                <label htmlFor="selected_size">Size</label>
-                <select id="selected_size" name="selected_size" defaultValue={selectedSize}>
-                  {product.sizes.map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="field">
-                <label htmlFor="selected_color">Colour</label>
-                <select id="selected_color" name="selected_color" defaultValue={selectedColor}>
-                  {product.colors.map((color) => (
-                    <option key={color} value={color}>
-                      {color}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="field">
-                <label htmlFor="quantity">Quantity</label>
-                <select id="quantity" name="quantity" defaultValue="1">
-                  {[1, 2, 3, 4].map((quantity) => (
-                    <option key={quantity} value={quantity}>
-                      {quantity}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="hero__actions">
-                <button type="submit" className="button">Add to cart</button>
-                <input type="hidden" name="next" value={`/product/${product.slug}`} />
-                <button
-                  type="submit"
-                  formAction={isSaved ? removeFromWishlistAction : addToWishlistAction}
-                  className="pill-link"
-                >
-                  {isSaved ? "Remove" : "Save"}
-                </button>
-                <Link href="/checkout" className="pill-link">Buy now</Link>
-              </div>
-            </form>
-
-            <div className="tab-list">
-              <div className="tab-item">
-                <h4>Fit and size confidence</h4>
-                <p className="body-copy">Structured fit notes and a direct route to the size guide reduce hesitation before checkout.</p>
-              </div>
-              <div className="tab-item">
-                <h4>Fabric & care</h4>
-                <p className="body-copy">{product.details.join(" · ")}</p>
-              </div>
-              <div className="tab-item">
-                <h4>Shipping & returns</h4>
-                <p className="body-copy">Fast dispatch, visible tracking, and policy routes that stay close to the purchase action.</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProductDetailExperience
+          product={product}
+          defaultImage={product.image ?? getVisualAsset(product.title)}
+          detailImage={getVisualAsset(`${product.title}::detail`)}
+          styledImage={getVisualAsset(`${product.title}::styled`)}
+          initialColor={selectedColor}
+          initialSize={selectedSize}
+          isSaved={isSaved}
+          error={query.error}
+          message={query.message}
+        />
       </section>
       <section className="page-section">
         <div className="section-head">

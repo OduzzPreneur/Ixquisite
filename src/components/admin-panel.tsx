@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Category, Collection, HomePageSettings, Occasion, Product, Tone } from "@/data/site";
+import { serializeSwatches } from "@/lib/product-swatches";
 
 const toneOptions: Tone[] = ["navy", "espresso", "stone", "slate", "ink", "gold"];
 
@@ -343,10 +344,20 @@ export function ProductEditorForm({
       <section className="surface-panel admin-form-section">
         <AdminFormSectionHeader
           eyebrow="Specifications"
-          title="Options and detail lists"
-          copy="Use one line per value so the storefront can convert each list cleanly into chips and detail bullets."
+          title="Options, swatches, and detail lists"
+          copy="Use structured swatch rows plus one line per value for sizes and detail bullets."
         />
         <div className="form-grid">
+          <div className="field field--span-2">
+            <label htmlFor="swatches">Swatches</label>
+            <textarea
+              id="swatches"
+              name="swatches"
+              defaultValue={serializeSwatches(product?.swatches)}
+              placeholder={"Midnight Navy | #244669\nGraphite | #5a616a\nIvory & Gold | linear-gradient(135deg, #ebe1cf 0% 50%, #ba9a55 50% 100%) | /images/ixquisite/heirloom-accessory-set.webp | center 18%"}
+            />
+            <p className="admin-field-hint">One swatch per line: label | value | optional image path | optional image position.</p>
+          </div>
           <div className="field">
             <label htmlFor="colors">Colours</label>
             <textarea
@@ -355,6 +366,7 @@ export function ProductEditorForm({
               defaultValue={serializeList(product?.colors)}
               placeholder={"Midnight Navy\nGraphite"}
             />
+            <p className="admin-field-hint">Legacy fallback only. When swatches are provided, colour labels will be derived from them automatically.</p>
           </div>
           <div className="field">
             <label htmlFor="sizes">Sizes</label>

@@ -24,9 +24,11 @@ import {
   type Collection,
   type Occasion,
   type Product,
+  type ProductSwatch,
   type Tone,
 } from "@/data/site";
 import { getHomePageSettings } from "@/lib/homepage";
+import { ensureProductSwatches } from "@/lib/product-swatches";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 
 type LookbookLook = {
@@ -57,6 +59,7 @@ type ProductRow = {
   delivery: string;
   fit: string;
   colors: string[] | null;
+  swatches: ProductSwatch[] | null;
   sizes: string[] | null;
   availability: string;
   details: string[] | null;
@@ -157,6 +160,7 @@ function mapProduct(row: ProductRow): Product {
     delivery: row.delivery,
     fit: row.fit,
     colors: row.colors ?? [],
+    swatches: ensureProductSwatches(row.swatches, row.colors),
     sizes: row.sizes ?? [],
     availability: row.availability,
     details: row.details ?? [],
@@ -212,7 +216,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
       supabase
         .from("products")
         .select(
-          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,sizes,availability,details,card_features,rating_value,review_count,collection_slug,featured_rank,is_new,is_best_seller,complete_the_look,image_url,image_alt,image_position,product_occasions(occasion_slug)",
+          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,swatches,sizes,availability,details,card_features,rating_value,review_count,collection_slug,featured_rank,is_new,is_best_seller,complete_the_look,image_url,image_alt,image_position,product_occasions(occasion_slug)",
         )
         .order("featured_rank", { ascending: true })
         .order("title", { ascending: true }),

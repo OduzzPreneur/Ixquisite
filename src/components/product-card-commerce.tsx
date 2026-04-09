@@ -32,8 +32,9 @@ export function ProductCardCommerce({
   wishlistState: "idle" | "saved";
   wishlistNext: string;
 }) {
-  const initialColor = product.colors[0] ?? "";
-  const [selectedColor, setSelectedColor] = useState(initialColor);
+  const swatches = product.swatches?.length ? product.swatches : product.colors.map((color) => ({ label: color, value: color }));
+  const initialSwatch = swatches[0] ?? null;
+  const [selectedColor, setSelectedColor] = useState(initialSwatch?.label ?? "");
   const features = getCardFeatures(product);
   const visibleSizes = getVisibleSizes(product);
   const hiddenSizeCount = Math.max(product.sizes.length - visibleSizes.length, 0);
@@ -59,23 +60,23 @@ export function ProductCardCommerce({
         </ul>
       ) : null}
 
-      {product.colors.length ? (
+      {swatches.length ? (
         <div className="product-card__swatch-block">
           <div className="product-card__swatch-row" role="group" aria-label={`${product.title} colours`}>
-            {product.colors.slice(0, 4).map((color) => (
+            {swatches.slice(0, 4).map((swatch) => (
               <button
-                key={color}
+                key={swatch.label}
                 type="button"
-                className={`product-card__swatch${selectedColor === color ? " product-card__swatch--active" : ""}${isLightSwatch(color) ? " product-card__swatch--light" : ""}`}
-                style={{ background: getSwatchBackground(color) }}
-                aria-label={`Select ${color}`}
-                aria-pressed={selectedColor === color}
-                onClick={() => setSelectedColor(color)}
+                className={`product-card__swatch${selectedColor === swatch.label ? " product-card__swatch--active" : ""}${isLightSwatch(swatch.value) ? " product-card__swatch--light" : ""}`}
+                style={{ background: getSwatchBackground(swatch.value) }}
+                aria-label={`Select ${swatch.label}`}
+                aria-pressed={selectedColor === swatch.label}
+                onClick={() => setSelectedColor(swatch.label)}
               />
             ))}
-            {product.colors.length > 4 ? <span className="product-card__swatch-more">+{product.colors.length - 4}</span> : null}
+            {swatches.length > 4 ? <span className="product-card__swatch-more">+{swatches.length - 4}</span> : null}
           </div>
-          <span className="product-card__swatch-label">{selectedColor || `${product.colors.length} colours`}</span>
+          <span className="product-card__swatch-label">{selectedColor || `${swatches.length} colours`}</span>
         </div>
       ) : null}
 

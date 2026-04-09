@@ -12,16 +12,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   await requireAdminUser("/admin");
 
   return (
-    <section className="page-section page-hero">
+    <section className="page-section admin-page">
       <div className="admin-shell">
-        <aside className="surface-panel admin-sidebar">
-          <p className="eyebrow">Admin panel</p>
-          <h1 className="section-title" style={{ marginTop: "0.75rem" }}>
-            Commerce workspace
-          </h1>
-          <p className="section-copy" style={{ marginTop: "0.85rem" }}>
-            Manage live catalog data and homepage messaging without opening the Supabase dashboard.
-          </p>
+        <aside className="admin-sidebar">
+          <div className="surface-panel admin-sidebar__intro">
+            <p className="eyebrow">Admin panel</p>
+            <h1 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Commerce workspace
+            </h1>
+            <p className="section-copy" style={{ marginTop: "0.85rem" }}>
+              Manage live catalog data and homepage messaging without opening the Supabase dashboard.
+            </p>
+          </div>
           <nav className="admin-nav" aria-label="Admin navigation">
             {adminNavItems.map((item) => (
               <Link key={item.href} href={item.href}>

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import type { Tone } from "@/data/site";
 import { requireAdminUser } from "@/lib/admin";
 import { mergeHomePageSettings } from "@/lib/homepage";
+import { parseSerializedSwatches } from "@/lib/product-swatches";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const tones: Tone[] = ["navy", "espresso", "stone", "slate", "ink", "gold"];
@@ -178,6 +179,7 @@ export async function upsertProductAction(formData: FormData) {
   const price = parseInteger(formData.get("price"));
   const featuredRank = parseInteger(formData.get("featured_rank"), 100);
   const colors = parseList(formData.get("colors"));
+  const swatches = parseSerializedSwatches(normalizeField(formData.get("swatches")));
   const sizes = parseList(formData.get("sizes"));
   const details = parseList(formData.get("details"));
   const cardFeatures = parseList(formData.get("card_features"));
@@ -207,6 +209,13 @@ export async function upsertProductAction(formData: FormData) {
 
   try {
     assertPublicImagePath(imageUrl, "Product image");
+    swatches.forEach((swatch, index) => {
+      if (swatch.imageSrc) {
+        assertPublicImagePath(swatch.imageSrc, `Swatch image ${index + 1}`);
+      }
+    });
+
+    const normalizedColors = swatches.length ? swatches.map((swatch) => swatch.label) : colors;
 
     const payload = {
       slug,
@@ -219,7 +228,8 @@ export async function upsertProductAction(formData: FormData) {
       description,
       delivery,
       fit,
-      colors,
+      colors: normalizedColors,
+      swatches,
       sizes,
       availability,
       details,

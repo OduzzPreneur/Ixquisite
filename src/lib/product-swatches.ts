@@ -1,3 +1,5 @@
+import type { ProductSwatch } from "@/data/site";
+
 const colorKeywords = [
   { match: "black", value: "#232323" },
   { match: "charcoal", value: "#3f434b" },
@@ -31,14 +33,18 @@ function normalizeColorLabel(value: string) {
   return value.trim().toLowerCase();
 }
 
-function resolveSwatchValue(label: string) {
+export function resolveSwatchValue(label: string) {
   const normalized = normalizeColorLabel(label);
   const matched = colorKeywords.find((entry) => normalized.includes(entry.match));
   return matched?.value ?? "#8c7967";
 }
 
-export function getSwatchBackground(label: string) {
-  const normalized = normalizeColorLabel(label);
+export function getSwatchBackground(labelOrValue: string) {
+  if (labelOrValue.includes("gradient(") || labelOrValue.startsWith("#") || labelOrValue.startsWith("rgb") || labelOrValue.startsWith("hsl")) {
+    return labelOrValue;
+  }
+
+  const normalized = normalizeColorLabel(labelOrValue);
   const parts = normalized
     .split(/\s*(?:&|and|\/|,)\s*/g)
     .map((part) => part.trim())
@@ -55,10 +61,61 @@ export function getSwatchBackground(label: string) {
     return `linear-gradient(135deg, ${stops.join(", ")})`;
   }
 
-  return resolveSwatchValue(label);
+  return resolveSwatchValue(labelOrValue);
 }
 
-export function isLightSwatch(label: string) {
-  const normalized = normalizeColorLabel(label);
+export function buildFallbackSwatch(label: string): ProductSwatch {
+  return {
+    label,
+    value: getSwatchBackground(label),
+  };
+}
+
+export function ensureProductSwatches(swatches: ProductSwatch[] | null | undefined, colors: string[] | null | undefined) {
+  if (swatches?.length) {
+    return swatches.map((swatch) => ({
+      label: swatch.label,
+      value: getSwatchBackground(swatch.value || swatch.label),
+      imageSrc: swatch.imageSrc || undefined,
+      imagePosition: swatch.imagePosition || undefined,
+    }));
+  }
+
+  return (colors ?? []).map(buildFallbackSwatch);
+}
+
+export function isLightSwatch(valueOrLabel: string) {
+  const normalized = normalizeColorLabel(valueOrLabel);
+  if (normalized.startsWith("#")) {
+    return normalized === "#ebe1cf" || normalized === "#f5f3ed" || normalized === "#b8ab9a" || normalized === "#ccb69c";
+  }
+
   return normalized.includes("ivory") || normalized.includes("white") || normalized.includes("stone") || normalized.includes("beige");
+}
+
+export function serializeSwatches(swatches: ProductSwatch[] | undefined) {
+  return swatches
+    ?.map((swatch) => [swatch.label, swatch.value, swatch.imageSrc ?? "", swatch.imagePosition ?? ""].join(" | "))
+    .join("\n") ?? "";
+}
+
+export function parseSerializedSwatches(value: string) {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, index) => {
+      const [label, rawValue, imageSrc, imagePosition] = line.split("|").map((part) => part.trim());
+
+      if (!label) {
+        throw new Error(`Swatch row ${index + 1} is missing a label.`);
+      }
+
+      return {
+        label,
+        value: getSwatchBackground(rawValue || label),
+        imageSrc: imageSrc || undefined,
+        imagePosition: imagePosition || undefined,
+      } satisfies ProductSwatch;
+    });
 }

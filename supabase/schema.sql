@@ -94,6 +94,7 @@ create table if not exists public.products (
   delivery text not null,
   fit text not null,
   colors text[] not null default '{}',
+  swatches jsonb not null default '[]'::jsonb,
   sizes text[] not null default '{}',
   availability text not null,
   details text[] not null default '{}',
@@ -111,6 +112,7 @@ create table if not exists public.products (
 alter table public.products add column if not exists image_url text;
 alter table public.products add column if not exists image_alt text;
 alter table public.products add column if not exists image_position text;
+alter table public.products add column if not exists swatches jsonb not null default '[]'::jsonb;
 alter table public.products add column if not exists card_features text[] not null default '{}';
 alter table public.products add column if not exists rating_value numeric(2,1) not null default 4.8;
 alter table public.products add column if not exists review_count integer not null default 0;

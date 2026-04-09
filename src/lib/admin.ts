@@ -8,6 +8,14 @@ function normalizeEmail(value: string) {
   return value.trim().toLowerCase();
 }
 
+export function emailHasAdminAccess(email: string | null | undefined) {
+  if (!email) {
+    return false;
+  }
+
+  return getAdminEmails().includes(normalizeEmail(email));
+}
+
 export function getAdminEmails() {
   const source = process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "";
 
@@ -37,7 +45,7 @@ export async function requireAdminUser(next = "/admin") {
     );
   }
 
-  if (!user.email || !adminEmails.includes(normalizeEmail(user.email))) {
+  if (!emailHasAdminAccess(user.email)) {
     redirect(
       `/sign-in?error=${encodeURIComponent("This account does not have admin access.")}&next=${encodeURIComponent(next)}`,
     );

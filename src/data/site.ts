@@ -6,6 +6,13 @@ export type ProductImage = {
   position?: string;
 };
 
+export type ProductSwatch = {
+  label: string;
+  value: string;
+  imageSrc?: string;
+  imagePosition?: string;
+};
+
 export type Category = {
   slug: string;
   title: string;
@@ -46,6 +53,7 @@ export type Product = {
   delivery: string;
   fit: string;
   colors: string[];
+  swatches: ProductSwatch[];
   sizes: string[];
   availability: string;
   details: string[];
@@ -61,6 +69,44 @@ export type Product = {
   completeTheLook: string[];
   image?: ProductImage;
 };
+
+function fallbackSwatchValue(label: string) {
+  const normalized = label.trim().toLowerCase();
+
+  if (normalized.includes("black")) return "#232323";
+  if (normalized.includes("charcoal")) return "#3f434b";
+  if (normalized.includes("graphite")) return "#5a616a";
+  if (normalized.includes("grey") || normalized.includes("gray")) return "#8a8f98";
+  if (normalized.includes("midnight")) return "#244669";
+  if (normalized.includes("navy")) return "#245179";
+  if (normalized.includes("blue")) return "#35648d";
+  if (normalized.includes("cocoa") || normalized.includes("brown")) return "#8b5b43";
+  if (normalized.includes("walnut")) return "#91684a";
+  if (normalized.includes("espresso")) return "#5b3a2e";
+  if (normalized.includes("wine")) return "#7b3348";
+  if (normalized.includes("oxblood")) return "#6d2030";
+  if (normalized.includes("burgundy")) return "#7b2438";
+  if (normalized.includes("forest")) return "#5a7746";
+  if (normalized.includes("olive")) return "#8ca15d";
+  if (normalized.includes("green")) return "#6d9254";
+  if (normalized.includes("ivory")) return "#ebe1cf";
+  if (normalized.includes("white")) return "#f5f3ed";
+  if (normalized.includes("gold")) return "#ba9a55";
+  if (normalized.includes("stone")) return "#b8ab9a";
+  if (normalized.includes("tan")) return "#b58b67";
+  if (normalized.includes("beige")) return "#ccb69c";
+  if (normalized.includes("slate")) return "#5f7282";
+  if (normalized.includes("ink")) return "#2b3442";
+
+  return "#8c7967";
+}
+
+function createSwatches(colors: string[]): ProductSwatch[] {
+  return colors.map((color) => ({
+    label: color,
+    value: fallbackSwatchValue(color),
+  }));
+}
 
 export type Article = {
   slug: string;
@@ -331,6 +377,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "Structured slim fit",
     colors: ["Midnight Navy", "Graphite"],
+    swatches: createSwatches(["Midnight Navy", "Graphite"]),
     sizes: ["48", "50", "52", "54", "56"],
     availability: "In stock",
     details: ["Wool blend", "Half-canvas front", "Double vent", "Dry clean only"],
@@ -354,6 +401,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "Tailored modern fit",
     colors: ["Cocoa Brown"],
+    swatches: createSwatches(["Cocoa Brown"]),
     sizes: ["48", "50", "52", "54"],
     availability: "Low stock",
     details: ["Signature brown tone", "Peak lapel", "Fully lined", "Dry clean only"],
@@ -377,6 +425,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "Contemporary slim fit",
     colors: ["Ivory", "White"],
+    swatches: createSwatches(["Ivory", "White"]),
     sizes: ["15", "15.5", "16", "16.5", "17"],
     availability: "In stock",
     details: ["Broadcloth cotton", "Semi-spread collar", "Double-button cuff", "Machine wash gentle"],
@@ -400,6 +449,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "Regular tailored fit",
     colors: ["Slate Stripe"],
+    swatches: createSwatches(["Slate Stripe"]),
     sizes: ["15", "15.5", "16", "16.5"],
     availability: "In stock",
     details: ["Cotton stretch blend", "Structured collar", "French placket", "Machine wash gentle"],
@@ -423,6 +473,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "Tapered fit",
     colors: ["Ink", "Charcoal"],
+    swatches: createSwatches(["Ink", "Charcoal"]),
     sizes: ["32", "34", "36", "38", "40"],
     availability: "In stock",
     details: ["Wool touch fabric", "Side adjusters", "Pressed crease", "Dry clean only"],
@@ -446,6 +497,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "Relaxed tailored fit",
     colors: ["Walnut"],
+    swatches: createSwatches(["Walnut"]),
     sizes: ["32", "34", "36", "38"],
     availability: "In stock",
     details: ["Pleated front", "Extended waistband", "Side pockets", "Dry clean only"],
@@ -469,6 +521,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "Standard width",
     colors: ["Midnight", "Wine", "Black"],
+    swatches: createSwatches(["Midnight", "Wine", "Black"]),
     sizes: ["One size"],
     availability: "In stock",
     details: ["Pure silk", "Self tipping", "7.5 cm blade", "Dry clean only"],
@@ -492,6 +545,7 @@ export const products: Product[] = [
     delivery: "Delivered in 2-4 days",
     fit: "One set",
     colors: ["Ivory & Gold"],
+    swatches: createSwatches(["Ivory & Gold"]),
     sizes: ["One size"],
     availability: "In stock",
     details: ["Pocket square", "Cufflinks", "Lapel pin", "Gift-ready case"],
@@ -518,6 +572,7 @@ export const newInPlaceholderProducts: Product[] = [
     delivery: "Arriving soon",
     fit: "Tailored modern fit",
     colors: ["Charcoal Windowpane"],
+    swatches: createSwatches(["Charcoal Windowpane"]),
     sizes: ["48", "50", "52", "54"],
     availability: "Arriving soon",
     details: ["Double-breasted front", "Windowpane pattern", "Peak lapel", "Editorial placeholder"],
@@ -542,6 +597,7 @@ export const newInPlaceholderProducts: Product[] = [
     delivery: "Arriving soon",
     fit: "Tailored evening fit",
     colors: ["Midnight Velvet"],
+    swatches: createSwatches(["Midnight Velvet"]),
     sizes: ["48", "50", "52", "54"],
     availability: "Arriving soon",
     details: ["Velvet cloth", "Satin lapel", "Eveningwear finish", "Editorial placeholder"],
@@ -566,6 +622,7 @@ export const newInPlaceholderProducts: Product[] = [
     delivery: "Arriving soon",
     fit: "Structured evening fit",
     colors: ["Oxblood"],
+    swatches: createSwatches(["Oxblood"]),
     sizes: ["48", "50", "52", "54"],
     availability: "Arriving soon",
     details: ["Dinner jacket silhouette", "Contrast lapel", "Formal eveningwear", "Editorial placeholder"],
@@ -590,6 +647,7 @@ export const newInPlaceholderProducts: Product[] = [
     delivery: "Arriving soon",
     fit: "Structured slim fit",
     colors: ["Forest Pinstripe"],
+    swatches: createSwatches(["Forest Pinstripe"]),
     sizes: ["48", "50", "52", "54"],
     availability: "Arriving soon",
     details: ["Double-breasted front", "Pinstripe finish", "Brass buttons", "Editorial placeholder"],

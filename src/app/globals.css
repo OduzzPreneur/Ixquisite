@@ -894,6 +894,23 @@ main {
   color: var(--ink-muted);
 }
 
+.product-detail__swatch-stack {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.product-detail__swatch-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.product-detail__swatch-label {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
 .product-card__actions {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
