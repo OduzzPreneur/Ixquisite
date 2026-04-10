@@ -72,7 +72,9 @@ export function ProductDetailExperience({
   error?: string;
   message?: string;
 }) {
-  const swatches = product.swatches?.length ? product.swatches : product.colors.map((color) => ({ label: color, value: color } satisfies ProductSwatch));
+  const swatches: ProductSwatch[] = product.swatches?.length
+    ? product.swatches
+    : product.colors.map((color) => ({ label: color, value: color }));
   const [selectedColor, setSelectedColor] = useState(initialColor || swatches[0]?.label || "");
   const [selectedSize, setSelectedSize] = useState(initialSize || product.sizes[0] || "");
   const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? swatches[0];
