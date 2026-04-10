@@ -9,7 +9,7 @@ import type {
   Product,
   Tone,
 } from "@/data/site";
-import { ProductCardCommerce } from "@/components/product-card-commerce";
+import { InteractiveProductCard } from "@/components/interactive-product-card";
 import { getVisualAsset, type VisualAsset } from "@/lib/visual-assets";
 
 function cx(...parts: Array<string | false | null | undefined>) {
@@ -234,18 +234,14 @@ export function ProductCard({
   wishlistNext?: string;
 }) {
   return (
-    <article className="product-card">
-      <Link href={`/product/${product.slug}`}>
-        <VisualPanel
-          title={product.title}
-          kicker={product.category}
-          tone={product.tone}
-          size="portrait"
-          image={product.image ?? getVisualAsset(product.title)}
-        />
-      </Link>
-      <ProductCardCommerce product={product} wishlistState={wishlistState} wishlistNext={wishlistNext} />
-    </article>
+    <InteractiveProductCard
+      product={product}
+      wishlistState={wishlistState}
+      wishlistNext={wishlistNext}
+      defaultImage={product.image ?? getVisualAsset(product.title)}
+      detailImage={getVisualAsset(`${product.title}::detail`)}
+      styledImage={getVisualAsset(`${product.title}::styled`)}
+    />
   );
 }
 

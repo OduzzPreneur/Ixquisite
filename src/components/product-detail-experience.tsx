@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { addToCartAction } from "@/app/actions/cart";
 import { addToWishlistAction, removeFromWishlistAction } from "@/app/actions/wishlist";
 import type { Product, ProductImage, ProductSwatch } from "@/data/site";
 import { formatPrice } from "@/data/site";
-import { getSwatchBackground, isLightSwatch } from "@/lib/product-swatches";
+import { applySwatchImageFallbacks, getSwatchBackground, isLightSwatch } from "@/lib/product-swatches";
 
 function DetailVisual({
   title,
@@ -72,12 +73,33 @@ export function ProductDetailExperience({
   error?: string;
   message?: string;
 }) {
-  const swatches: ProductSwatch[] = product.swatches?.length
-    ? product.swatches
-    : product.colors.map((color) => ({ label: color, value: color }));
+  const swatches: ProductSwatch[] = applySwatchImageFallbacks(
+    product.swatches?.length
+      ? product.swatches
+      : product.colors.map((color) => ({ label: color, value: color })),
+    [defaultImage, styledImage, detailImage],
+  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
   const [selectedColor, setSelectedColor] = useState(initialColor || swatches[0]?.label || "");
   const [selectedSize, setSelectedSize] = useState(initialSize || product.sizes[0] || "");
   const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? swatches[0];
+  const hasSwatchPreview = swatches.some((swatch) => Boolean(swatch.imageSrc));
+  const currentUrl = useMemo(() => {
+    const params = new URLSearchParams();
+
+    if (selectedColor) {
+      params.set("color", selectedColor);
+    }
+
+    if (selectedSize) {
+      params.set("size", selectedSize);
+    }
+
+    const query = params.toString();
+    return query ? `${pathname}?${query}` : pathname;
+  }, [pathname, selectedColor, selectedSize]);
   const mainImage = selectedSwatch?.imageSrc
     ? {
         src: selectedSwatch.imageSrc,
@@ -85,7 +107,24 @@ export function ProductDetailExperience({
         position: selectedSwatch.imagePosition ?? defaultImage?.position,
       }
     : defaultImage;
-  const currentUrl = selectedColor ? `/product/${product.slug}?color=${encodeURIComponent(selectedColor)}` : `/product/${product.slug}`;
+
+  function syncSelection(nextColor: string, nextSize: string) {
+    const params = new URLSearchParams();
+
+    if (nextColor) {
+      params.set("color", nextColor);
+    }
+
+    if (nextSize) {
+      params.set("size", nextSize);
+    }
+
+    const query = params.toString();
+    const href = query ? `${pathname}?${query}` : pathname;
+    startTransition(() => {
+      router.replace(href, { scroll: false });
+    });
+  }
 
   return (
     <div className="detail-layout">
@@ -122,7 +161,11 @@ export function ProductDetailExperience({
           <input type="hidden" name="selected_color" value={selectedColor} />
           <div className="field">
             <label>Colour</label>
-            <div className="product-detail__swatch-stack">
+            <div className="product-detail__swatch-stack" aria-busy={isPending}>
+              <div className="product-detail__option-head">
+                <span className="product-detail__option-label">Selected colour</span>
+                <span className="product-detail__swatch-label">{selectedSwatch?.label ?? "Choose a colour"}</span>
+              </div>
               <div className="product-detail__swatch-row" role="group" aria-label={`${product.title} colours`}>
                 {swatches.map((swatch) => (
                   <button
@@ -132,16 +175,32 @@ export function ProductDetailExperience({
                     style={{ background: getSwatchBackground(swatch.value) }}
                     aria-label={`Select ${swatch.label}`}
                     aria-pressed={selectedColor === swatch.label}
-                    onClick={() => setSelectedColor(swatch.label)}
+                    onClick={() => {
+                      setSelectedColor(swatch.label);
+                      syncSelection(swatch.label, selectedSize);
+                    }}
                   />
                 ))}
               </div>
-              <span className="product-detail__swatch-label">{selectedColor}</span>
+              <span className="product-detail__swatch-note">
+                {hasSwatchPreview
+                  ? (selectedSwatch?.imageSrc ? "This selection updates the lead image preview." : "This colour keeps the default studio image.")
+                  : "Your selected colour will be carried into cart and wishlist actions."}
+              </span>
             </div>
           </div>
           <div className="field">
             <label htmlFor="selected_size">Size</label>
-            <select id="selected_size" name="selected_size" value={selectedSize} onChange={(event) => setSelectedSize(event.target.value)}>
+            <select
+              id="selected_size"
+              name="selected_size"
+              value={selectedSize}
+              onChange={(event) => {
+                const nextSize = event.target.value;
+                setSelectedSize(nextSize);
+                syncSelection(selectedColor, nextSize);
+              }}
+            >
               {product.sizes.map((size) => (
                 <option key={size} value={size}>
                   {size}

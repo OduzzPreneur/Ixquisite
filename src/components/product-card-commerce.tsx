@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { addToCartAction } from "@/app/actions/cart";
 import { addToWishlistAction } from "@/app/actions/wishlist";
-import type { Product } from "@/data/site";
+import type { Product, ProductSwatch } from "@/data/site";
 import { formatPrice } from "@/data/site";
 import { getSwatchBackground, isLightSwatch } from "@/lib/product-swatches";
 
@@ -27,14 +27,26 @@ export function ProductCardCommerce({
   product,
   wishlistState,
   wishlistNext,
+  swatches: providedSwatches,
+  selectedColor: controlledSelectedColor,
+  onSelectColor,
 }: {
   product: Product;
   wishlistState: "idle" | "saved";
   wishlistNext: string;
+  swatches?: ProductSwatch[];
+  selectedColor?: string;
+  onSelectColor?: (color: string) => void;
 }) {
-  const swatches = product.swatches?.length ? product.swatches : product.colors.map((color) => ({ label: color, value: color }));
+  const swatches: ProductSwatch[] = providedSwatches?.length
+    ? providedSwatches
+    : product.swatches?.length
+      ? product.swatches
+    : product.colors.map((color) => ({ label: color, value: color }));
   const initialSwatch = swatches[0] ?? null;
-  const [selectedColor, setSelectedColor] = useState(initialSwatch?.label ?? "");
+  const [selectedColorState, setSelectedColorState] = useState(initialSwatch?.label ?? "");
+  const selectedColor = controlledSelectedColor ?? selectedColorState;
+  const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? initialSwatch;
   const features = getCardFeatures(product);
   const visibleSizes = getVisibleSizes(product);
   const hiddenSizeCount = Math.max(product.sizes.length - visibleSizes.length, 0);
@@ -62,6 +74,10 @@ export function ProductCardCommerce({
 
       {swatches.length ? (
         <div className="product-card__swatch-block">
+          <div className="product-card__swatch-header">
+            <span className="product-card__option-label">Colour</span>
+            <span className="product-card__swatch-label">{selectedSwatch?.label ?? `${swatches.length} colours`}</span>
+          </div>
           <div className="product-card__swatch-row" role="group" aria-label={`${product.title} colours`}>
             {swatches.slice(0, 4).map((swatch) => (
               <button
@@ -71,12 +87,14 @@ export function ProductCardCommerce({
                 style={{ background: getSwatchBackground(swatch.value) }}
                 aria-label={`Select ${swatch.label}`}
                 aria-pressed={selectedColor === swatch.label}
-                onClick={() => setSelectedColor(swatch.label)}
+                onClick={() => {
+                  setSelectedColorState(swatch.label);
+                  onSelectColor?.(swatch.label);
+                }}
               />
             ))}
             {swatches.length > 4 ? <span className="product-card__swatch-more">+{swatches.length - 4}</span> : null}
           </div>
-          <span className="product-card__swatch-label">{selectedColor || `${swatches.length} colours`}</span>
         </div>
       ) : null}
 

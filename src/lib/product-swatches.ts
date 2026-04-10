@@ -1,5 +1,10 @@
 import type { ProductSwatch } from "@/data/site";
 
+type SwatchImageCandidate = {
+  src: string;
+  position?: string;
+} | null | undefined;
+
 const colorKeywords = [
   { match: "black", value: "#232323" },
   { match: "charcoal", value: "#3f434b" },
@@ -82,6 +87,28 @@ export function ensureProductSwatches(swatches: ProductSwatch[] | null | undefin
   }
 
   return (colors ?? []).map(buildFallbackSwatch);
+}
+
+export function applySwatchImageFallbacks(swatches: ProductSwatch[], images: SwatchImageCandidate[]) {
+  const fallbackImages = images.filter((image): image is NonNullable<SwatchImageCandidate> => Boolean(image?.src));
+
+  if (!swatches.length || !fallbackImages.length) {
+    return swatches;
+  }
+
+  return swatches.map((swatch, index) => {
+    if (swatch.imageSrc) {
+      return swatch;
+    }
+
+    const fallbackImage = fallbackImages[index % fallbackImages.length];
+
+    return {
+      ...swatch,
+      imageSrc: fallbackImage.src,
+      imagePosition: swatch.imagePosition ?? fallbackImage.position,
+    };
+  });
 }
 
 export function isLightSwatch(valueOrLabel: string) {
