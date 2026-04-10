@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BeforeAfterComparison } from "@/components/before-after-comparison";
 import { getHomePageData } from "@/lib/catalog";
 import { getVisualAsset } from "@/lib/visual-assets";
 import {
@@ -85,6 +86,49 @@ export default async function Home() {
           {categories.map((category) => (
             <CategoryTile key={category.slug} category={category} />
           ))}
+        </div>
+      </section>
+
+      <section className="page-section comparison-section">
+        <div className="comparison-section__frame surface-panel">
+          <div className="comparison-section__copy">
+            <p className="eyebrow">The Shift</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              See the Difference
+            </h2>
+            <p className="section-copy" style={{ maxWidth: "38rem" }}>
+              From underdressed to unmistakably refined.
+            </p>
+          </div>
+          <BeforeAfterComparison
+            beforeImage={{
+              src: "/images/ixquisite/slider-before-underdressed.webp",
+              alt: "Before Ixquisite: underdressed and less structured.",
+              position: "center 22%",
+            }}
+            afterImage={{
+              src: "/images/ixquisite/slider-after-confident.webp",
+              alt: "The Ixquisite standard: sharp, confident, and executive.",
+              position: "center 20%",
+            }}
+            beforeLabel="Before Ixquisite"
+            beforeSubLabel="Underdressed"
+            afterLabel="The Ixquisite Standard"
+            afterSubLabel="Sharp, Confident"
+          />
+          <div className="comparison-section__footer">
+            <p className="comparison-section__note">
+              Tailored suits, shirts, ties, and finishing pieces that remove the guesswork from looking sharp.
+            </p>
+            <div className="hero__actions hero__actions--compact">
+              <Link href="/category/suits" className="button">
+                Shop Suits
+              </Link>
+              <Link href="/groom-package" className="pill-link">
+                Explore Groom Package
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
