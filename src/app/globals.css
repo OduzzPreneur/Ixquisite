@@ -2460,7 +2460,7 @@ main {
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 680px) {
   .category-shortcuts__head .section-title {
     font-size: clamp(0.94rem, 3.85vw, 1.16rem);
     letter-spacing: -0.045em;
