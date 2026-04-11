@@ -93,10 +93,10 @@ export default async function Home() {
         <div className="comparison-section__frame surface-panel">
           <div className="comparison-section__copy">
             <p className="eyebrow">The Shift</p>
-            <h2 className="section-title comparison-section__title" style={{ marginTop: "0.55rem" }}>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
               See the Difference
             </h2>
-            <p className="section-copy comparison-section__subcopy" style={{ maxWidth: "38rem" }}>
+            <p className="section-copy" style={{ maxWidth: "38rem" }}>
               From underdressed to unmistakably refined.
             </p>
           </div>
@@ -104,18 +104,17 @@ export default async function Home() {
             beforeImage={{
               src: "/images/ixquisite/slider-before-underdressed.webp",
               alt: "Before Ixquisite: underdressed and less structured.",
-              position: "14% 10%",
+              position: "center 22%",
             }}
             afterImage={{
               src: "/images/ixquisite/slider-after-confident.webp",
               alt: "The Ixquisite standard: sharp, confident, and executive.",
-              position: "64% 8%",
+              position: "center 20%",
             }}
             beforeLabel="Before Ixquisite"
-            beforeSubLabel="Underdressed."
+            beforeSubLabel="Underdressed"
             afterLabel="The Ixquisite Standard"
-            afterSubLabel="Sharp. Confident."
-            initialPosition={38}
+            afterSubLabel="Sharp, Confident"
           />
           <div className="comparison-section__footer">
             <p className="comparison-section__note">
