@@ -1930,45 +1930,6 @@ main {
     --page-gutter: 0.9rem;
   }
 
-  .site-header__inner {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    padding-block: 0.55rem;
-  }
-
-  .site-header__brand {
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  .logo-mark__frame {
-    width: clamp(5.4rem, 26vw, 6.6rem);
-  }
-
-  .mobile-drawer__trigger {
-    min-height: 2.45rem;
-    padding: 0 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .utility-nav {
-    width: 100%;
-    justify-content: space-between;
-    gap: 0.45rem;
-  }
-
-  .utility-nav__link {
-    flex: 1 1 0;
-    min-width: 0;
-    min-height: 2.4rem;
-    padding: 0 0.55rem;
-  }
-
-  .utility-nav__label {
-    font-size: 0.74rem;
-    white-space: nowrap;
-  }
-
   .display-title { font-size: clamp(2.15rem, 10.8vw, 2.7rem); }
   .page-title { font-size: clamp(1.9rem, 9.6vw, 2.5rem); }
   .section-title { font-size: clamp(1.55rem, 7.4vw, 2rem); }
