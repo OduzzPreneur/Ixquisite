@@ -2368,8 +2368,8 @@ main {
     max-width: none;
     font-size: clamp(1.12rem, 3.7vw, 1.55rem);
     letter-spacing: -0.05em;
-    white-space: normal;
-    text-wrap: balance;
+    white-space: nowrap;
+    text-wrap: nowrap;
   }
 
   .category-shortcuts__grid {
@@ -2464,8 +2464,6 @@ main {
   .category-shortcuts__head .section-title {
     font-size: clamp(0.94rem, 3.85vw, 1.16rem);
     letter-spacing: -0.045em;
-    white-space: normal;
-    text-wrap: balance;
   }
 
   .category-shortcuts__grid {
