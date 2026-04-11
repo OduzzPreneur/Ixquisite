@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BeforeAfterComparison } from "@/components/before-after-comparison";
 import { getHomePageData } from "@/lib/catalog";
 import { getVisualAsset } from "@/lib/visual-assets";
 import {
@@ -85,6 +86,52 @@ export default async function Home() {
           {categories.map((category) => (
             <CategoryTile key={category.slug} category={category} />
           ))}
+        </div>
+      </section>
+
+      <section className="page-section comparison-band">
+        <div className="comparison-band__frame surface-panel">
+          <div className="comparison-band__copy">
+            <p className="eyebrow">The Shift</p>
+            <h2 className="section-title comparison-band__title">
+              See the Difference
+            </h2>
+            <p className="section-copy comparison-band__subcopy">
+              From underdressed to unmistakably refined.
+            </p>
+          </div>
+
+          <BeforeAfterComparison
+            beforeImage={{
+              src: "/images/ixquisite/slider-before-underdressed.webp",
+              alt: "Before Ixquisite: underdressed and less structured.",
+              position: "center 12%",
+            }}
+            afterImage={{
+              src: "/images/ixquisite/slider-after-confident.webp",
+              alt: "The Ixquisite standard: sharp, confident, and executive.",
+              position: "center 10%",
+            }}
+            beforeLabel="Before Ixquisite"
+            beforeSubLabel="Underdressed."
+            afterLabel="The Ixquisite Standard"
+            afterSubLabel="Sharp. Confident."
+            initialPosition={52}
+          />
+
+          <div className="comparison-band__footer">
+            <p className="comparison-band__note">
+              Tailored suits, shirts, ties, and finishing pieces that remove the guesswork from looking sharp.
+            </p>
+            <div className="comparison-band__actions">
+              <Link href="/category/suits" className="button comparison-band__button">
+                Shop Suits
+              </Link>
+              <Link href="/groom-package" className="pill-link comparison-band__pill">
+                Explore Groom Package
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
