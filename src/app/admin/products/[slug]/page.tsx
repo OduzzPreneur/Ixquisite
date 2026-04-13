@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { deleteProductAction, upsertProductAction } from "@/app/actions/admin";
-import { AdminNotice, AdminPageHeader, ProductEditorForm } from "@/components/admin-panel";
+import {
+  deleteProductAction,
+  upsertProductAction,
+  uploadProductGalleryImageAction,
+  uploadProductImageAction,
+  uploadProductSwatchImageAction,
+} from "@/app/actions/admin";
+import { AdminNotice, AdminPageHeader, ProductEditorForm, ProductImageUploadPanel } from "@/components/admin-panel";
 import { getCategories, getCollections, getOccasions, getProduct } from "@/lib/catalog";
 
 export default async function AdminProductDetailPage({
@@ -23,6 +29,10 @@ export default async function AdminProductDetailPage({
   if (!product) {
     notFound();
   }
+
+  const uploadProductImage = uploadProductImageAction.bind(null, product.slug);
+  const uploadProductGalleryImage = uploadProductGalleryImageAction.bind(null, product.slug);
+  const uploadProductSwatchImage = uploadProductSwatchImageAction.bind(null, product.slug);
 
   return (
     <div className="cta-stack">
@@ -59,6 +69,13 @@ export default async function AdminProductDetailPage({
           submitLabel="Save product"
         />
       </section>
+
+      <ProductImageUploadPanel
+        product={product}
+        uploadProductImageAction={uploadProductImage}
+        uploadProductGalleryImageAction={uploadProductGalleryImage}
+        uploadProductSwatchImageAction={uploadProductSwatchImage}
+      />
 
       <section className="surface-panel admin-overview-panel">
         <div className="section-head section-head--split">

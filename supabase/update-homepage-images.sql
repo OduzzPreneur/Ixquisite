@@ -4,10 +4,10 @@ insert into public.homepage_settings (id, content)
 values (
   'default',
   jsonb_build_object(
-    'heroVisualTitle', 'Cocoa Double-Breasted Suit',
-    'heroVisualSrc', '/images/ixquisite/cocoa-double-breasted-suit.webp',
-    'heroVisualAlt', 'Model in a cocoa double-breasted suit with a clean ceremony-ready stance.',
-    'heroVisualPosition', 'center 18%',
+    'heroVisualTitle', 'Oxblood Dinner Jacket',
+    'heroVisualSrc', '/images/ixquisite/burgundy-ceremony-jacket-portrait-02.webp',
+    'heroVisualAlt', 'Model in a burgundy ceremony jacket with black lapels and a groom-ready finish.',
+    'heroVisualPosition', 'center 12%',
     'groomFeatureImageTitle', 'Groomsmen Coordination',
     'groomFeatureImageSrc', '/images/ixquisite/groomsmen-suit-group.webp',
     'groomFeatureImageAlt', 'Coordinated groom and groomsmen tailoring in a ceremony lineup.',

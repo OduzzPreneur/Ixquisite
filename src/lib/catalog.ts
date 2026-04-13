@@ -24,9 +24,11 @@ import {
   type Collection,
   type Occasion,
   type Product,
+  type ProductGalleryImage,
   type ProductSwatch,
   type Tone,
 } from "@/data/site";
+import { normalizeProductGalleryImages } from "@/lib/product-gallery";
 import { getHomePageSettings } from "@/lib/homepage";
 import { ensureProductSwatches } from "@/lib/product-swatches";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
@@ -74,6 +76,7 @@ type ProductRow = {
   image_url?: string | null;
   image_alt?: string | null;
   image_position?: string | null;
+  gallery_images?: ProductGalleryImage[] | null;
   product_occasions?: Array<{ occasion_slug: string }> | null;
 };
 
@@ -180,6 +183,7 @@ function mapProduct(row: ProductRow): Product {
           position: row.image_position ?? undefined,
         }
       : undefined,
+    galleryImages: normalizeProductGalleryImages(row.gallery_images),
   };
 }
 
@@ -216,7 +220,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
       supabase
         .from("products")
         .select(
-          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,swatches,sizes,availability,details,card_features,rating_value,review_count,collection_slug,featured_rank,is_new,is_best_seller,complete_the_look,image_url,image_alt,image_position,product_occasions(occasion_slug)",
+          "slug,title,category_slug,price,tone,blurb,description,delivery,fit,colors,swatches,sizes,availability,details,card_features,rating_value,review_count,collection_slug,featured_rank,is_new,is_best_seller,complete_the_look,image_url,image_alt,image_position,gallery_images,product_occasions(occasion_slug)",
         )
         .order("featured_rank", { ascending: true })
         .order("title", { ascending: true }),

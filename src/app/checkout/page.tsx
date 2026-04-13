@@ -96,7 +96,7 @@ export default async function CheckoutPage({
             <div className="pill-row" style={{ marginTop: "1rem" }}>
               <span className="pill-link">Guest checkout enabled</span>
               <span className="pill-link">Secure payment flow</span>
-              <span className="pill-link">Returns guidance visible</span>
+              <span className="pill-link">Measurements collected after payment</span>
             </div>
             <button
               type="submit"
@@ -115,8 +115,7 @@ export default async function CheckoutPage({
                   <div>
                     <strong>{item.product.title}</strong>
                     <p className="muted">
-                      {item.quantity} × {item.selectedSize ?? "Standard"}
-                      {item.selectedColor ? ` · ${item.selectedColor}` : ""}
+                      {item.quantity} × {item.selectedColor ?? "Default colour"}
                     </p>
                   </div>
                   <span>{formatPrice(item.lineTotal)}</span>

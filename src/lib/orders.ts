@@ -23,6 +23,18 @@ export type CheckoutPayload = {
   paymentMethod: string;
 };
 
+export type MeasurementStatus = "pending_measurements" | "needs_assistance" | "submitted";
+
+export type OrderMeasurements = {
+  chest?: string;
+  shoulder?: string;
+  sleeve?: string;
+  waist?: string;
+  hips?: string;
+  inseam?: string;
+  height?: string;
+};
+
 type StoredOrder = {
   id: string;
   reference: string;
@@ -38,6 +50,9 @@ type StoredOrder = {
   shipping_address: string | null;
   shipping_method: string | null;
   payment_method: string | null;
+  measurement_status: MeasurementStatus;
+  measurement_notes: string | null;
+  measurements: OrderMeasurements | null;
   currency: string;
   paid_at: string | null;
   created_at: string;
@@ -66,6 +81,32 @@ export type PaymentSummary = {
   detail: string;
   helper: string;
 };
+
+export type OrderMeasurementUpdatePayload = {
+  orderId: string;
+  reference: string;
+  email: string;
+  status: MeasurementStatus;
+  notes: string;
+  measurements: OrderMeasurements;
+};
+
+export function getMeasurementStatusLabel(status: string) {
+  switch (status) {
+    case "submitted":
+      return "Measurements submitted";
+    case "needs_assistance":
+      return "Measurement help requested";
+    default:
+      return "Measurements pending";
+  }
+}
+
+function normalizeMeasurements(measurements: OrderMeasurements) {
+  return Object.fromEntries(
+    Object.entries(measurements).filter((entry): entry is [string, string] => Boolean(entry[1]?.trim())),
+  ) as OrderMeasurements;
+}
 
 function requirePaymentsReady() {
   if (!hasSupabaseAdminConfig()) {
@@ -183,6 +224,9 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
       shipping_address: payload.shippingAddress,
       shipping_method: payload.shippingMethod,
       payment_method: payload.paymentMethod,
+      measurement_status: "pending_measurements",
+      measurement_notes: null,
+      measurements: {},
       status: "pending_payment",
       payment_status: "initialized",
       currency: "NGN",
@@ -289,6 +333,9 @@ export async function getTrackedOrder(reference: string, email?: string | null) 
       shipping_method: null,
       payment_method: "paystack",
       currency: "NGN",
+      measurement_status: "pending_measurements",
+      measurement_notes: null,
+      measurements: null,
       paid_at: null,
       created_at: new Date().toISOString(),
       user_id: null,
@@ -381,6 +428,9 @@ export async function getOrdersForCurrentUser() {
       shipping_address: null,
       shipping_method: null,
       payment_method: "paystack",
+      measurement_status: "pending_measurements",
+      measurement_notes: null,
+      measurements: null,
       currency: "NGN",
       paid_at: null,
       created_at: new Date().toISOString(),
@@ -427,6 +477,9 @@ export async function getOrderForCurrentUser(orderId: string) {
       shipping_address: null,
       shipping_method: null,
       payment_method: "paystack",
+      measurement_status: "pending_measurements",
+      measurement_notes: null,
+      measurements: null,
       currency: "NGN",
       paid_at: null,
       created_at: new Date().toISOString(),
@@ -508,6 +561,57 @@ export async function reorderItemsFromOrder(orderId: string) {
   }
 
   return { order, addedCount, unavailableCount };
+}
+
+export async function submitOrderMeasurements(payload: OrderMeasurementUpdatePayload) {
+  const admin = createSupabaseAdminClient();
+
+  if (!admin) {
+    throw new Error("Order measurements require Supabase admin access.");
+  }
+
+  const user = await getAuthenticatedUser();
+  const normalizedEmail = payload.email.trim().toLowerCase();
+  const normalizedMeasurements = normalizeMeasurements(payload.measurements);
+  const normalizedNotes = payload.notes.trim();
+
+  if (payload.status === "submitted" && !Object.keys(normalizedMeasurements).length && !normalizedNotes) {
+    throw new Error("Add at least one measurement or a fit note before submitting.");
+  }
+
+  let query = admin
+    .from("orders")
+    .select("id,user_id,email,reference")
+    .eq("id", payload.orderId)
+    .eq("reference", payload.reference)
+    .limit(1);
+
+  if (user) {
+    query = query.eq("user_id", user.id);
+  } else {
+    query = query.ilike("email", normalizedEmail);
+  }
+
+  const { data: order } = await query.maybeSingle<{ id: string; user_id: string | null; email: string; reference: string }>();
+
+  if (!order) {
+    throw new Error("Order not found for measurement update.");
+  }
+
+  const { error } = await admin
+    .from("orders")
+    .update({
+      measurement_status: payload.status,
+      measurement_notes: normalizedNotes || null,
+      measurements: normalizedMeasurements,
+    })
+    .eq("id", order.id);
+
+  if (error) {
+    throw new Error(error.message || "Unable to save measurements.");
+  }
+
+  return order.id;
 }
 
 export async function finalizePaystackPayment(reference: string) {
@@ -613,4 +717,24 @@ export async function getPaymentSummariesForCurrentUser(): Promise<PaymentSummar
       helper: "Stored payment methods are represented as payment history only. Raw card details are not retained in Ixquisite.",
     };
   });
+}
+
+export async function getRecentOrdersForAdmin(limit = 6) {
+  if (!hasSupabaseAdminConfig()) {
+    return [] as Array<Pick<StoredOrder, "id" | "reference" | "full_name" | "email" | "total" | "status" | "payment_status" | "measurement_status" | "created_at">>;
+  }
+
+  const admin = createSupabaseAdminClient();
+
+  if (!admin) {
+    return [] as Array<Pick<StoredOrder, "id" | "reference" | "full_name" | "email" | "total" | "status" | "payment_status" | "measurement_status" | "created_at">>;
+  }
+
+  const { data } = await admin
+    .from("orders")
+    .select("id,reference,full_name,email,total,status,payment_status,measurement_status,created_at")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return (data as Array<Pick<StoredOrder, "id" | "reference" | "full_name" | "email" | "total" | "status" | "payment_status" | "measurement_status" | "created_at">> | null) ?? [];
 }

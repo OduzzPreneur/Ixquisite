@@ -1,16 +1,21 @@
 import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin-panel";
+import { formatPrice } from "@/data/site";
 import { getCategories, getCollections, getHomePageData, getLookbookLooks, getOccasions, getProducts } from "@/lib/catalog";
+import { getMeasurementStatusLabel, getRecentOrdersForAdmin } from "@/lib/orders";
 
 export default async function AdminOverviewPage() {
-  const [products, categories, collections, occasions, homepageData, lookbookLooks] = await Promise.all([
+  const [products, categories, collections, occasions, homepageData, lookbookLooks, recentOrders] = await Promise.all([
     getProducts(),
     getCategories(),
     getCollections(),
     getOccasions(),
     getHomePageData(),
     getLookbookLooks(),
+    getRecentOrdersForAdmin(),
   ]);
+  const measurementOrders = recentOrders.filter((order) => order.payment_status === "paid" || order.status === "confirmed");
+  const pendingMeasurementCount = measurementOrders.filter((order) => order.measurement_status !== "submitted").length;
 
   return (
     <div className="cta-stack">
@@ -45,6 +50,12 @@ export default async function AdminOverviewPage() {
             Edit homepage
           </Link>
         </article>
+        <article className="surface-panel admin-summary-card">
+          <span className="eyebrow">Measurements</span>
+          <strong>{pendingMeasurementCount}</strong>
+          <p>Recent paid orders still waiting for measurements or direct fit assistance.</p>
+          <span className="pill-link">Tracked from confirmation flow</span>
+        </article>
       </section>
 
       <section className="surface-panel admin-overview-panel">
@@ -77,6 +88,40 @@ export default async function AdminOverviewPage() {
             <strong>{homepageData.settings.finalCtaTitle}</strong>
           </div>
         </div>
+      </section>
+
+      <section className="surface-panel admin-overview-panel">
+        <div className="section-head section-head--split">
+          <div>
+            <p className="eyebrow">Order follow-up</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Recent measurement status
+            </h2>
+          </div>
+          <p className="section-copy">
+            This gives the team a direct view of which new orders still need fit details after payment.
+          </p>
+        </div>
+        {measurementOrders.length ? (
+          <div className="table-like">
+            {measurementOrders.map((order) => (
+              <article key={order.id}>
+                <div>
+                  <strong>{order.reference}</strong>
+                  <p className="section-copy" style={{ marginTop: "0.45rem" }}>
+                    {order.full_name} · {order.email}
+                  </p>
+                </div>
+                <div className="table-meta">
+                  <span className="muted">{getMeasurementStatusLabel(order.measurement_status)}</span>
+                  <span>{formatPrice(order.total)}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="section-copy">No paid or confirmed orders are waiting for measurement follow-up right now.</p>
+        )}
       </section>
 
       <section className="surface-panel admin-overview-panel">

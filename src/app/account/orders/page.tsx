@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AccountShell } from "@/components/page-templates";
 import { formatPrice } from "@/data/site";
-import { getOrdersForCurrentUser } from "@/lib/orders";
+import { getMeasurementStatusLabel, getOrdersForCurrentUser } from "@/lib/orders";
 
 export default async function AccountOrdersPage() {
   const orders = await getOrdersForCurrentUser();
@@ -14,7 +14,7 @@ export default async function AccountOrdersPage() {
             <article key={order.id}>
               <div>
                 <strong>{order.reference}</strong>
-                <p className="muted">{order.status} · {order.payment_status}</p>
+                <p className="muted">{order.status} · {order.payment_status} · {getMeasurementStatusLabel(order.measurement_status)}</p>
               </div>
               <div className="table-meta">
                 <span>{formatPrice(order.total)}</span>

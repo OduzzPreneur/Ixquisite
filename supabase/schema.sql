@@ -95,6 +95,7 @@ create table if not exists public.products (
   fit text not null,
   colors text[] not null default '{}',
   swatches jsonb not null default '[]'::jsonb,
+  gallery_images jsonb not null default '[]'::jsonb,
   sizes text[] not null default '{}',
   availability text not null,
   details text[] not null default '{}',
@@ -113,6 +114,7 @@ alter table public.products add column if not exists image_url text;
 alter table public.products add column if not exists image_alt text;
 alter table public.products add column if not exists image_position text;
 alter table public.products add column if not exists swatches jsonb not null default '[]'::jsonb;
+alter table public.products add column if not exists gallery_images jsonb not null default '[]'::jsonb;
 alter table public.products add column if not exists card_features text[] not null default '{}';
 alter table public.products add column if not exists rating_value numeric(2,1) not null default 4.8;
 alter table public.products add column if not exists review_count integer not null default 0;
@@ -215,6 +217,9 @@ create table if not exists public.orders (
   payment_method text,
   status text not null default 'pending_payment',
   payment_status text not null default 'initialized',
+  measurement_status text not null default 'pending_measurements',
+  measurement_notes text,
+  measurements jsonb not null default '{}'::jsonb,
   currency text not null default 'NGN',
   subtotal integer not null default 0,
   delivery_fee integer not null default 0,
@@ -238,6 +243,10 @@ create table if not exists public.order_items (
   line_total integer not null,
   created_at timestamptz not null default timezone('utc', now())
 );
+
+alter table public.orders add column if not exists measurement_status text not null default 'pending_measurements';
+alter table public.orders add column if not exists measurement_notes text;
+alter table public.orders add column if not exists measurements jsonb not null default '{}'::jsonb;
 
 create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),

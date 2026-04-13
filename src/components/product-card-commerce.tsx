@@ -1,6 +1,4 @@
 "use client";
-
-import Link from "next/link";
 import { useState } from "react";
 import { addToCartAction } from "@/app/actions/cart";
 import { addToWishlistAction } from "@/app/actions/wishlist";
@@ -11,10 +9,6 @@ import { getSwatchBackground, isLightSwatch } from "@/lib/product-swatches";
 function getCardFeatures(product: Product) {
   const features = product.cardFeatures?.length ? product.cardFeatures : [product.fit, ...product.details].filter(Boolean);
   return features.slice(0, 2);
-}
-
-function getVisibleSizes(product: Product) {
-  return product.sizes.slice(0, 4);
 }
 
 function renderRatingStars(value: number) {
@@ -48,12 +42,6 @@ export function ProductCardCommerce({
   const selectedColor = controlledSelectedColor ?? selectedColorState;
   const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? initialSwatch;
   const features = getCardFeatures(product);
-  const visibleSizes = getVisibleSizes(product);
-  const hiddenSizeCount = Math.max(product.sizes.length - visibleSizes.length, 0);
-  const hasSingleSize = product.sizes.length <= 1;
-  const quickAddSize = hasSingleSize ? (product.sizes[0] ?? "") : "";
-  const productHref = selectedColor ? `/product/${product.slug}?color=${encodeURIComponent(selectedColor)}` : `/product/${product.slug}`;
-
   return (
     <div className="product-card__meta">
       <div className="product-card__topline">
@@ -98,33 +86,15 @@ export function ProductCardCommerce({
         </div>
       ) : null}
 
-      {product.sizes.length ? (
-        <div className="product-card__sizes" aria-label={`${product.title} sizes`}>
-          {visibleSizes.map((size) => (
-            <span key={size} className="product-card__size-chip">
-              {size}
-            </span>
-          ))}
-          {hiddenSizeCount ? <span className="product-card__size-chip product-card__size-chip--more">+{hiddenSizeCount}</span> : null}
-        </div>
-      ) : null}
-
       <div className="product-card__actions">
-        {hasSingleSize ? (
-          <form action={addToCartAction}>
-            <input type="hidden" name="product_slug" value={product.slug} />
-            <input type="hidden" name="quantity" value="1" />
-            <input type="hidden" name="selected_size" value={quickAddSize} />
-            <input type="hidden" name="selected_color" value={selectedColor} />
-            <button type="submit" className="button product-card__button">
-              Add to Cart
-            </button>
-          </form>
-        ) : (
-          <Link href={productHref} className="button product-card__button">
-            Choose Size
-          </Link>
-        )}
+        <form action={addToCartAction}>
+          <input type="hidden" name="product_slug" value={product.slug} />
+          <input type="hidden" name="quantity" value="1" />
+          <input type="hidden" name="selected_color" value={selectedColor} />
+          <button type="submit" className="button product-card__button">
+            Add to Cart
+          </button>
+        </form>
 
         {wishlistState === "saved" ? (
           <span className="pill-link product-card__save" aria-label="Saved to wishlist">

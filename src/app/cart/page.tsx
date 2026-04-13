@@ -44,8 +44,7 @@ export default async function CartPage({
                     <div>
                       <strong>{item.product.title}</strong>
                       <p className="muted">
-                        {item.selectedSize ? `Size ${item.selectedSize}` : "Standard"}
-                        {item.selectedColor ? ` · ${item.selectedColor}` : ""}
+                        {item.selectedColor ? `Colour · ${item.selectedColor}` : "Colour locked to product default"}
                       </p>
                       <div className="hero__actions hero__actions--compact" style={{ marginTop: "0.8rem" }}>
                         <form action={updateCartItemQuantityAction}>
@@ -74,7 +73,7 @@ export default async function CartPage({
                 <div>
                   <h2 className="minor-title">Your cart is empty.</h2>
                   <p className="body-copy" style={{ marginTop: "0.8rem" }}>
-                    Add a suit, shirt, or accessory from any product page to start building the order.
+                    Add a suit, shirt, or accessory from any product page to start building the order. Measurements are handled after checkout.
                   </p>
                   <Link href="/category/suits" className="button" style={{ marginTop: "1rem" }}>
                     Shop suits

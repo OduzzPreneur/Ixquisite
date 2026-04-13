@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { updateHomepageSettingsAction } from "@/app/actions/admin";
+import { updateHomepageSettingsAction, uploadHomepageImageAction } from "@/app/actions/admin";
 import { AdminNotice, AdminPageHeader, HomepageEditorForm } from "@/components/admin-panel";
 import { getCollections, getLookbookLooks } from "@/lib/catalog";
 import { getHomePageSettings } from "@/lib/homepage";
@@ -9,6 +9,8 @@ export default async function AdminHomepagePage({
 }: {
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
+  const uploadHeroImage = uploadHomepageImageAction.bind(null, "hero");
+  const uploadGroomImage = uploadHomepageImageAction.bind(null, "groom");
   const [params, settings, collections, lookbookLooks] = await Promise.all([
     searchParams,
     getHomePageSettings(),
@@ -44,6 +46,8 @@ export default async function AdminHomepagePage({
           collections={collections}
           lookbookLooks={lookbookLooks.map((look) => ({ slug: look.slug, title: look.title }))}
           action={updateHomepageSettingsAction}
+          uploadHeroImageAction={uploadHeroImage}
+          uploadGroomImageAction={uploadGroomImage}
         />
       </section>
     </div>

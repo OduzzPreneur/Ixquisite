@@ -13,6 +13,14 @@ export type ProductSwatch = {
   imagePosition?: string;
 };
 
+export type ProductGalleryImage = {
+  label: string;
+  src: string;
+  alt: string;
+  position?: string;
+  swatchLabel?: string;
+};
+
 export type Category = {
   slug: string;
   title: string;
@@ -68,6 +76,7 @@ export type Product = {
   occasions: string[];
   completeTheLook: string[];
   image?: ProductImage;
+  galleryImages?: ProductGalleryImage[];
 };
 
 function fallbackSwatchValue(label: string) {
@@ -184,10 +193,10 @@ export const defaultHomePageSettings: HomePageSettings = {
   heroPrimaryHref: "/category/suits",
   heroSecondaryLabel: "Explore Collection",
   heroSecondaryHref: "/collection/boardroom-edit",
-  heroVisualTitle: "Cocoa Double-Breasted Suit",
-  heroVisualSrc: "/images/ixquisite/cocoa-double-breasted-suit.webp",
-  heroVisualAlt: "Model in a cocoa double-breasted suit with a clean ceremony-ready stance.",
-  heroVisualPosition: "center 18%",
+  heroVisualTitle: "Oxblood Dinner Jacket",
+  heroVisualSrc: "/images/ixquisite/burgundy-ceremony-jacket-portrait-02.webp",
+  heroVisualAlt: "Model in a burgundy ceremony jacket with black lapels and a groom-ready finish.",
+  heroVisualPosition: "center 12%",
   heroMeta: ["Premium corporate wear", "Delivered in a few days", "Fit guidance available"],
   heroNoteTitle: "Hero product direction",
   heroNoteCopy: "Refined, suit-led, and image-dominant without discount-store noise.",

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Category, Collection, HomePageSettings, Occasion, Product, Tone } from "@/data/site";
+import { serializeGalleryImages } from "@/lib/product-gallery";
 import { serializeSwatches } from "@/lib/product-swatches";
 
 const toneOptions: Tone[] = ["navy", "espresso", "stone", "slate", "ink", "gold"];
@@ -54,6 +55,33 @@ export function AdminNotice({ error, message }: { error?: string; message?: stri
       {error ? <p className="auth-notice auth-notice--error">{error}</p> : null}
       {message ? <p className="auth-notice auth-notice--success">{message}</p> : null}
     </>
+  );
+}
+
+function AdminImageUploadField({
+  action,
+  label,
+  copy,
+  inputName,
+}: {
+  action: (formData: FormData) => Promise<void>;
+  label: string;
+  copy: string;
+  inputName: string;
+}) {
+  return (
+    <div className="admin-upload-form">
+      <label className="field">
+        <span>{label}</span>
+        <input type="file" name={inputName} accept="image/png,image/jpeg,image/webp,image/avif" />
+      </label>
+      <p className="admin-field-hint">{copy}</p>
+      <div className="hero__actions hero__actions--compact">
+        <button type="submit" formAction={action} className="pill-link">
+          Upload image
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -393,7 +421,7 @@ export function ProductEditorForm({
         <AdminFormSectionHeader
           eyebrow="Visuals"
           title="Product imagery"
-          copy="Use paths inside `public/`. These fields feed the product card, product page, and any featured merchandising placements."
+          copy="Use a local `/images/...` path or a Supabase Storage public URL. These fields feed the product card, product page, and featured merchandising placements."
         />
         <div className="form-grid">
           <div className="field field--span-2">
@@ -423,6 +451,16 @@ export function ProductEditorForm({
               placeholder="center 18%"
             />
           </div>
+          <div className="field field--span-2">
+            <label htmlFor="gallery_images">Gallery images</label>
+            <textarea
+              id="gallery_images"
+              name="gallery_images"
+              defaultValue={serializeGalleryImages(product?.galleryImages)}
+              placeholder={"Front view | /images/ixquisite/cocoa-double-breasted-suit.webp | Model in the cocoa double-breasted suit | center 18%\nStyled look | /images/ixquisite/cocoa-double-breasted-suit-styled.webp | Full-length styling of the cocoa double-breasted suit | center 18%\nFabric detail | /images/ixquisite/cocoa-double-breasted-suit-detail.webp | Close detail of the cocoa suit's lapel and tie | center 18%\nGraphite front | /images/ixquisite/midnight-commander-suit-graphite.webp | Midnight Commander Suit in Graphite | center 18% | Graphite"}
+            />
+            <p className="admin-field-hint">One row per image: label | image path | alt text | optional image position | optional swatch label. Add a swatch label only when the image belongs to one colour.</p>
+          </div>
         </div>
       </section>
       <div className="hero__actions">
@@ -439,11 +477,15 @@ export function HomepageEditorForm({
   collections,
   lookbookLooks,
   action,
+  uploadHeroImageAction,
+  uploadGroomImageAction,
 }: {
   settings: HomePageSettings;
   collections: Collection[];
   lookbookLooks: Array<{ slug: string; title: string }>;
   action: (formData: FormData) => Promise<void>;
+  uploadHeroImageAction: (formData: FormData) => Promise<void>;
+  uploadGroomImageAction: (formData: FormData) => Promise<void>;
 }) {
   return (
     <form action={action} className="cta-stack admin-form">
@@ -490,6 +532,15 @@ export function HomepageEditorForm({
           <div className="field field--span-2">
             <label htmlFor="hero_visual_src">Visual image path</label>
             <input id="hero_visual_src" name="hero_visual_src" defaultValue={settings.heroVisualSrc} />
+            <p className="admin-field-hint">Use a local `/images/...` path or a Supabase Storage public URL.</p>
+          </div>
+          <div className="field field--span-2">
+            <AdminImageUploadField
+              action={uploadHeroImageAction}
+              label="Upload hero image"
+              copy="Upload directly from your phone or laptop. The uploaded file will replace the Hero image path automatically."
+              inputName="hero_image_file"
+            />
           </div>
           <div className="field">
             <label htmlFor="hero_visual_alt">Visual alt</label>
@@ -580,6 +631,15 @@ export function HomepageEditorForm({
               id="groom_feature_image_src"
               name="groom_feature_image_src"
               defaultValue={settings.groomFeatureImageSrc}
+            />
+            <p className="admin-field-hint">Use a local `/images/...` path or a Supabase Storage public URL.</p>
+          </div>
+          <div className="field field--span-2">
+            <AdminImageUploadField
+              action={uploadGroomImageAction}
+              label="Upload groom feature image"
+              copy="Upload directly from your phone or laptop. The uploaded file will replace the Groom feature image path automatically."
+              inputName="groom_image_file"
             />
           </div>
           <div className="field">
@@ -697,5 +757,189 @@ export function HomepageEditorForm({
         </button>
       </div>
     </form>
+  );
+}
+
+export function ProductImageUploadPanel({
+  product,
+  uploadProductImageAction,
+  uploadProductGalleryImageAction,
+  uploadProductSwatchImageAction,
+}: {
+  product: Product;
+  uploadProductImageAction: (formData: FormData) => Promise<void>;
+  uploadProductGalleryImageAction: (formData: FormData) => Promise<void>;
+  uploadProductSwatchImageAction: (formData: FormData) => Promise<void>;
+}) {
+  return (
+    <div className="cta-stack">
+      <section className="surface-panel admin-overview-panel">
+        <div className="section-head section-head--split">
+          <div>
+            <p className="eyebrow">Product uploads</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Main image
+            </h2>
+          </div>
+          <p className="section-copy">
+            Upload directly from your phone or laptop. The product image fields will update automatically.
+          </p>
+        </div>
+        <form action={uploadProductImageAction} className="form-grid">
+          <div className="field field--span-2">
+            <label htmlFor="product_image_file">Image file</label>
+            <input
+              id="product_image_file"
+              name="product_image_file"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/avif"
+              required
+            />
+          </div>
+          <div className="field field--span-2">
+            <label htmlFor="product_image_alt">Image alt</label>
+            <input
+              id="product_image_alt"
+              name="product_image_alt"
+              defaultValue={product.image?.alt ?? ""}
+              placeholder="Model in a sharply tailored double-breasted suit."
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="product_image_position">Image position</label>
+            <input
+              id="product_image_position"
+              name="product_image_position"
+              defaultValue={product.image?.position ?? ""}
+              placeholder="center 18%"
+            />
+          </div>
+          <div className="hero__actions hero__actions--compact field field--span-2">
+            <button type="submit" className="button">
+              Upload main image
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="surface-panel admin-overview-panel">
+        <div className="section-head section-head--split">
+          <div>
+            <p className="eyebrow">Product uploads</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Gallery images
+            </h2>
+          </div>
+          <p className="section-copy">
+            Upload one gallery image at a time. It will be appended to the existing gallery list for this product.
+          </p>
+        </div>
+        <form action={uploadProductGalleryImageAction} className="form-grid">
+          <div className="field field--span-2">
+            <label htmlFor="gallery_image_file">Image file</label>
+            <input
+              id="gallery_image_file"
+              name="gallery_image_file"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/avif"
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="gallery_image_label">Label</label>
+            <input
+              id="gallery_image_label"
+              name="gallery_image_label"
+              placeholder="Front view"
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="gallery_image_position">Image position</label>
+            <input
+              id="gallery_image_position"
+              name="gallery_image_position"
+              placeholder="center 18%"
+            />
+          </div>
+          <div className="field field--span-2">
+            <label htmlFor="gallery_image_alt">Image alt</label>
+            <input
+              id="gallery_image_alt"
+              name="gallery_image_alt"
+              placeholder={`${product.title} front view`}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="gallery_image_swatch_label">Swatch label</label>
+            <input
+              id="gallery_image_swatch_label"
+              name="gallery_image_swatch_label"
+              placeholder="Optional, e.g. Midnight Navy"
+            />
+          </div>
+          <div className="hero__actions hero__actions--compact field field--span-2">
+            <button type="submit" className="button">
+              Upload gallery image
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="surface-panel admin-overview-panel">
+        <div className="section-head section-head--split">
+          <div>
+            <p className="eyebrow">Product uploads</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Swatch preview images
+            </h2>
+          </div>
+          <p className="section-copy">
+            Upload a preview image for a specific swatch. This image is used when that swatch is selected on cards and product pages.
+          </p>
+        </div>
+        {product.swatches.length ? (
+          <form action={uploadProductSwatchImageAction} className="form-grid">
+            <div className="field">
+              <label htmlFor="swatch_image_label">Swatch</label>
+              <select id="swatch_image_label" name="swatch_image_label" defaultValue={product.swatches[0]?.label ?? ""}>
+                {product.swatches.map((swatch) => (
+                  <option key={swatch.label} value={swatch.label}>
+                    {swatch.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="swatch_image_position">Image position</label>
+              <input
+                id="swatch_image_position"
+                name="swatch_image_position"
+                placeholder="center 18%"
+              />
+            </div>
+            <div className="field field--span-2">
+              <label htmlFor="swatch_image_file">Image file</label>
+              <input
+                id="swatch_image_file"
+                name="swatch_image_file"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/avif"
+                required
+              />
+            </div>
+            <div className="hero__actions hero__actions--compact field field--span-2">
+              <button type="submit" className="button">
+                Upload swatch image
+              </button>
+            </div>
+          </form>
+        ) : (
+          <p className="section-copy">Add swatches in the product form first, then upload swatch-specific preview images here.</p>
+        )}
+      </section>
+    </div>
   );
 }

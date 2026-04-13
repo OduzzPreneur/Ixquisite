@@ -2,51 +2,167 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { addToCartAction } from "@/app/actions/cart";
 import { addToWishlistAction, removeFromWishlistAction } from "@/app/actions/wishlist";
-import type { Product, ProductImage, ProductSwatch } from "@/data/site";
+import type { Product, ProductGalleryImage, ProductImage, ProductSwatch } from "@/data/site";
 import { formatPrice } from "@/data/site";
+import { resolveProductGalleryImages } from "@/lib/product-gallery";
 import { applySwatchImageFallbacks, getSwatchBackground, isLightSwatch } from "@/lib/product-swatches";
 
-function DetailVisual({
-  title,
-  kicker,
-  tone,
-  size,
-  image,
-  preload = false,
+function ProductMediaGallery({
+  images,
+  product,
+  activeImage,
+  onSelectImage,
+  onOpenLightbox,
 }: {
-  title: string;
-  kicker: string;
-  tone: Product["tone"];
-  size: "portrait" | "wide";
-  image?: ProductImage;
-  preload?: boolean;
+  images: ProductGalleryImage[];
+  product: Product;
+  activeImage?: ProductGalleryImage;
+  onSelectImage: (image: ProductGalleryImage) => void;
+  onOpenLightbox: () => void;
 }) {
   return (
-    <div className={`visual-panel tone-${tone} visual-panel--${size}${image ? " visual-panel--with-image" : ""}`}>
-      {image ? (
-        <>
-          <Image
-            src={image.src}
-            alt={image.alt}
-            fill
-            preload={preload}
-            loading={preload ? "eager" : undefined}
-            sizes={size === "portrait" ? "(max-width: 1100px) 100vw, (max-width: 1440px) 33vw, 24vw" : "(max-width: 1100px) 100vw, 28vw"}
-            className="visual-panel__image"
-            style={image.position ? { objectPosition: image.position } : undefined}
-          />
-          <span className="visual-panel__scrim" />
-        </>
-      ) : (
-        <span className="visual-panel__line" />
-      )}
-      <div className="visual-panel__content">
-        <span className="visual-panel__kicker">{kicker}</span>
-        <h3 className="visual-panel__title">{title}</h3>
+    <div className="product-gallery">
+      <div className="product-gallery__thumbs" aria-label={`${product.title} image gallery`}>
+        {images.map((image) => {
+          const isActive = activeImage?.src === image.src && activeImage?.label === image.label;
+
+          return (
+            <button
+              key={`${image.label}-${image.src}`}
+              type="button"
+              className={`product-gallery__thumb${isActive ? " product-gallery__thumb--active" : ""}`}
+              onMouseEnter={() => onSelectImage(image)}
+              onFocus={() => onSelectImage(image)}
+              onClick={() => onSelectImage(image)}
+              aria-label={`Show ${image.label}`}
+              aria-pressed={isActive}
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="96px"
+                className="product-gallery__thumb-image"
+                style={image.position ? { objectPosition: image.position } : undefined}
+              />
+            </button>
+          );
+        })}
+      </div>
+
+      <button type="button" className="product-gallery__main" onClick={onOpenLightbox}>
+        {activeImage ? (
+          <>
+            <Image
+              src={activeImage.src}
+              alt={activeImage.alt}
+              fill
+              preload
+              loading="eager"
+              sizes="(max-width: 1100px) 100vw, 48vw"
+              className="product-gallery__main-image"
+              style={activeImage.position ? { objectPosition: activeImage.position } : undefined}
+            />
+            <span className="product-gallery__main-scrim" />
+          </>
+        ) : null}
+        <span className="product-gallery__view-pill">View gallery</span>
+        <div className="product-gallery__main-copy">
+          <span className="product-gallery__main-kicker">Image gallery</span>
+          <strong className="product-gallery__main-label">{activeImage?.label ?? product.title}</strong>
+        </div>
+      </button>
+    </div>
+  );
+}
+
+function ProductGalleryLightbox({
+  open,
+  images,
+  activeImage,
+  onClose,
+  onSelectImage,
+}: {
+  open: boolean;
+  images: ProductGalleryImage[];
+  activeImage?: ProductGalleryImage;
+  onClose: () => void;
+  onSelectImage: (image: ProductGalleryImage) => void;
+}) {
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose, open]);
+
+  if (!open || !activeImage) {
+    return null;
+  }
+
+  return (
+    <div className="product-gallery-lightbox" role="dialog" aria-modal="true" aria-label="Product gallery">
+      <button type="button" className="product-gallery-lightbox__backdrop" onClick={onClose} aria-label="Close gallery" />
+      <div className="product-gallery-lightbox__panel">
+        <button type="button" className="product-gallery-lightbox__close" onClick={onClose} aria-label="Close gallery">
+          Close
+        </button>
+        <div className="product-gallery-lightbox__layout">
+          <div className="product-gallery-lightbox__thumbs" aria-label="Gallery thumbnails">
+            {images.map((image) => {
+              const isActive = activeImage.src === image.src && activeImage.label === image.label;
+
+              return (
+                <button
+                  key={`${image.label}-${image.src}-lightbox`}
+                  type="button"
+                  className={`product-gallery__thumb${isActive ? " product-gallery__thumb--active" : ""}`}
+                  onClick={() => onSelectImage(image)}
+                  aria-label={`Show ${image.label}`}
+                  aria-pressed={isActive}
+                >
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    sizes="88px"
+                    className="product-gallery__thumb-image"
+                    style={image.position ? { objectPosition: image.position } : undefined}
+                  />
+                </button>
+              );
+            })}
+          </div>
+          <div className="product-gallery-lightbox__main">
+            <Image
+              src={activeImage.src}
+              alt={activeImage.alt}
+              fill
+              sizes="(max-width: 1100px) 100vw, 70vw"
+              className="product-gallery-lightbox__image"
+              style={activeImage.position ? { objectPosition: activeImage.position } : undefined}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -58,7 +174,6 @@ export function ProductDetailExperience({
   detailImage,
   styledImage,
   initialColor,
-  initialSize,
   isSaved,
   error,
   message,
@@ -68,7 +183,6 @@ export function ProductDetailExperience({
   detailImage?: ProductImage;
   styledImage?: ProductImage;
   initialColor: string;
-  initialSize: string;
   isSaved: boolean;
   error?: string;
   message?: string;
@@ -83,7 +197,8 @@ export function ProductDetailExperience({
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [selectedColor, setSelectedColor] = useState(initialColor || swatches[0]?.label || "");
-  const [selectedSize, setSelectedSize] = useState(initialSize || product.sizes[0] || "");
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [selectedImageKey, setSelectedImageKey] = useState("");
   const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? swatches[0];
   const hasSwatchPreview = swatches.some((swatch) => Boolean(swatch.imageSrc));
   const currentUrl = useMemo(() => {
@@ -93,30 +208,51 @@ export function ProductDetailExperience({
       params.set("color", selectedColor);
     }
 
-    if (selectedSize) {
-      params.set("size", selectedSize);
-    }
-
     const query = params.toString();
     return query ? `${pathname}?${query}` : pathname;
-  }, [pathname, selectedColor, selectedSize]);
-  const mainImage = selectedSwatch?.imageSrc
-    ? {
-        src: selectedSwatch.imageSrc,
-        alt: `${product.title} in ${selectedSwatch.label}`,
-        position: selectedSwatch.imagePosition ?? defaultImage?.position,
-      }
-    : defaultImage;
+  }, [pathname, selectedColor]);
 
-  function syncSelection(nextColor: string, nextSize: string) {
+  const galleryImages = useMemo(
+    () =>
+      resolveProductGalleryImages(product.galleryImages, {
+        defaultImage,
+        detailImage,
+        styledImage,
+        selectedSwatchLabel: selectedColor,
+        selectedSwatchImage: selectedSwatch?.imageSrc
+          ? {
+              src: selectedSwatch.imageSrc,
+              position: selectedSwatch.imagePosition ?? defaultImage?.position,
+            }
+          : null,
+        productTitle: product.title,
+      }),
+    [
+      defaultImage,
+      detailImage,
+      product.galleryImages,
+      product.title,
+      selectedColor,
+      selectedSwatch?.imagePosition,
+      selectedSwatch?.imageSrc,
+      styledImage,
+    ],
+  );
+
+  useEffect(() => {
+    const nextKey = galleryImages[0] ? `${galleryImages[0].label}::${galleryImages[0].src}` : "";
+    if (!selectedImageKey || !galleryImages.some((image) => `${image.label}::${image.src}` === selectedImageKey)) {
+      setSelectedImageKey(nextKey);
+    }
+  }, [galleryImages, selectedImageKey]);
+
+  const activeImage = galleryImages.find((image) => `${image.label}::${image.src}` === selectedImageKey) ?? galleryImages[0];
+
+  function syncSelection(nextColor: string) {
     const params = new URLSearchParams();
 
     if (nextColor) {
       params.set("color", nextColor);
-    }
-
-    if (nextSize) {
-      params.set("size", nextSize);
     }
 
     const query = params.toString();
@@ -126,127 +262,117 @@ export function ProductDetailExperience({
     });
   }
 
-  return (
-    <div className="detail-layout">
-      <div className="gallery-grid">
-        <DetailVisual
-          title={product.title}
-          kicker="Front view"
-          tone={product.tone}
-          size="portrait"
-          image={mainImage}
-          preload
-        />
-        <div className="gallery-stack">
-          <DetailVisual title="Fabric detail" kicker="Close-up" tone={product.tone} size="wide" image={detailImage} />
-          <DetailVisual title="Styled full look" kicker="Look pairing" tone={product.tone} size="wide" image={styledImage} />
-        </div>
-      </div>
-      <div className="support-card product-detail-card">
-        {error ? <p className="auth-notice auth-notice--error">{error}</p> : null}
-        {message ? <p className="auth-notice auth-notice--success">{message}</p> : null}
-        <div className="price-row">
-          <h1 className="page-title" style={{ fontSize: "clamp(2.2rem, 4vw, 3.5rem)" }}>{product.title}</h1>
-          <strong>{formatPrice(product.price)}</strong>
-        </div>
-        <p className="body-copy">{product.blurb}</p>
-        <div className="pill-row">
-          <span className="pill-link">{product.availability}</span>
-          <span className="pill-link">{product.delivery}</span>
-          <span className="pill-link">{product.fit}</span>
-        </div>
+  function selectImage(image: ProductGalleryImage) {
+    setSelectedImageKey(`${image.label}::${image.src}`);
+  }
 
-        <form action={addToCartAction} className="cta-stack">
-          <input type="hidden" name="product_slug" value={product.slug} />
-          <input type="hidden" name="selected_color" value={selectedColor} />
-          <div className="field">
-            <label>Colour</label>
-            <div className="product-detail__swatch-stack" aria-busy={isPending}>
-              <div className="product-detail__option-head">
-                <span className="product-detail__option-label">Selected colour</span>
-                <span className="product-detail__swatch-label">{selectedSwatch?.label ?? "Choose a colour"}</span>
+  return (
+    <>
+      <div className="detail-layout">
+        <div className="product-gallery-shell">
+          <ProductMediaGallery
+            images={galleryImages}
+            product={product}
+            activeImage={activeImage}
+            onSelectImage={selectImage}
+            onOpenLightbox={() => setIsLightboxOpen(true)}
+          />
+        </div>
+        <div className="support-card product-detail-card">
+          {error ? <p className="auth-notice auth-notice--error">{error}</p> : null}
+          {message ? <p className="auth-notice auth-notice--success">{message}</p> : null}
+          <div className="price-row">
+            <h1 className="page-title" style={{ fontSize: "clamp(2.2rem, 4vw, 3.5rem)" }}>{product.title}</h1>
+            <strong>{formatPrice(product.price)}</strong>
+          </div>
+          <p className="body-copy">{product.blurb}</p>
+          <div className="pill-row">
+            <span className="pill-link">{product.availability}</span>
+            <span className="pill-link">{product.delivery}</span>
+            <span className="pill-link">{product.fit}</span>
+          </div>
+
+          <form action={addToCartAction} className="cta-stack">
+            <input type="hidden" name="product_slug" value={product.slug} />
+            <input type="hidden" name="selected_color" value={selectedColor} />
+            <div className="field">
+              <label>Colour</label>
+              <div className="product-detail__swatch-stack" aria-busy={isPending}>
+                <div className="product-detail__option-head">
+                  <span className="product-detail__option-label">Selected colour</span>
+                  <span className="product-detail__swatch-label">{selectedSwatch?.label ?? "Choose a colour"}</span>
+                </div>
+                <div className="product-detail__swatch-row" role="group" aria-label={`${product.title} colours`}>
+                  {swatches.map((swatch) => (
+                    <button
+                      key={swatch.label}
+                      type="button"
+                      className={`product-card__swatch${selectedColor === swatch.label ? " product-card__swatch--active" : ""}${isLightSwatch(swatch.value) ? " product-card__swatch--light" : ""}`}
+                      style={{ background: getSwatchBackground(swatch.value) }}
+                      aria-label={`Select ${swatch.label}`}
+                      aria-pressed={selectedColor === swatch.label}
+                      onClick={() => {
+                        setSelectedColor(swatch.label);
+                        syncSelection(swatch.label);
+                      }}
+                    />
+                  ))}
+                </div>
+                <span className="product-detail__swatch-note">
+                  {hasSwatchPreview
+                    ? "Swatches choose the colour. The thumbnail gallery lets you inspect different views of that selection."
+                    : "Swatches choose the colour. The thumbnail gallery lets you inspect the product from multiple angles."}
+                </span>
               </div>
-              <div className="product-detail__swatch-row" role="group" aria-label={`${product.title} colours`}>
-                {swatches.map((swatch) => (
-                  <button
-                    key={swatch.label}
-                    type="button"
-                    className={`product-card__swatch${selectedColor === swatch.label ? " product-card__swatch--active" : ""}${isLightSwatch(swatch.value) ? " product-card__swatch--light" : ""}`}
-                    style={{ background: getSwatchBackground(swatch.value) }}
-                    aria-label={`Select ${swatch.label}`}
-                    aria-pressed={selectedColor === swatch.label}
-                    onClick={() => {
-                      setSelectedColor(swatch.label);
-                      syncSelection(swatch.label, selectedSize);
-                    }}
-                  />
+            </div>
+            <div className="field">
+              <label htmlFor="quantity">Quantity</label>
+              <select id="quantity" name="quantity" defaultValue="1">
+                {[1, 2, 3, 4].map((quantity) => (
+                  <option key={quantity} value={quantity}>
+                    {quantity}
+                  </option>
                 ))}
-              </div>
-              <span className="product-detail__swatch-note">
-                {hasSwatchPreview
-                  ? (selectedSwatch?.imageSrc ? "This selection updates the lead image preview." : "This colour keeps the default studio image.")
-                  : "Your selected colour will be carried into cart and wishlist actions."}
-              </span>
+              </select>
+            </div>
+            <div className="hero__actions">
+              <button type="submit" className="button">Add to cart</button>
+              <input type="hidden" name="next" value={currentUrl} />
+              <button
+                type="submit"
+                formAction={isSaved ? removeFromWishlistAction : addToWishlistAction}
+                className="pill-link"
+              >
+                {isSaved ? "Remove" : "Save"}
+              </button>
+              <Link href="/checkout" className="pill-link">Buy now</Link>
+            </div>
+          </form>
+
+          <div className="tab-list">
+            <div className="tab-item">
+              <h4>Measurements after payment</h4>
+              <p className="body-copy">Choose the product and your preferred colour now. Measurements can be submitted or requested after checkout.</p>
+            </div>
+            <div className="tab-item">
+              <h4>Fabric & care</h4>
+              <p className="body-copy">{product.details.join(" · ")}</p>
+            </div>
+            <div className="tab-item">
+              <h4>Shipping & returns</h4>
+              <p className="body-copy">Fast dispatch, visible tracking, and policy routes that stay close to the purchase action.</p>
             </div>
           </div>
-          <div className="field">
-            <label htmlFor="selected_size">Size</label>
-            <select
-              id="selected_size"
-              name="selected_size"
-              value={selectedSize}
-              onChange={(event) => {
-                const nextSize = event.target.value;
-                setSelectedSize(nextSize);
-                syncSelection(selectedColor, nextSize);
-              }}
-            >
-              {product.sizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="quantity">Quantity</label>
-            <select id="quantity" name="quantity" defaultValue="1">
-              {[1, 2, 3, 4].map((quantity) => (
-                <option key={quantity} value={quantity}>
-                  {quantity}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="hero__actions">
-            <button type="submit" className="button">Add to cart</button>
-            <input type="hidden" name="next" value={currentUrl} />
-            <button
-              type="submit"
-              formAction={isSaved ? removeFromWishlistAction : addToWishlistAction}
-              className="pill-link"
-            >
-              {isSaved ? "Remove" : "Save"}
-            </button>
-            <Link href="/checkout" className="pill-link">Buy now</Link>
-          </div>
-        </form>
-
-        <div className="tab-list">
-          <div className="tab-item">
-            <h4>Fit and size confidence</h4>
-            <p className="body-copy">Structured fit notes and a direct route to the size guide reduce hesitation before checkout.</p>
-          </div>
-          <div className="tab-item">
-            <h4>Fabric & care</h4>
-            <p className="body-copy">{product.details.join(" · ")}</p>
-          </div>
-          <div className="tab-item">
-            <h4>Shipping & returns</h4>
-            <p className="body-copy">Fast dispatch, visible tracking, and policy routes that stay close to the purchase action.</p>
-          </div>
         </div>
       </div>
-    </div>
+
+      <ProductGalleryLightbox
+        open={isLightboxOpen}
+        images={galleryImages}
+        activeImage={activeImage}
+        onClose={() => setIsLightboxOpen(false)}
+        onSelectImage={selectImage}
+      />
+    </>
   );
 }

@@ -16,7 +16,7 @@ export default async function ProductPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ error?: string; message?: string; color?: string; size?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; color?: string }>;
 }) {
   const { slug } = await params;
   const query = await searchParams;
@@ -34,7 +34,6 @@ export default async function ProductPage({
   const related = allProducts.filter((item) => item.category === product.category && item.slug !== product.slug).slice(0, 3);
   const isSaved = wishlistSlugs.includes(product.slug);
   const swatchLabels = product.swatches.map((swatch) => swatch.label);
-  const selectedSize = query.size && product.sizes.includes(query.size) ? query.size : (product.sizes[0] ?? "");
   const selectedColor = query.color && swatchLabels.includes(query.color) ? query.color : (swatchLabels[0] ?? product.colors[0] ?? "");
 
   return (
@@ -52,7 +51,6 @@ export default async function ProductPage({
           detailImage={getVisualAsset(`${product.title}::detail`)}
           styledImage={getVisualAsset(`${product.title}::styled`)}
           initialColor={selectedColor}
-          initialSize={selectedSize}
           isSaved={isSaved}
           error={query.error}
           message={query.message}
