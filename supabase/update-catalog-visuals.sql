@@ -16,9 +16,9 @@ with category_updates (slug, image_url, image_alt, image_position) as (
   values
     (
       'suits',
-      '/images/ixquisite/midnight-commander-suit.webp',
-      'Royal blue double-breasted tailoring presented as a sharp suiting hero.',
-      'center 18%'
+      '/images/ixquisite/tuxedo/ceremony-tuxedo-burgundy-front.webp',
+      'Burgundy tuxedo with black lapels used as the suits category hero.',
+      'center 14%'
     ),
     (
       'shirts',

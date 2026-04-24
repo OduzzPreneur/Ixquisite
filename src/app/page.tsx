@@ -13,6 +13,57 @@ import {
   VisualPanel,
 } from "@/components/ui";
 
+function normalizeHeroMetaLabel(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function HeroMetaIcon({ item }: { item: string }) {
+  const normalized = normalizeHeroMetaLabel(item);
+
+  if (normalized === "premium corporate wear") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="hero__meta-icon">
+        <path
+          d="M7.5 4.5h9l2 3.5-2 11H7.5l-2-11 2-3.5Zm2.2 0 2.3 2.7 2.3-2.7M9.4 9.3l2.6 2.6 2.6-2.6M12 7.2v8.7"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  if (normalized === "delivered in a few days") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="hero__meta-icon">
+        <path
+          d="M3.5 7.5h10.5v8H3.5Zm10.5 2.2h3l2.5 2.3v3.5H14M7 18.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm10 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="hero__meta-icon">
+      <path
+        d="M6.5 8.8a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Zm5.5 5.5v2.2m-4.6-1 1.6 2.7m9.2-2.7-1.6 2.7M4.8 12h2.4m12 0h-2.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default async function Home() {
   const {
     settings,
@@ -49,8 +100,11 @@ export default async function Home() {
               </div>
               <div className="hero__meta">
                 {settings.heroMeta.map((item) => (
-                  <span key={item} className="tag">
-                    {item}
+                  <span key={item} className="tag hero__meta-card">
+                    <span className="hero__meta-icon-shell">
+                      <HeroMetaIcon item={item} />
+                    </span>
+                    <span className="hero__meta-card-copy">{item}</span>
                   </span>
                 ))}
               </div>
