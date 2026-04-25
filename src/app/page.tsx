@@ -103,7 +103,7 @@ export default async function Home() {
           <div className="hero__grid">
             <div className="hero__copy">
               <p className="eyebrow hero__mobile-hidden">{settings.heroEyebrow}</p>
-              <h1 className="page-title hero__seo-title">Premium Men&apos;s Corporate Wear, Tailored for Confidence</h1>
+              <h1 className="page-title hero__seo-title hero__mobile-hidden">Premium Men&apos;s Corporate Wear, Tailored for Confidence</h1>
               {settings.heroTitle ? (
                 <p className="display-title hero__mobile-hidden hero__campaign-line">{settings.heroTitle}</p>
               ) : null}
@@ -112,7 +112,7 @@ export default async function Home() {
                   {settings.heroCopy}
                 </p>
               ) : null}
-              <p className="section-copy hero__seo-support">
+              <p className="section-copy hero__seo-support hero__mobile-hidden">
                 Shop premium men&apos;s <Link href="/category/suits">suits</Link>, <Link href="/category/shirts">shirts</Link>, <Link href="/category/trousers">trousers</Link>, <Link href="/category/ties">ties</Link>, and <Link href="/groom-package">groom packages</Link> designed for work, weddings, ceremonies, and complete menswear styling.
               </p>
               <div className="hero__actions">
@@ -123,7 +123,7 @@ export default async function Home() {
                   {settings.heroSecondaryLabel}
                 </Link>
               </div>
-              <div className="hero__meta">
+              <div className="hero__meta hero__mobile-hidden">
                 {settings.heroMeta.map((item) => (
                   <span key={item} className="tag hero__meta-card">
                     <span className="hero__meta-icon-shell">

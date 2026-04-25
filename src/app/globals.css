@@ -1988,6 +1988,10 @@ main {
     justify-self: stretch;
   }
 
+  .hero__visual .visual-panel__content {
+    display: none;
+  }
+
   .hero__frame,
   .visual-panel,
   .surface-panel,
