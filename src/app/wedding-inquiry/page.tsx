@@ -3,8 +3,14 @@ import { submitWeddingInquiryAction } from "@/app/actions/support";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { groomCoordinationPoints, groomSupportTopics, weddingDeliveryPoints } from "@/data/site";
 import { getAccountProfileForCurrentUser } from "@/lib/account";
+import { buildNoIndexMetadata } from "@/lib/seo";
 import { getVisualAsset } from "@/lib/visual-assets";
 import { VisualPanel } from "@/components/ui";
+
+export const metadata = buildNoIndexMetadata(
+  "Wedding inquiry",
+  "Private wedding inquiry form for Ixquisite support.",
+);
 
 export default async function WeddingInquiryPage({
   searchParams,
@@ -33,16 +39,16 @@ export default async function WeddingInquiryPage({
             />
             <div className="summary-list" style={{ marginTop: "1rem" }}>
               <div>
-                <h3 className="minor-title">WhatsApp</h3>
-                <p className="body-copy">+234 800 000 0001</p>
-              </div>
-              <div>
-                <h3 className="minor-title">Email</h3>
-                <p className="body-copy">weddings@ixquisite.com</p>
-              </div>
-              <div>
                 <h3 className="minor-title">Best for</h3>
-                <p className="body-copy">Custom sizing, premium consults, groomsmen coordination, and urgent timelines.</p>
+                <p className="body-copy">Custom sizing, premium consults, groomsmen coordination, and urgent ceremony timelines.</p>
+              </div>
+              <div>
+                <h3 className="minor-title">How to use this route</h3>
+                <p className="body-copy">Submit the form with your timeline, colour direction, and group size so the team can review the request properly.</p>
+              </div>
+              <div>
+                <h3 className="minor-title">Support path</h3>
+                <p className="body-copy">Use the groom package page for ready-to-buy options and this inquiry route when the ceremony needs direct coordination.</p>
               </div>
             </div>
             <div className="hero__actions" style={{ marginTop: "1rem" }}>

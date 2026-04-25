@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { AuthPage } from "@/components/page-templates";
 import { signUpAction } from "@/app/actions/auth";
+import { buildNoIndexMetadata } from "@/lib/seo";
+
+export const metadata = buildNoIndexMetadata(
+  "Create account",
+  "Private account creation page for Ixquisite customers.",
+);
 
 export default async function CreateAccountPage({
   searchParams,

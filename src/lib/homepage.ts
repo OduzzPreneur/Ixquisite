@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { defaultHomePageSettings, type HomePageSettings } from "@/data/site";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
 
@@ -74,7 +75,7 @@ export function mergeHomePageSettings(input?: Partial<HomePageSettings> | null):
   };
 }
 
-export async function getHomePageSettings() {
+export const getHomePageSettings = cache(async function getHomePageSettings() {
   if (!hasSupabaseConfig()) {
     return defaultHomePageSettings;
   }
@@ -97,4 +98,4 @@ export async function getHomePageSettings() {
   }
 
   return mergeHomePageSettings(data?.content);
-}
+});

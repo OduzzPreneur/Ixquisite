@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buildNoIndexMetadata } from "@/lib/seo";
 import { requireAdminUser } from "@/lib/admin";
 
 const adminNavItems = [
@@ -7,6 +8,11 @@ const adminNavItems = [
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/homepage", label: "Homepage" },
 ] as const;
+
+export const metadata = buildNoIndexMetadata(
+  "Admin workspace",
+  "Internal Ixquisite commerce workspace.",
+);
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireAdminUser("/admin");

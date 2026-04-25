@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { addGroomPackageToCartAction } from "@/app/actions/groom-package";
+import { JsonLd } from "@/components/seo/JsonLd";
 import {
+  groomPackageFaqs,
   groomAccessoryBundle,
   groomBuilderOptions,
   groomCoordinationPoints,
@@ -15,8 +17,28 @@ import {
   weddingDeliveryPoints,
 } from "@/data/site";
 import { getProductsBySlugs } from "@/lib/catalog";
+import { buildMetadata } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildFAQSchema } from "@/lib/schema";
 import { getVisualAsset } from "@/lib/visual-assets";
-import { ProductCard, TrustStrip, VisualPanel } from "@/components/ui";
+import { Breadcrumbs, ProductCard, TrustStrip, VisualPanel } from "@/components/ui";
+
+export const metadata = buildMetadata({
+  title: "Groom Suit Packages",
+  description:
+    "Explore Ixquisite groom suit packages for weddings, traditional ceremonies, groomsmen coordination, premium tailoring, accessories, and ceremony-ready menswear styling.",
+  path: "/groom-package",
+  keywords: [
+    "groom suit package",
+    "groom suits in Nigeria",
+    "groom suits in Lagos",
+    "wedding suits for men",
+    "men's wedding suits",
+    "groomsmen suits",
+    "premium groom wear",
+    "wedding menswear",
+  ],
+  image: getVisualAsset("Your Wedding Look. Perfectly Handled."),
+});
 
 export default async function GroomPackagePage({
   searchParams,
@@ -38,13 +60,24 @@ export default async function GroomPackagePage({
 
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Groom Package", path: "/groom-package" },
+        ])}
+      />
+      <JsonLd data={buildFAQSchema(groomPackageFaqs)} />
       <section className="hero hero--groom">
         <div className="hero__frame">
           <div className="hero__grid hero__grid--groom">
             <div className="hero__copy">
+              <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Groom Package" }]} />
               <p className="eyebrow">{groomPackageIntro.eyebrow}</p>
-              <h1 className="display-title">{groomPackageIntro.title}</h1>
+              <h1 className="display-title">Groom Suit Packages for Weddings &amp; Ceremonies</h1>
               <p className="section-copy">{groomPackageIntro.description}</p>
+              <p className="section-copy">
+                Ixquisite groom suit packages help grooms and groomsmen coordinate premium ceremony looks with suits, shirts, ties, accessories, and styling support in one premium flow.
+              </p>
               <div className="hero__actions">
                 <a href="#groom-builder" className="button">
                   Choose Your Package
@@ -347,6 +380,57 @@ export default async function GroomPackagePage({
                 Browse wedding guest looks
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="page-section">
+        <div className="section-head section-head--split">
+          <div>
+            <p className="eyebrow">Frequently asked</p>
+            <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+              Practical answers before the ceremony decisions get louder.
+            </h2>
+          </div>
+          <p className="section-copy">
+            These questions cover package scope, groomsmen coordination, colour selection, and accessory inclusion without overpromising custom support.
+          </p>
+        </div>
+        <div className="grid grid--2">
+          {groomPackageFaqs.map((item) => (
+            <article key={item.question} className="support-card">
+              <h3 className="minor-title">{item.question}</h3>
+              <p className="body-copy">{item.answer}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="page-section">
+        <div className="surface-panel">
+          <p className="eyebrow">Related routes</p>
+          <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
+            Keep the wedding decision connected to the rest of the wardrobe.
+          </h2>
+          <div className="pill-row" style={{ marginTop: "1rem" }}>
+            <Link href="/category/suits" className="pill-link">
+              Shop premium men&apos;s suits
+            </Link>
+            <Link href="/category/shirts" className="pill-link">
+              Shop men&apos;s shirts
+            </Link>
+            <Link href="/category/ties" className="pill-link">
+              Shop men&apos;s ties
+            </Link>
+            <Link href="/category/accessories" className="pill-link">
+              Shop men&apos;s accessories
+            </Link>
+            <Link href="/style-guide" className="pill-link">
+              Read the men&apos;s style guide
+            </Link>
+            <Link href="/contact" className="pill-link">
+              Contact Ixquisite
+            </Link>
           </div>
         </div>
       </section>

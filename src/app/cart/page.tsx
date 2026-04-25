@@ -5,7 +5,13 @@ import { ProductCard } from "@/components/ui";
 import { formatPrice } from "@/data/site";
 import { getCurrentCart } from "@/lib/cart";
 import { getProductsBySlugs } from "@/lib/catalog";
+import { buildNoIndexMetadata } from "@/lib/seo";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
+
+export const metadata = buildNoIndexMetadata(
+  "Cart",
+  "Private cart review page.",
+);
 
 export default async function CartPage({
   searchParams,

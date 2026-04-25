@@ -19,7 +19,7 @@ function LogoMark({ footer = false }: { footer?: boolean }) {
       <span className="logo-mark__frame">
         <Image
           src="/images/ixquisite/brand-landscape.jpg"
-          alt="Ixquisite Menswear logo"
+          alt="Ixquisite"
           width={960}
           height={540}
           className="logo-mark__image"
@@ -92,6 +92,9 @@ function Footer() {
             and a wardrobe that feels composed from the first meeting to the last.
           </p>
           <form className="newsletter-form">
+            <label className="sr-only" htmlFor="newsletter_email">
+              Email address for private arrivals and product updates
+            </label>
             <input
               id="newsletter_email"
               name="email"

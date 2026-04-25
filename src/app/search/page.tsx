@@ -1,6 +1,12 @@
 import { SearchShell } from "@/components/page-templates";
 import { getProducts } from "@/lib/catalog";
+import { buildNoIndexMetadata } from "@/lib/seo";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
+
+export const metadata = buildNoIndexMetadata(
+  "Search",
+  "Internal storefront search results.",
+);
 
 export default async function SearchPage({
   searchParams,

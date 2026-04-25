@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { HelpHub, UtilityPageHeader } from "@/components/page-templates";
 import { getAccountProfileForCurrentUser } from "@/lib/account";
+import { buildNoIndexMetadata } from "@/lib/seo";
 import { getTrackedOrder, getTrackingStages } from "@/lib/orders";
+
+export const metadata = buildNoIndexMetadata(
+  "Track order",
+  "Private order tracking page.",
+);
 
 export default async function TrackOrderPage({
   searchParams,
@@ -19,8 +25,8 @@ export default async function TrackOrderPage({
     <>
       <UtilityPageHeader
         eyebrow="Track order"
-        title="Order visibility should be immediate and trust-building."
-        copy="Tracking sits close to support because delivery confidence is part of the premium experience, not an afterthought."
+        title="Track your Ixquisite order."
+        copy="Enter your order reference and email address to check the latest delivery status and payment confirmation for your order."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Track Order" }]}
       />
       <section className="page-section">

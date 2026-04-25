@@ -2,6 +2,14 @@ import Link from "next/link";
 import { CollectionFeature, PageHero, VisualPanel } from "@/components/ui";
 import { getVisualAsset } from "@/lib/visual-assets";
 import { getCollections, getProductsByCollection } from "@/lib/catalog";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "Core & Signature Collections",
+  description:
+    "Explore Ixquisite Core and Signature collections, featuring premium menswear pieces for everyday corporate confidence, ceremony-level styling, and refined executive presence.",
+  path: "/collections",
+});
 
 export default async function CollectionsPage() {
   const collections = await getCollections();
@@ -16,8 +24,8 @@ export default async function CollectionsPage() {
     <>
       <PageHero
         eyebrow="Collections"
-        title="Curated wardrobes built around how professionals actually dress."
-        copy="Collections narrow the search and group products by tone, role, and daily rhythm rather than dumping the full catalog at once."
+        title="Core & Signature Collections"
+        copy="Explore Ixquisite collections built around premium men's suits, shirts, trousers, ties, accessories, and complete wardrobe direction for work, ceremony, and executive dressing."
         tone="stone"
         visualTitle="Collection architecture"
         visualKicker="Editorial merchandising"

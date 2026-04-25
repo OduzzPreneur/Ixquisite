@@ -1,6 +1,14 @@
+import { buildMetadata } from "@/lib/seo";
 import { ListingPage } from "@/components/page-templates";
 import { getBestSellerProducts } from "@/lib/catalog";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
+
+export const metadata = buildMetadata({
+  title: "Best Selling Men's Suits, Shirts & Accessories",
+  description:
+    "Shop Ixquisite best sellers across premium men's suits, shirts, trousers, ties, and accessories chosen most often for corporate wear, ceremony, and polished everyday dressing.",
+  path: "/best-sellers",
+});
 
 export default async function BestSellersPage() {
   const [products, wishlistSlugs] = await Promise.all([

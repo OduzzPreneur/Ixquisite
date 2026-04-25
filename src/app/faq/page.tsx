@@ -1,5 +1,13 @@
+import { buildMetadata } from "@/lib/seo";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { faqItems } from "@/data/site";
+
+export const metadata = buildMetadata({
+  title: "Shopping FAQ",
+  description:
+    "Read frequently asked questions about Ixquisite orders, delivery, sizing, returns, groom packages, and premium menswear support.",
+  path: "/faq",
+});
 
 export default function FaqPage() {
   return (

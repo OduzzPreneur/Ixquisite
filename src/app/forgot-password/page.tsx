@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { requestPasswordResetAction } from "@/app/actions/auth";
 import { AuthPage } from "@/components/page-templates";
+import { buildNoIndexMetadata } from "@/lib/seo";
+
+export const metadata = buildNoIndexMetadata(
+  "Forgot password",
+  "Private password recovery page for Ixquisite customers.",
+);
 
 export default async function ForgotPasswordPage({
   searchParams,

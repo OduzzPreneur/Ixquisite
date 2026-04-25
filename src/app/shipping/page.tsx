@@ -1,11 +1,19 @@
+import { buildMetadata } from "@/lib/seo";
 import { PolicyPage } from "@/components/page-templates";
+
+export const metadata = buildMetadata({
+  title: "Shipping & Delivery",
+  description:
+    "Read the Ixquisite shipping and delivery information for processing time, standard delivery windows, regions, and tracking visibility.",
+  path: "/shipping",
+});
 
 export default function ShippingPage() {
   return (
     <PolicyPage
       eyebrow="Shipping & delivery"
-      title="Delivery windows should feel specific, not vague."
-      copy="Use this page to communicate regions, dispatch cadence, express options, and expected timing."
+      title="Shipping timing and delivery visibility."
+      copy="Find the current guidance on order processing, delivery windows, covered regions, and tracking for Ixquisite shipments."
       items={[
         { title: "Processing", copy: "Ready-to-wear orders are prepared within 24 hours before handoff to the delivery partner." },
         { title: "Delivery windows", copy: "Standard delivery arrives in 2 to 4 days for core service areas, with express options where available." },

@@ -1,4 +1,13 @@
 import { SectionCardGrid, UtilityPageHeader } from "@/components/page-templates";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "About Ixquisite",
+  description:
+    "Learn about Ixquisite, a premium menswear brand focused on quiet luxury, refined corporate wear, ceremony dressing, and complete wardrobe convenience.",
+  path: "/about",
+  keywords: ["about Ixquisite", "premium menswear brand", "quiet luxury menswear", "corporate wear brand"],
+});
 
 export default function AboutPage() {
   return (

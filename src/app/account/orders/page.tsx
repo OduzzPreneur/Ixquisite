@@ -7,7 +7,7 @@ export default async function AccountOrdersPage() {
   const orders = await getOrdersForCurrentUser();
 
   return (
-    <AccountShell title="Order history" copy="Customers should be able to review order status, totals, and re-order paths without contacting support.">
+    <AccountShell title="Order history" copy="Review your order status, totals, and measurement progress in one place.">
       {orders.length ? (
         <div className="table-like">
           {orders.map((order) => (

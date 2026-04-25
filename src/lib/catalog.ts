@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import {
   articles as fallbackArticles,
   categories as fallbackCategories,
@@ -15,7 +16,6 @@ import {
   getProductsByOccasion as fallbackGetProductsByOccasion,
   getProductsBySlugs as fallbackGetProductsBySlugs,
   lookbookLooks as fallbackLookbookLooks,
-  newInPlaceholderProducts,
   occasions as fallbackOccasions,
   products as fallbackProducts,
   trustPoints,
@@ -192,7 +192,7 @@ function withFallback<T>(label: string, fallback: T, error: unknown) {
   return fallback;
 }
 
-const loadStorefrontData = async (): Promise<StorefrontData> => {
+const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
   if (!hasSupabaseConfig()) {
     return fallbackData;
   }
@@ -290,6 +290,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
       tone: article.tone,
       readingTime: article.reading_time,
       category: article.category,
+      body: article.body ?? undefined,
     })),
     lookbookLooks: ((lookbookResult.data as LookbookRow[]) ?? []).map((look) => ({
       slug: look.slug,
@@ -299,7 +300,7 @@ const loadStorefrontData = async (): Promise<StorefrontData> => {
       products: look.product_slugs ?? [],
     })),
   };
-};
+});
 
 export async function getCategories() {
   return (await loadStorefrontData()).categories;
@@ -319,16 +320,16 @@ export async function getProducts() {
 
 export async function getNewInProducts() {
   const products = await getProducts();
-  const matches = products.filter((item) => item.isNew);
+  const matches = products.filter((item) => item.isNew && !item.isPlaceholder);
 
-  return matches.length ? matches : fallbackProducts.filter((item) => item.isNew);
+  return matches.length ? matches : fallbackProducts.filter((item) => item.isNew && !item.isPlaceholder);
 }
 
 export async function getBestSellerProducts() {
   const products = await getProducts();
-  const matches = products.filter((item) => item.isBestSeller);
+  const matches = products.filter((item) => item.isBestSeller && !item.isPlaceholder);
 
-  return matches.length ? matches : fallbackProducts.filter((item) => item.isBestSeller);
+  return matches.length ? matches : fallbackProducts.filter((item) => item.isBestSeller && !item.isPlaceholder);
 }
 
 export async function getArticles() {
@@ -360,18 +361,18 @@ export async function getProduct(slug: string) {
 }
 
 export async function getProductsByCategory(slug: string) {
-  const matches = (await getProducts()).filter((item) => item.category === slug);
-  return matches.length ? matches : fallbackGetProductsByCategory(slug);
+  const matches = (await getProducts()).filter((item) => item.category === slug && !item.isPlaceholder);
+  return matches.length ? matches : fallbackGetProductsByCategory(slug).filter((item) => !item.isPlaceholder);
 }
 
 export async function getProductsByCollection(slug: string) {
-  const matches = (await getProducts()).filter((item) => item.collection === slug);
-  return matches.length ? matches : fallbackGetProductsByCollection(slug);
+  const matches = (await getProducts()).filter((item) => item.collection === slug && !item.isPlaceholder);
+  return matches.length ? matches : fallbackGetProductsByCollection(slug).filter((item) => !item.isPlaceholder);
 }
 
 export async function getProductsByOccasion(slug: string) {
-  const matches = (await getProducts()).filter((item) => item.occasions.includes(slug));
-  return matches.length ? matches : fallbackGetProductsByOccasion(slug);
+  const matches = (await getProducts()).filter((item) => item.occasions.includes(slug) && !item.isPlaceholder);
+  return matches.length ? matches : fallbackGetProductsByOccasion(slug).filter((item) => !item.isPlaceholder);
 }
 
 export async function getProductsBySlugs(slugs: readonly string[]) {
@@ -400,7 +401,7 @@ export async function getHomePageData() {
     collections.find((collection) => collection.slug === settings.featuredCollectionSlug) ??
     collections[0] ??
     fallbackCollections[0];
-  const latestProducts = [...newInProducts, ...newInPlaceholderProducts].slice(0, 6);
+  const latestProducts = newInProducts.slice(0, 6);
   const featuredProducts = products.filter((product) => product.collection === featuredCollection.slug).slice(0, 3);
   const completeLook =
     lookbookLooks.find((look) => look.slug === settings.completeLookSlug) ??

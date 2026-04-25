@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/site";
+
 export function getSupabaseUrl() {
   return process.env.NEXT_PUBLIC_SUPABASE_URL;
 }
@@ -22,15 +24,5 @@ export function hasSupabaseAdminConfig() {
 }
 
 export function getSiteUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
-  if (explicit) {
-    return explicit.replace(/\/$/, "");
-  }
-
-  const vercelUrl = process.env.VERCEL_URL;
-  if (vercelUrl) {
-    return `https://${vercelUrl}`;
-  }
-
-  return "http://localhost:3000";
+  return siteConfig.url;
 }

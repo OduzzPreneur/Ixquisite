@@ -201,6 +201,8 @@ export function ProductDetailExperience({
   const [selectedImageKey, setSelectedImageKey] = useState("");
   const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? swatches[0];
   const hasSwatchPreview = swatches.some((swatch) => Boolean(swatch.imageSrc));
+  const selectedSwatchPreviewSrc = selectedSwatch?.imageSrc ?? null;
+  const selectedSwatchPreviewPosition = selectedSwatch?.imagePosition ?? defaultImage?.position;
   const currentUrl = useMemo(() => {
     const params = new URLSearchParams();
 
@@ -212,41 +214,28 @@ export function ProductDetailExperience({
     return query ? `${pathname}?${query}` : pathname;
   }, [pathname, selectedColor]);
 
-  const galleryImages = useMemo(
-    () =>
-      resolveProductGalleryImages(product.galleryImages, {
-        defaultImage,
-        detailImage,
-        styledImage,
-        selectedSwatchLabel: selectedColor,
-        selectedSwatchImage: selectedSwatch?.imageSrc
-          ? {
-              src: selectedSwatch.imageSrc,
-              position: selectedSwatch.imagePosition ?? defaultImage?.position,
-            }
-          : null,
-        productTitle: product.title,
-      }),
-    [
-      defaultImage,
-      detailImage,
-      product.galleryImages,
-      product.title,
-      selectedColor,
-      selectedSwatch?.imagePosition,
-      selectedSwatch?.imageSrc,
-      styledImage,
-    ],
-  );
+  const galleryImages = resolveProductGalleryImages(product.galleryImages, {
+    defaultImage,
+    detailImage,
+    styledImage,
+    selectedSwatchLabel: selectedColor,
+    selectedSwatchImage: selectedSwatchPreviewSrc
+      ? {
+          src: selectedSwatchPreviewSrc,
+          position: selectedSwatchPreviewPosition,
+        }
+      : null,
+    productTitle: product.title,
+  });
 
-  useEffect(() => {
-    const nextKey = galleryImages[0] ? `${galleryImages[0].label}::${galleryImages[0].src}` : "";
-    if (!selectedImageKey || !galleryImages.some((image) => `${image.label}::${image.src}` === selectedImageKey)) {
-      setSelectedImageKey(nextKey);
-    }
-  }, [galleryImages, selectedImageKey]);
+  const resolvedSelectedImageKey =
+    selectedImageKey && galleryImages.some((image) => `${image.label}::${image.src}` === selectedImageKey)
+      ? selectedImageKey
+      : galleryImages[0]
+        ? `${galleryImages[0].label}::${galleryImages[0].src}`
+        : "";
 
-  const activeImage = galleryImages.find((image) => `${image.label}::${image.src}` === selectedImageKey) ?? galleryImages[0];
+  const activeImage = galleryImages.find((image) => `${image.label}::${image.src}` === resolvedSelectedImageKey) ?? galleryImages[0];
 
   function syncSelection(nextColor: string) {
     const params = new URLSearchParams();
@@ -309,7 +298,7 @@ export function ProductDetailExperience({
                       type="button"
                       className={`product-card__swatch${selectedColor === swatch.label ? " product-card__swatch--active" : ""}${isLightSwatch(swatch.value) ? " product-card__swatch--light" : ""}`}
                       style={{ background: getSwatchBackground(swatch.value) }}
-                      aria-label={`Select ${swatch.label}`}
+                      aria-label={`Select ${swatch.label} colour`}
                       aria-pressed={selectedColor === swatch.label}
                       onClick={() => {
                         setSelectedColor(swatch.label);
@@ -336,16 +325,25 @@ export function ProductDetailExperience({
               </select>
             </div>
             <div className="hero__actions">
-              <button type="submit" className="button">Add to cart</button>
+              <button
+                type="submit"
+                className="button"
+                aria-label={`Add ${product.title}${selectedColor ? ` in ${selectedColor}` : ""} to cart`}
+              >
+                Add to cart
+              </button>
               <input type="hidden" name="next" value={currentUrl} />
               <button
                 type="submit"
                 formAction={isSaved ? removeFromWishlistAction : addToWishlistAction}
                 className="pill-link"
+                aria-label={isSaved ? `Remove ${product.title} from wishlist` : `Save ${product.title} to wishlist`}
               >
                 {isSaved ? "Remove" : "Save"}
               </button>
-              <Link href="/checkout" className="pill-link">Buy now</Link>
+              <Link href="/checkout" className="pill-link" aria-label={`Buy ${product.title} now`}>
+                Buy now
+              </Link>
             </div>
           </form>
 
@@ -357,6 +355,14 @@ export function ProductDetailExperience({
             <div className="tab-item">
               <h4>Fabric & care</h4>
               <p className="body-copy">{product.details.join(" · ")}</p>
+            </div>
+            <div className="tab-item">
+              <h4>Best occasions</h4>
+              <p className="body-copy">
+                {product.occasions.length
+                  ? product.occasions.map((occasion) => occasion.replace(/-/g, " ")).join(" · ")
+                  : "Built for premium menswear dressing across work and formal events."}
+              </p>
             </div>
             <div className="tab-item">
               <h4>Shipping & returns</h4>

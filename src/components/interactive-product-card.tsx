@@ -39,7 +39,7 @@ export function InteractiveProductCard({
 
   return (
     <article className="product-card">
-      <Link href={productHref}>
+      <Link href={productHref} aria-label={`View ${product.title}`}>
         <div className={`visual-panel tone-${product.tone} visual-panel--portrait${cardImage ? " visual-panel--with-image" : ""}`}>
           {cardImage ? (
             <>

@@ -1,6 +1,14 @@
+import { buildMetadata } from "@/lib/seo";
 import { ListingPage } from "@/components/page-templates";
 import { getNewInProducts } from "@/lib/catalog";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
+
+export const metadata = buildMetadata({
+  title: "New In Men's Suits, Shirts & Accessories",
+  description:
+    "Discover the latest arrivals from Ixquisite across premium men's suits, shirts, trousers, ties, and accessories for work, weddings, and refined daily dressing.",
+  path: "/new-in",
+});
 
 export default async function NewInPage() {
   const [products, wishlistSlugs] = await Promise.all([

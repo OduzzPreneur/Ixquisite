@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SiteChrome } from "@/components/site-shell";
+import { buildOrganizationSchema, buildWebsiteSchema } from "@/lib/schema";
+import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const displayFont = localFont({
@@ -32,9 +35,36 @@ const bodyFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Ixquisite Menswear",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.defaultTitle,
+    template: siteConfig.titleTemplate,
+  },
   description:
-    "Premium menswear for professionals who want sharp tailoring without the search.",
+    "Shop premium men's suits, shirts, trousers, ties, accessories, and groom packages from Ixquisite. Quiet luxury menswear for work, weddings, ceremonies, and executive presence.",
+  keywords: [...siteConfig.keywords],
+  openGraph: {
+    title: siteConfig.defaultTitle,
+    description:
+      "Shop premium men's suits, shirts, trousers, ties, accessories, and groom packages from Ixquisite. Quiet luxury menswear for work, weddings, ceremonies, and executive presence.",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    locale: siteConfig.locale,
+    type: "website",
+    images: [
+      {
+        url: siteConfig.ogImage.src,
+        alt: siteConfig.ogImage.alt,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.defaultTitle,
+    description:
+      "Shop premium men's suits, shirts, trousers, ties, accessories, and groom packages from Ixquisite. Quiet luxury menswear for work, weddings, ceremonies, and executive presence.",
+    images: [siteConfig.ogImage.src],
+  },
 };
 
 export default function RootLayout({
@@ -45,6 +75,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}>
       <body>
+        <JsonLd data={buildOrganizationSchema()} />
+        <JsonLd data={buildWebsiteSchema()} />
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>

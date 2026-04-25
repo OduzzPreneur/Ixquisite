@@ -1,16 +1,24 @@
+import { buildMetadata } from "@/lib/seo";
 import { PolicyPage } from "@/components/page-templates";
+
+export const metadata = buildMetadata({
+  title: "Delivery Policy",
+  description:
+    "Read the Ixquisite delivery policy for dispatch timing, delivery regions, tracking, and special handling guidance.",
+  path: "/delivery-policy",
+});
 
 export default function DeliveryPolicyPage() {
   return (
     <PolicyPage
       eyebrow="Delivery policy"
-      title="Delivery commitments should be separated from general browsing copy."
-      copy="This page sets clear expectations around dispatch timing, delivery regions, handoff, and tracking communication."
+      title="Delivery guidance for ready-to-wear orders."
+      copy="Read how Ixquisite handles dispatch, delivery regions, tracking, and special requests so timing expectations stay clear before purchase."
       items={[
-        { title: "Dispatch cadence", copy: "In-stock ready-to-wear orders are prepared quickly, with dispatch timing communicated clearly after payment verification." },
-        { title: "Delivery regions", copy: "Ixquisite supports core city delivery, broader nationwide dispatch, and a clarified process for any longer-distance or special handling requests." },
-        { title: "Tracking communication", copy: "Every eligible order should have a visible order reference and tracking path so customers can monitor delivery progress independently." },
-        { title: "Exceptions", copy: "Urgent requests, premium wedding support, and any custom handling should be clarified through direct support before fulfillment begins." },
+        { title: "Dispatch timing", copy: "In-stock ready-to-wear orders are prepared after payment verification, with dispatch timing communicated clearly once the order is confirmed." },
+        { title: "Delivery regions", copy: "Ixquisite supports core city delivery and broader nationwide dispatch, with extra coordination where distance or handling requirements make timing less standard." },
+        { title: "Tracking updates", copy: "Eligible orders receive an order reference and tracking visibility so you can follow delivery progress without needing a manual update first." },
+        { title: "Special handling", copy: "Urgent requests, wedding-related orders, and any delivery needing extra coordination should be discussed with support before fulfillment begins." },
       ]}
     />
   );

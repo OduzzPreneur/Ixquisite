@@ -124,6 +124,7 @@ export type Article = {
   tone: Tone;
   readingTime: string;
   category: string;
+  body?: string;
 };
 
 export type GroomPackageTier = {
@@ -186,9 +187,8 @@ export const announcements = [
 
 export const defaultHomePageSettings: HomePageSettings = {
   heroEyebrow: "Quiet luxury for professionals",
-  heroTitle: "Tailoring that removes the search.",
-  heroCopy:
-    "Ixquisite Menswear delivers premium suits, shirts, trousers, ties, and accessories for men who want to look confident without moving across multiple stores.",
+  heroTitle: "",
+  heroCopy: "",
   heroPrimaryLabel: "Shop Suits",
   heroPrimaryHref: "/category/suits",
   heroSecondaryLabel: "Explore Collection",
@@ -198,8 +198,8 @@ export const defaultHomePageSettings: HomePageSettings = {
   heroVisualAlt: "Model in a burgundy ceremony jacket with black lapels and a groom-ready finish.",
   heroVisualPosition: "center 12%",
   heroMeta: ["Premium corporate wear", "Delivered in a few days", "Fit guidance available"],
-  heroNoteTitle: "Hero product direction",
-  heroNoteCopy: "Refined, suit-led, and image-dominant without discount-store noise.",
+  heroNoteTitle: "",
+  heroNoteCopy: "",
   groomFeatureEyebrow: "Groom's Full Package",
   groomFeatureTitle: "Wedding dressing, handled as one premium decision.",
   groomFeatureCopy:
@@ -999,6 +999,29 @@ export const faqItems = [
   {
     question: "Do you support wedding and team orders?",
     answer: "Yes. Corporate outfitting and wedding party requests can be submitted through the contact and bulk-order pathways.",
+  },
+];
+
+export const groomPackageFaqs = [
+  {
+    question: "What is included in an Ixquisite groom package?",
+    answer:
+      "Ixquisite groom packages can include suits, shirts, ties, accessories, styling coordination, and groomsmen support depending on the selected package.",
+  },
+  {
+    question: "Can Ixquisite coordinate outfits for groomsmen?",
+    answer:
+      "Yes. Ixquisite can help coordinate groomsmen looks so the wedding party appears polished, consistent, and ceremony-ready.",
+  },
+  {
+    question: "Can I choose suit colours for my wedding?",
+    answer:
+      "Yes. Available colours depend on current product availability and the package or product option selected.",
+  },
+  {
+    question: "Do groom packages include accessories?",
+    answer:
+      "Some packages include accessories, while others allow accessories to be added based on the groom's preferred look.",
   },
 ];
 

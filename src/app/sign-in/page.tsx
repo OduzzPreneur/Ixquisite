@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { AuthPage } from "@/components/page-templates";
 import { signInAction } from "@/app/actions/auth";
+import { buildNoIndexMetadata } from "@/lib/seo";
+
+export const metadata = buildNoIndexMetadata(
+  "Sign in",
+  "Private sign-in page for returning Ixquisite customers.",
+);
 
 export default async function SignInPage({
   searchParams,

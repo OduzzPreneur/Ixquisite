@@ -4,7 +4,13 @@ import { PostCheckoutSignupPrompt } from "@/components/post-checkout-signup-prom
 import { UtilityPageHeader } from "@/components/page-templates";
 import { formatPrice } from "@/data/site";
 import { getAuthenticatedUser } from "@/lib/auth";
+import { buildNoIndexMetadata } from "@/lib/seo";
 import { getMeasurementStatusLabel, getOrderById, getOrderEtaLabel } from "@/lib/orders";
+
+export const metadata = buildNoIndexMetadata(
+  "Order confirmation",
+  "Private order confirmation page.",
+);
 
 export default async function OrderConfirmationPage({
   searchParams,

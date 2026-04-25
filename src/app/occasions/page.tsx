@@ -3,6 +3,14 @@ import { UtilityPageHeader } from "@/components/page-templates";
 import { OccasionTile, VisualPanel } from "@/components/ui";
 import { getVisualAsset } from "@/lib/visual-assets";
 import { getOccasions } from "@/lib/catalog";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "Shop Men's Outfits by Occasion",
+  description:
+    "Shop premium men's outfits by occasion, including boardroom looks, wedding guest style, groom packages, formal evenings, business travel, and executive dressing.",
+  path: "/occasions",
+});
 
 export default async function OccasionsPage() {
   const occasions = await getOccasions();
@@ -11,8 +19,8 @@ export default async function OccasionsPage() {
     <>
       <UtilityPageHeader
         eyebrow="Occasions"
-        title="Start from the room you are dressing for."
-        copy="Occasion-led shopping should feel like a guided edit, with each dress code anchored by a real look instead of a text-only menu."
+        title="Shop Men's Outfits by Occasion"
+        copy="Shop premium men's outfits by occasion, including boardroom looks, wedding guest style, groom packages, formal evenings, business travel, and executive dressing."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Occasions" }]}
       />
       <section className="page-section">

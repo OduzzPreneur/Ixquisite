@@ -60,6 +60,18 @@ textarea {
   font: inherit;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .site-shell {
   min-height: 100vh;
 }
@@ -606,7 +618,7 @@ main {
 }
 
 .hero__frame {
-  min-height: calc(100svh - var(--header-height) - 3rem);
+  min-height: clamp(36rem, calc(92svh - var(--header-height) - 2.5rem), 46rem);
   border-radius: calc(var(--radius-lg) + 4px);
   overflow: hidden;
   position: relative;
@@ -620,7 +632,7 @@ main {
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(22rem, 0.88fr);
   gap: 2rem;
-  padding: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.75rem, 3.4vw, 2.6rem);
   min-height: inherit;
 }
 
@@ -637,6 +649,33 @@ main {
 .hero__copy .section-copy {
   color: rgba(255, 248, 239, 0.74);
   max-width: 28rem;
+}
+
+.hero__seo-title {
+  max-width: 10ch;
+  color: rgba(255, 248, 239, 0.98);
+  text-wrap: balance;
+}
+
+.hero__campaign-line {
+  max-width: 11ch;
+  margin-top: -0.2rem;
+  color: rgba(255, 248, 239, 0.98);
+}
+
+.hero__seo-support {
+  max-width: 34rem;
+}
+
+.hero__seo-support a {
+  color: rgba(255, 248, 239, 0.96);
+  text-decoration: underline;
+  text-decoration-color: rgba(179, 150, 100, 0.78);
+  text-underline-offset: 0.16em;
+}
+
+.hero__seo-support a:hover {
+  color: #fff9ef;
 }
 
 .hero__visual {
@@ -1961,7 +2000,10 @@ main {
     border-radius: 22px;
   }
 
-  .hero__meta,
+  .hero__meta {
+    display: none;
+  }
+
   .pill-row {
     gap: 0.55rem;
   }
@@ -2189,10 +2231,6 @@ main {
 
   .utility-page-header--compact-mobile .utility-page-header__copy {
     display: none;
-  }
-
-  .hero__meta {
-    grid-template-columns: 1fr;
   }
 
   .product-detail-card .hero__actions {

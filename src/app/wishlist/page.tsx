@@ -2,7 +2,13 @@ import Link from "next/link";
 import { removeFromWishlistAction } from "@/app/actions/wishlist";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { ProductCard } from "@/components/ui";
+import { buildNoIndexMetadata } from "@/lib/seo";
 import { getWishlistProductsForCurrentUser, getWishlistStateForCurrentUser } from "@/lib/wishlist";
+
+export const metadata = buildNoIndexMetadata(
+  "Wishlist",
+  "Private wishlist page for saved Ixquisite products.",
+);
 
 export default async function WishlistPage({
   searchParams,

@@ -1,5 +1,11 @@
 import { UtilityPageHeader } from "@/components/page-templates";
 import { UpdatePasswordForm } from "@/components/update-password-form";
+import { buildNoIndexMetadata } from "@/lib/seo";
+
+export const metadata = buildNoIndexMetadata(
+  "Update password",
+  "Private password update page for Ixquisite customers.",
+);
 
 export default function UpdatePasswordPage() {
   return (

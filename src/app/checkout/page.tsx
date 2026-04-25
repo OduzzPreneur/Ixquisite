@@ -3,6 +3,12 @@ import { UtilityPageHeader } from "@/components/page-templates";
 import { formatPrice } from "@/data/site";
 import { getCheckoutDefaultsForCurrentUser } from "@/lib/account";
 import { getCurrentCart } from "@/lib/cart";
+import { buildNoIndexMetadata } from "@/lib/seo";
+
+export const metadata = buildNoIndexMetadata(
+  "Checkout",
+  "Private checkout flow.",
+);
 
 export default async function CheckoutPage({
   searchParams,

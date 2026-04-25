@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BeforeAfterComparison } from "@/components/before-after-comparison";
 import { getHomePageData } from "@/lib/catalog";
+import { buildMetadata } from "@/lib/seo";
 import { getVisualAsset } from "@/lib/visual-assets";
 import {
   CategoryTile,
@@ -12,6 +13,22 @@ import {
   TrustStrip,
   VisualPanel,
 } from "@/components/ui";
+
+export const metadata = buildMetadata({
+  title: "Premium Men's Suits, Shirts & Corporate Wear",
+  description:
+    "Shop premium men's suits, shirts, trousers, ties, accessories, and groom packages from Ixquisite. Quiet luxury menswear designed for work, weddings, ceremonies, and confident everyday presence.",
+  path: "/",
+  keywords: [
+    "premium men's suits",
+    "men's corporate wear",
+    "premium menswear Nigeria",
+    "men's suits in Lagos",
+    "groom suits",
+    "men's formal wear",
+    "Ixquisite",
+  ],
+});
 
 function normalizeHeroMetaLabel(value: string) {
   return value.trim().toLowerCase();
@@ -86,9 +103,17 @@ export default async function Home() {
           <div className="hero__grid">
             <div className="hero__copy">
               <p className="eyebrow hero__mobile-hidden">{settings.heroEyebrow}</p>
-              <h1 className="display-title hero__mobile-hidden">{settings.heroTitle}</h1>
-              <p className="section-copy hero__mobile-hidden-copy">
-                {settings.heroCopy}
+              <h1 className="page-title hero__seo-title">Premium Men&apos;s Corporate Wear, Tailored for Confidence</h1>
+              {settings.heroTitle ? (
+                <p className="display-title hero__mobile-hidden hero__campaign-line">{settings.heroTitle}</p>
+              ) : null}
+              {settings.heroCopy ? (
+                <p className="section-copy hero__mobile-hidden-copy">
+                  {settings.heroCopy}
+                </p>
+              ) : null}
+              <p className="section-copy hero__seo-support">
+                Shop premium men&apos;s <Link href="/category/suits">suits</Link>, <Link href="/category/shirts">shirts</Link>, <Link href="/category/trousers">trousers</Link>, <Link href="/category/ties">ties</Link>, and <Link href="/groom-package">groom packages</Link> designed for work, weddings, ceremonies, and complete menswear styling.
               </p>
               <div className="hero__actions">
                 <Link href={settings.heroPrimaryHref} className="button">
@@ -122,10 +147,12 @@ export default async function Home() {
                 }}
                 preload
               />
-              <div className="hero__note">
-                <strong>{settings.heroNoteTitle}</strong>
-                {settings.heroNoteCopy}
-              </div>
+              {settings.heroNoteTitle || settings.heroNoteCopy ? (
+                <div className="hero__note">
+                  {settings.heroNoteTitle ? <strong>{settings.heroNoteTitle}</strong> : null}
+                  {settings.heroNoteCopy}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

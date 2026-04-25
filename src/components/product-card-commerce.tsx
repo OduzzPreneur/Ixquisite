@@ -73,7 +73,7 @@ export function ProductCardCommerce({
                 type="button"
                 className={`product-card__swatch${selectedColor === swatch.label ? " product-card__swatch--active" : ""}${isLightSwatch(swatch.value) ? " product-card__swatch--light" : ""}`}
                 style={{ background: getSwatchBackground(swatch.value) }}
-                aria-label={`Select ${swatch.label}`}
+                aria-label={`Select ${swatch.label} colour`}
                 aria-pressed={selectedColor === swatch.label}
                 onClick={() => {
                   setSelectedColorState(swatch.label);
@@ -91,7 +91,11 @@ export function ProductCardCommerce({
           <input type="hidden" name="product_slug" value={product.slug} />
           <input type="hidden" name="quantity" value="1" />
           <input type="hidden" name="selected_color" value={selectedColor} />
-          <button type="submit" className="button product-card__button">
+          <button
+            type="submit"
+            className="button product-card__button"
+            aria-label={`Add ${product.title}${selectedColor ? ` in ${selectedColor}` : ""} to cart`}
+          >
             Add to Cart
           </button>
         </form>
@@ -104,7 +108,7 @@ export function ProductCardCommerce({
           <form action={addToWishlistAction}>
             <input type="hidden" name="product_slug" value={product.slug} />
             <input type="hidden" name="next" value={wishlistNext} />
-            <button type="submit" className="pill-link product-card__save">
+            <button type="submit" className="pill-link product-card__save" aria-label={`Save ${product.title} to wishlist`}>
               Save
             </button>
           </form>

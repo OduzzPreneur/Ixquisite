@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { getLookbookLooks, getProductsBySlugs } from "@/lib/catalog";
+import { buildMetadata } from "@/lib/seo";
 import { getVisualAsset } from "@/lib/visual-assets";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 import { ProductCard, VisualPanel } from "@/components/ui";
+
+export const metadata = buildMetadata({
+  title: "Men's Lookbook",
+  description:
+    "Explore the Ixquisite lookbook for complete premium menswear outfits built around suits, shirts, trousers, ties, and accessories that work together.",
+  path: "/lookbook",
+});
 
 export default async function LookbookPage() {
   const looks = await getLookbookLooks();

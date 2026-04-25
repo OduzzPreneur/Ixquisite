@@ -1,6 +1,7 @@
 import "server-only";
 
 import crypto from "crypto";
+import { siteConfig } from "@/lib/site";
 
 const PAYSTACK_API_BASE = "https://api.paystack.co";
 
@@ -40,18 +41,8 @@ export function hasPaystackConfig() {
 }
 
 function getBaseUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
-  if (explicit) {
-    return explicit.replace(/\/$/, "");
-  }
-
-  const vercelUrl = process.env.VERCEL_URL;
-  if (vercelUrl) {
-    return `https://${vercelUrl}`;
-  }
-
-  if (process.env.NODE_ENV !== "production") {
-    return "http://localhost:3000";
+  if (siteConfig.url) {
+    return siteConfig.url;
   }
 
   throw new Error("NEXT_PUBLIC_SITE_URL is required in production for Paystack callback URLs.");
