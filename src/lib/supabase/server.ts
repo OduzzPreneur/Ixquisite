@@ -29,11 +29,12 @@ function describeError(error: unknown): string {
     return String(error);
   }
 
+  const errorRecord = error as Record<string, unknown>;
   const fields = ["name", "message", "details", "hint", "code"]
-    .map((key) => error[key as keyof typeof error])
+    .map((key) => errorRecord[key])
     .filter((value): value is string => typeof value === "string" && Boolean(value.trim()));
 
-  const cause = "cause" in error ? describeError(error.cause) : "";
+  const cause = "cause" in errorRecord ? describeError(errorRecord.cause) : "";
 
   return [...fields, cause].filter(Boolean).join(" ");
 }
