@@ -7,6 +7,7 @@ import { UtilityPageHeader } from "@/components/page-templates";
 import { getCategory, getProduct, getProducts, getProductsBySlugs } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
 import { buildBreadcrumbSchema, buildProductSchema } from "@/lib/schema";
+import { getProductVariants, resolveProductVariant, resolveVariantByColor } from "@/lib/product-variants";
 import { getVisualAsset } from "@/lib/visual-assets";
 import { getWishlistProductSlugsForCurrentUser } from "@/lib/wishlist";
 import { ProductCard } from "@/components/ui";
@@ -65,7 +66,7 @@ export default async function ProductPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ error?: string; message?: string; color?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; color?: string; variant?: string }>;
 }) {
   const { slug } = await params;
   const query = await searchParams;
@@ -83,8 +84,11 @@ export default async function ProductPage({
   const category = await getCategory(product.category);
   const related = allProducts.filter((item) => item.category === product.category && item.slug !== product.slug).slice(0, 3);
   const isSaved = wishlistSlugs.includes(product.slug);
-  const swatchLabels = product.swatches.map((swatch) => swatch.label);
-  const selectedColor = query.color && swatchLabels.includes(query.color) ? query.color : (swatchLabels[0] ?? product.colors[0] ?? "");
+  const variants = getProductVariants(product);
+  const fallbackVariant = variants[0] ?? null;
+  const variantFromQuery = resolveProductVariant({ ...product, variants }, query.variant);
+  const variantFromColor = resolveVariantByColor({ ...product, variants }, query.color);
+  const selectedVariant = variantFromQuery ?? variantFromColor ?? fallbackVariant;
   const categoryTitle = category?.title ?? product.category;
 
   return (
@@ -109,7 +113,7 @@ export default async function ProductPage({
           defaultImage={product.image ?? getVisualAsset(product.title)}
           detailImage={getVisualAsset(`${product.title}::detail`)}
           styledImage={getVisualAsset(`${product.title}::styled`)}
-          initialColor={selectedColor}
+          initialVariantSlug={selectedVariant?.slug ?? ""}
           isSaved={isSaved}
           error={query.error}
           message={query.message}

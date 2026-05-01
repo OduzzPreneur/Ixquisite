@@ -228,16 +228,19 @@ export function ProductCard({
   product,
   wishlistState = "idle",
   wishlistNext = "/wishlist",
+  initialVariantSlug,
 }: {
   product: Product;
   wishlistState?: "idle" | "saved";
   wishlistNext?: string;
+  initialVariantSlug?: string;
 }) {
   return (
     <InteractiveProductCard
       product={product}
       wishlistState={wishlistState}
       wishlistNext={wishlistNext}
+      initialVariantSlug={initialVariantSlug}
       defaultImage={product.image ?? getVisualAsset(product.title)}
       detailImage={getVisualAsset(`${product.title}::detail`)}
       styledImage={getVisualAsset(`${product.title}::styled`)}

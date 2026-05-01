@@ -29,6 +29,7 @@ import {
   type Tone,
 } from "@/data/site";
 import { normalizeProductGalleryImages } from "@/lib/product-gallery";
+import { withShirtVariants } from "@/lib/product-variants";
 import { getHomePageSettings } from "@/lib/homepage";
 import { ensureProductSwatches } from "@/lib/product-swatches";
 import { createSupabaseServerClient, hasSupabaseConfig } from "@/lib/supabase/server";
@@ -140,7 +141,7 @@ const fallbackData: StorefrontData = {
   categories: fallbackCategories,
   occasions: fallbackOccasions,
   collections: fallbackCollections,
-  products: fallbackProducts,
+  products: fallbackProducts.map(withShirtVariants),
   articles: fallbackArticles,
   lookbookLooks: fallbackLookbookLooks.map((look, index) => ({
     slug: `look-${index + 1}`,
@@ -152,7 +153,7 @@ const fallbackData: StorefrontData = {
 };
 
 function mapProduct(row: ProductRow): Product {
-  return {
+  return withShirtVariants({
     slug: row.slug,
     title: row.title,
     category: row.category_slug,
@@ -184,7 +185,7 @@ function mapProduct(row: ProductRow): Product {
         }
       : undefined,
     galleryImages: normalizeProductGalleryImages(row.gallery_images),
-  };
+  });
 }
 
 function withFallback<T>(label: string, fallback: T, error: unknown) {
@@ -252,6 +253,13 @@ const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
     return withFallback("lookbook", fallbackData, lookbookResult.error);
   }
 
+  const mappedProducts = ((productsResult.data as ProductRow[]) ?? []).map(mapProduct);
+  const productMap = new Map(mappedProducts.map((product) => [product.slug, product]));
+  const productsWithFallbackShirts = [
+    ...mappedProducts,
+    ...fallbackData.products.filter((product) => product.category === "shirts" && !productMap.has(product.slug)),
+  ];
+
   return {
     categories:
       ((categoriesResult.data as CategoryRow[]) ?? []).map((category) => ({
@@ -282,7 +290,7 @@ const loadStorefrontData = cache(async (): Promise<StorefrontData> => {
         sortOrder: collection.sort_order ?? 0,
         image: mapCatalogImage(collection),
       })) || fallbackData.collections,
-    products: ((productsResult.data as ProductRow[]) ?? []).map(mapProduct),
+    products: productsWithFallbackShirts,
     articles: ((articlesResult.data as ArticleRow[]) ?? []).map((article) => ({
       slug: article.slug,
       title: article.title,
@@ -322,14 +330,14 @@ export async function getNewInProducts() {
   const products = await getProducts();
   const matches = products.filter((item) => item.isNew && !item.isPlaceholder);
 
-  return matches.length ? matches : fallbackProducts.filter((item) => item.isNew && !item.isPlaceholder);
+  return matches.length ? matches : fallbackProducts.filter((item) => item.isNew && !item.isPlaceholder).map(withShirtVariants);
 }
 
 export async function getBestSellerProducts() {
   const products = await getProducts();
   const matches = products.filter((item) => item.isBestSeller && !item.isPlaceholder);
 
-  return matches.length ? matches : fallbackProducts.filter((item) => item.isBestSeller && !item.isPlaceholder);
+  return matches.length ? matches : fallbackProducts.filter((item) => item.isBestSeller && !item.isPlaceholder).map(withShirtVariants);
 }
 
 export async function getArticles() {
@@ -357,22 +365,28 @@ export async function getArticle(slug: string) {
 }
 
 export async function getProduct(slug: string) {
-  return (await getProducts()).find((item) => item.slug === slug) ?? fallbackGetProduct(slug);
+  const match = (await getProducts()).find((item) => item.slug === slug);
+  if (match) {
+    return match;
+  }
+
+  const fallback = fallbackGetProduct(slug);
+  return fallback ? withShirtVariants(fallback) : undefined;
 }
 
 export async function getProductsByCategory(slug: string) {
   const matches = (await getProducts()).filter((item) => item.category === slug && !item.isPlaceholder);
-  return matches.length ? matches : fallbackGetProductsByCategory(slug).filter((item) => !item.isPlaceholder);
+  return matches.length ? matches : fallbackGetProductsByCategory(slug).filter((item) => !item.isPlaceholder).map(withShirtVariants);
 }
 
 export async function getProductsByCollection(slug: string) {
   const matches = (await getProducts()).filter((item) => item.collection === slug && !item.isPlaceholder);
-  return matches.length ? matches : fallbackGetProductsByCollection(slug).filter((item) => !item.isPlaceholder);
+  return matches.length ? matches : fallbackGetProductsByCollection(slug).filter((item) => !item.isPlaceholder).map(withShirtVariants);
 }
 
 export async function getProductsByOccasion(slug: string) {
   const matches = (await getProducts()).filter((item) => item.occasions.includes(slug) && !item.isPlaceholder);
-  return matches.length ? matches : fallbackGetProductsByOccasion(slug).filter((item) => !item.isPlaceholder);
+  return matches.length ? matches : fallbackGetProductsByOccasion(slug).filter((item) => !item.isPlaceholder).map(withShirtVariants);
 }
 
 export async function getProductsBySlugs(slugs: readonly string[]) {
@@ -381,7 +395,7 @@ export async function getProductsBySlugs(slugs: readonly string[]) {
     .map((slug) => products.find((item) => item.slug === slug))
     .filter((item): item is Product => Boolean(item));
 
-  return mapped.length ? mapped : fallbackGetProductsBySlugs([...slugs]);
+  return mapped.length ? mapped : fallbackGetProductsBySlugs([...slugs]).map(withShirtVariants);
 }
 
 export async function getHomePageData() {
@@ -416,9 +430,9 @@ export async function getHomePageData() {
     articles,
     trustPoints,
     featuredCollection,
-    featuredProducts: featuredProducts.length ? featuredProducts : fallbackGetProductsByCollection(featuredCollection.slug).slice(0, 3),
+    featuredProducts: featuredProducts.length ? featuredProducts : fallbackGetProductsByCollection(featuredCollection.slug).slice(0, 3).map(withShirtVariants),
     bestSellerProducts: bestSellerProducts.slice(0, 3),
-    latestProducts: latestProducts.length ? latestProducts : fallbackProducts.filter((product) => product.isNew).slice(0, 6),
+    latestProducts: latestProducts.length ? latestProducts : fallbackProducts.filter((product) => product.isNew).slice(0, 6).map(withShirtVariants),
     completeLook,
     completeLookProducts,
   };

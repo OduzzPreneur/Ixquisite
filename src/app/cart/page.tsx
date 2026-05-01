@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { removeCartItemAction, updateCartItemQuantityAction } from "@/app/actions/cart";
 import { UtilityPageHeader } from "@/components/page-templates";
 import { ProductCard } from "@/components/ui";
@@ -47,27 +48,42 @@ export default async function CartPage({
               <div className="table-like">
                 {cart.items.map((item) => (
                   <article key={item.id}>
-                    <div>
-                      <strong>{item.product.title}</strong>
-                      <p className="muted">
-                        {item.selectedColor ? `Colour · ${item.selectedColor}` : "Colour locked to product default"}
-                      </p>
-                      <div className="hero__actions hero__actions--compact" style={{ marginTop: "0.8rem" }}>
-                        <form action={updateCartItemQuantityAction}>
-                          <input type="hidden" name="item_id" value={item.id} />
-                          <input type="hidden" name="quantity" value={Math.max(1, item.quantity - 1)} />
-                          <button type="submit" className="pill-link">-</button>
-                        </form>
-                        <span className="pill-link">Qty {item.quantity}</span>
-                        <form action={updateCartItemQuantityAction}>
-                          <input type="hidden" name="item_id" value={item.id} />
-                          <input type="hidden" name="quantity" value={item.quantity + 1} />
-                          <button type="submit" className="pill-link">+</button>
-                        </form>
-                        <form action={removeCartItemAction}>
-                          <input type="hidden" name="item_id" value={item.id} />
-                          <button type="submit" className="pill-link">Remove</button>
-                        </form>
+                    <div style={{ display: "grid", gridTemplateColumns: "72px minmax(0, 1fr)", gap: "0.9rem", alignItems: "start" }}>
+                      <div style={{ position: "relative", width: "72px", height: "96px", borderRadius: "0.7rem", overflow: "hidden" }}>
+                        <Image
+                          src={item.image ?? item.product.image?.src ?? "/images/ixquisite/ivory-broadcloth-shirt.webp"}
+                          alt={`${item.productName}${item.selectedColor ? ` in ${item.selectedColor}` : ""}`}
+                          fill
+                          sizes="72px"
+                          className="visual-panel__image"
+                        />
+                      </div>
+                      <div>
+                        <strong>{item.productName}</strong>
+                        <p className="muted">
+                          {item.selectedColor ? `Variant · ${item.selectedColor}` : "Variant · Default"}
+                        </p>
+                        <p className="muted">
+                          {item.selectedSize ? `Size · ${item.selectedSize}` : "Size · Default"}
+                        </p>
+                        <p className="muted">SKU · {item.sku}</p>
+                        <div className="hero__actions hero__actions--compact" style={{ marginTop: "0.8rem" }}>
+                          <form action={updateCartItemQuantityAction}>
+                            <input type="hidden" name="item_id" value={item.id} />
+                            <input type="hidden" name="quantity" value={Math.max(1, item.quantity - 1)} />
+                            <button type="submit" className="pill-link">-</button>
+                          </form>
+                          <span className="pill-link">Qty {item.quantity}</span>
+                          <form action={updateCartItemQuantityAction}>
+                            <input type="hidden" name="item_id" value={item.id} />
+                            <input type="hidden" name="quantity" value={item.quantity + 1} />
+                            <button type="submit" className="pill-link">+</button>
+                          </form>
+                          <form action={removeCartItemAction}>
+                            <input type="hidden" name="item_id" value={item.id} />
+                            <button type="submit" className="pill-link">Remove</button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                     <span>{formatPrice(item.lineTotal)}</span>

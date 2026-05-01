@@ -179,8 +179,9 @@ create table if not exists public.wishlist_items (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   product_slug text not null references public.products(slug) on delete cascade on update cascade,
+  selected_variant_slug text,
   created_at timestamptz not null default timezone('utc', now()),
-  unique (user_id, product_slug)
+  unique (user_id, product_slug, selected_variant_slug)
 );
 
 create table if not exists public.carts (
@@ -196,9 +197,15 @@ create table if not exists public.cart_items (
   id uuid primary key default gen_random_uuid(),
   cart_id uuid not null references public.carts(id) on delete cascade,
   product_slug text not null references public.products(slug) on update cascade,
+  product_id text,
+  product_name text,
+  variant_id text,
+  variant_slug text,
+  sku text,
   quantity integer not null check (quantity > 0),
   selected_size text,
   selected_color text,
+  image text,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
@@ -296,7 +303,18 @@ create table if not exists public.homepage_settings (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
-create unique index if not exists cart_items_identity_idx on public.cart_items (cart_id, product_slug, coalesce(selected_size, ''), coalesce(selected_color, ''));
+alter table public.wishlist_items add column if not exists selected_variant_slug text;
+alter table public.cart_items add column if not exists product_id text;
+alter table public.cart_items add column if not exists product_name text;
+alter table public.cart_items add column if not exists variant_id text;
+alter table public.cart_items add column if not exists variant_slug text;
+alter table public.cart_items add column if not exists sku text;
+alter table public.cart_items add column if not exists image text;
+
+drop index if exists cart_items_identity_idx;
+create unique index if not exists cart_items_identity_idx on public.cart_items (cart_id, coalesce(product_id, product_slug), coalesce(variant_id, selected_color, ''), coalesce(selected_size, ''));
+drop index if exists wishlist_items_identity_idx;
+create unique index if not exists wishlist_items_identity_idx on public.wishlist_items (user_id, product_slug, coalesce(selected_variant_slug, ''));
 create index if not exists products_category_slug_idx on public.products(category_slug);
 create index if not exists products_collection_slug_idx on public.products(collection_slug);
 create index if not exists product_occasions_occasion_slug_idx on public.product_occasions(occasion_slug);

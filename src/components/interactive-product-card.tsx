@@ -6,11 +6,13 @@ import { useMemo, useState } from "react";
 import { ProductCardCommerce } from "@/components/product-card-commerce";
 import type { Product, ProductImage } from "@/data/site";
 import { applySwatchImageFallbacks } from "@/lib/product-swatches";
+import { getProductVariants } from "@/lib/product-variants";
 
 export function InteractiveProductCard({
   product,
   wishlistState,
   wishlistNext,
+  initialVariantSlug,
   defaultImage,
   detailImage,
   styledImage,
@@ -18,6 +20,7 @@ export function InteractiveProductCard({
   product: Product;
   wishlistState: "idle" | "saved";
   wishlistNext: string;
+  initialVariantSlug?: string;
   defaultImage?: ProductImage;
   detailImage?: ProductImage;
   styledImage?: ProductImage;
@@ -26,16 +29,17 @@ export function InteractiveProductCard({
     () => applySwatchImageFallbacks(product.swatches, [defaultImage, styledImage, detailImage]),
     [defaultImage, detailImage, product.swatches, styledImage],
   );
-  const [selectedColor, setSelectedColor] = useState(swatches[0]?.label ?? "");
-  const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? swatches[0];
-  const cardImage = selectedSwatch?.imageSrc
+  const variants = useMemo(() => getProductVariants({ ...product, swatches }), [product, swatches]);
+  const [selectedVariantSlug, setSelectedVariantSlug] = useState(initialVariantSlug ?? variants[0]?.slug ?? "");
+  const selectedVariant = variants.find((variant) => variant.slug === selectedVariantSlug) ?? variants[0];
+  const cardImage = selectedVariant?.images.main
     ? {
-        src: selectedSwatch.imageSrc,
-        alt: `${product.title} in ${selectedSwatch.label}`,
-        position: selectedSwatch.imagePosition ?? defaultImage?.position,
+        src: selectedVariant.images.main,
+        alt: `${product.title} in ${selectedVariant.colorName} - main front view`,
+        position: defaultImage?.position,
       }
     : defaultImage;
-  const productHref = selectedColor ? `/product/${product.slug}?color=${encodeURIComponent(selectedColor)}` : `/product/${product.slug}`;
+  const productHref = selectedVariant?.slug ? `/product/${product.slug}?variant=${encodeURIComponent(selectedVariant.slug)}` : `/product/${product.slug}`;
 
   return (
     <article className="product-card">
@@ -66,9 +70,9 @@ export function InteractiveProductCard({
         product={product}
         wishlistState={wishlistState}
         wishlistNext={wishlistNext}
-        swatches={swatches}
-        selectedColor={selectedColor}
-        onSelectColor={setSelectedColor}
+        variants={variants}
+        selectedVariantSlug={selectedVariant?.slug}
+        onSelectVariant={(variant) => setSelectedVariantSlug(variant.slug)}
       />
     </article>
   );

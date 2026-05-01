@@ -59,11 +59,17 @@ export default async function WishlistPage({
               </Link>
             </div>
             <div className="grid grid--3">
-              {products.map((product) => (
-                <article key={product.slug} className="cta-stack">
-                  <ProductCard product={product} wishlistState="saved" wishlistNext="/wishlist" />
+              {products.map((entry) => (
+                <article key={`${entry.product.slug}-${entry.selectedVariantSlug ?? "default"}`} className="cta-stack">
+                  <ProductCard
+                    product={entry.product}
+                    wishlistState="saved"
+                    wishlistNext="/wishlist"
+                    initialVariantSlug={entry.selectedVariantSlug ?? undefined}
+                  />
                   <form action={removeFromWishlistAction}>
-                    <input type="hidden" name="product_slug" value={product.slug} />
+                    <input type="hidden" name="product_slug" value={entry.product.slug} />
+                    <input type="hidden" name="selected_variant_slug" value={entry.selectedVariantSlug ?? ""} />
                     <input type="hidden" name="next" value="/wishlist" />
                     <button type="submit" className="pill-link">
                       Remove

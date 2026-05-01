@@ -9,8 +9,33 @@ export type ProductImage = {
 export type ProductSwatch = {
   label: string;
   value: string;
+  slug?: string;
+  variantId?: string;
+  swatchType?: "color" | "image";
+  swatchImage?: string;
+  sku?: string;
   imageSrc?: string;
   imagePosition?: string;
+};
+
+export type ProductVariantImages = {
+  main?: string;
+  layered?: string;
+  detail?: string;
+  fit?: string;
+  completeLook?: string;
+};
+
+export type ProductVariant = {
+  id: string;
+  colorName: string;
+  slug: string;
+  swatchType: "color" | "image";
+  swatchValue: string;
+  swatchImage?: string;
+  sku: string;
+  stock?: number;
+  images: ProductVariantImages;
 };
 
 export type ProductGalleryImage = {
@@ -51,6 +76,8 @@ export type Collection = {
 };
 
 export type Product = {
+  id?: string;
+  name?: string;
   slug: string;
   title: string;
   category: string;
@@ -75,8 +102,10 @@ export type Product = {
   isPlaceholder?: boolean;
   occasions: string[];
   completeTheLook: string[];
+  baseImage?: string;
   image?: ProductImage;
   galleryImages?: ProductGalleryImage[];
+  variants?: ProductVariant[];
 };
 
 function fallbackSwatchValue(label: string) {
@@ -640,14 +669,14 @@ export const products: Product[] = [
     slug: "ivory-broadcloth-shirt",
     title: "Ivory Broadcloth Shirt",
     category: "shirts",
-    price: 36500,
+    price: 42500,
     tone: "stone",
-    blurb: "A clean formal shirt with enough weight to stay sharp under tailored jackets.",
-    description: "Cut for polished layering, this shirt keeps its structure through full workdays.",
+    blurb: "A refined broadcloth shirt designed for clean tailoring and formal confidence.",
+    description: "Cut for polished layering with a premium broadcloth finish that stays structured through long days.",
     delivery: "Delivered in 2-4 days",
     fit: "Contemporary slim fit",
-    colors: ["Ivory", "White"],
-    swatches: createSwatches(["Ivory", "White"]),
+    colors: ["Ivory", "White", "Champagne"],
+    swatches: createSwatches(["Ivory", "White", "Champagne"]),
     sizes: ["15", "15.5", "16", "16.5", "17"],
     availability: "In stock",
     details: ["Broadcloth cotton", "Semi-spread collar", "Double-button cuff", "Machine wash gentle"],
@@ -658,20 +687,44 @@ export const products: Product[] = [
     isNew: true,
     isBestSeller: false,
     occasions: ["office", "executive", "wedding-guest"],
-    completeTheLook: ["midnight-commander-suit", "regent-silk-tie"],
+    completeTheLook: ["midnight-commander-suit", "regent-silk-tie", "heirloom-accessory-set"],
+  },
+  {
+    slug: "executive-poplin-shirt",
+    title: "Executive Poplin Shirt",
+    category: "shirts",
+    price: 38500,
+    tone: "stone",
+    blurb: "Crisp poplin shirting built for boardroom clarity and premium daily dressing.",
+    description: "Designed for sharp formal layering with clean structure, breathable wear, and understated luxury styling.",
+    delivery: "Delivered in 2-4 days",
+    fit: "Contemporary tailored fit",
+    colors: ["White", "Sky Blue", "Black"],
+    swatches: createSwatches(["White", "Sky Blue", "Black"]),
+    sizes: ["15", "15.5", "16", "16.5", "17"],
+    availability: "In stock",
+    details: ["Premium poplin cotton", "Semi-spread collar", "Single-needle finish", "Machine wash gentle"],
+    cardFeatures: ["Premium poplin cotton", "Contemporary tailored fit"],
+    ratingValue: 4.8,
+    reviewCount: 21,
+    collection: "executive-essentials",
+    isNew: true,
+    isBestSeller: false,
+    occasions: ["office", "executive", "business-travel"],
+    completeTheLook: ["midnight-commander-suit", "regent-silk-tie", "heirloom-accessory-set"],
   },
   {
     slug: "slate-pinstripe-shirt",
     title: "Slate Pinstripe Shirt",
     category: "shirts",
-    price: 39900,
+    price: 45500,
     tone: "slate",
-    blurb: "A subtle pinstripe shirt for professionals who want texture without flash.",
-    description: "Designed for client meetings, travel, and layered office dressing.",
+    blurb: "A structured pinstripe shirt for understated authority and texture-rich tailoring.",
+    description: "Designed for executive meetings and elevated formalwear, with refined pinstripes that stay subtle and premium.",
     delivery: "Delivered in 2-4 days",
     fit: "Regular tailored fit",
-    colors: ["Slate Stripe"],
-    swatches: createSwatches(["Slate Stripe"]),
+    colors: ["Slate", "Navy Stripe", "Charcoal Stripe"],
+    swatches: createSwatches(["Slate", "Navy Stripe", "Charcoal Stripe"]),
     sizes: ["15", "15.5", "16", "16.5"],
     availability: "In stock",
     details: ["Cotton stretch blend", "Structured collar", "French placket", "Machine wash gentle"],
@@ -683,6 +736,30 @@ export const products: Product[] = [
     isBestSeller: false,
     occasions: ["office", "business-travel"],
     completeTheLook: ["midnight-commander-suit", "regent-silk-tie"],
+  },
+  {
+    slug: "black-ceremony-shirt",
+    title: "Black Ceremony Shirt",
+    category: "shirts",
+    price: 48500,
+    tone: "ink",
+    blurb: "A ceremony-grade shirt with controlled drape for formal nights and statement tailoring.",
+    description: "Built for black-tie and premium evening dressing with sharp collar lines and elevated finishing.",
+    delivery: "Delivered in 2-4 days",
+    fit: "Slim formal fit",
+    colors: ["Black", "Wine", "Deep Navy"],
+    swatches: createSwatches(["Black", "Wine", "Deep Navy"]),
+    sizes: ["15", "15.5", "16", "16.5", "17"],
+    availability: "In stock",
+    details: ["Ceremony cotton blend", "Structured spread collar", "Formal cuff finish", "Machine wash gentle"],
+    cardFeatures: ["Slim formal fit", "Ceremony cotton blend"],
+    ratingValue: 4.8,
+    reviewCount: 14,
+    collection: "signature-neutrals",
+    isNew: true,
+    isBestSeller: false,
+    occasions: ["black-tie", "wedding-guest", "executive"],
+    completeTheLook: ["signature-ceremony-tuxedo", "regent-silk-tie", "heirloom-accessory-set"],
   },
   {
     slug: "tailored-ink-trouser",

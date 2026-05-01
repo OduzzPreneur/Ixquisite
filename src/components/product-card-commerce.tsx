@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useMemo } from "react";
 import { addToCartAction } from "@/app/actions/cart";
 import { addToWishlistAction } from "@/app/actions/wishlist";
-import type { Product, ProductSwatch } from "@/data/site";
+import { ProductSwatches } from "@/components/product-swatches";
+import type { Product, ProductVariant } from "@/data/site";
 import { formatPrice } from "@/data/site";
-import { getSwatchBackground, isLightSwatch } from "@/lib/product-swatches";
+import { getProductVariants } from "@/lib/product-variants";
 
 function getCardFeatures(product: Product) {
   const features = product.cardFeatures?.length ? product.cardFeatures : [product.fit, ...product.details].filter(Boolean);
@@ -21,27 +22,21 @@ export function ProductCardCommerce({
   product,
   wishlistState,
   wishlistNext,
-  swatches: providedSwatches,
-  selectedColor: controlledSelectedColor,
-  onSelectColor,
+  variants: providedVariants,
+  selectedVariantSlug,
+  onSelectVariant,
 }: {
   product: Product;
   wishlistState: "idle" | "saved";
   wishlistNext: string;
-  swatches?: ProductSwatch[];
-  selectedColor?: string;
-  onSelectColor?: (color: string) => void;
+  variants?: ProductVariant[];
+  selectedVariantSlug?: string;
+  onSelectVariant?: (variant: ProductVariant) => void;
 }) {
-  const swatches: ProductSwatch[] = providedSwatches?.length
-    ? providedSwatches
-    : product.swatches?.length
-      ? product.swatches
-    : product.colors.map((color) => ({ label: color, value: color }));
-  const initialSwatch = swatches[0] ?? null;
-  const [selectedColorState, setSelectedColorState] = useState(initialSwatch?.label ?? "");
-  const selectedColor = controlledSelectedColor ?? selectedColorState;
-  const selectedSwatch = swatches.find((swatch) => swatch.label === selectedColor) ?? initialSwatch;
+  const variants = useMemo(() => providedVariants?.length ? providedVariants : getProductVariants(product), [product, providedVariants]);
+  const selectedVariant = variants.find((variant) => variant.slug === selectedVariantSlug) ?? variants[0] ?? null;
   const features = getCardFeatures(product);
+
   return (
     <div className="product-card__meta">
       <div className="product-card__topline">
@@ -60,41 +55,28 @@ export function ProductCardCommerce({
         </ul>
       ) : null}
 
-      {swatches.length ? (
-        <div className="product-card__swatch-block">
-          <div className="product-card__swatch-header">
-            <span className="product-card__option-label">Colour</span>
-            <span className="product-card__swatch-label">{selectedSwatch?.label ?? `${swatches.length} colours`}</span>
-          </div>
-          <div className="product-card__swatch-row" role="group" aria-label={`${product.title} colours`}>
-            {swatches.slice(0, 4).map((swatch) => (
-              <button
-                key={swatch.label}
-                type="button"
-                className={`product-card__swatch${selectedColor === swatch.label ? " product-card__swatch--active" : ""}${isLightSwatch(swatch.value) ? " product-card__swatch--light" : ""}`}
-                style={{ background: getSwatchBackground(swatch.value) }}
-                aria-label={`Select ${swatch.label} colour`}
-                aria-pressed={selectedColor === swatch.label}
-                onClick={() => {
-                  setSelectedColorState(swatch.label);
-                  onSelectColor?.(swatch.label);
-                }}
-              />
-            ))}
-            {swatches.length > 4 ? <span className="product-card__swatch-more">+{swatches.length - 4}</span> : null}
-          </div>
-        </div>
+      {variants.length ? (
+        <ProductSwatches
+          variants={variants}
+          selectedVariant={selectedVariant}
+          onSelect={onSelectVariant ?? (() => undefined)}
+          size="sm"
+        />
       ) : null}
 
       <div className="product-card__actions">
         <form action={addToCartAction}>
           <input type="hidden" name="product_slug" value={product.slug} />
           <input type="hidden" name="quantity" value="1" />
-          <input type="hidden" name="selected_color" value={selectedColor} />
+          <input type="hidden" name="selected_variant_id" value={selectedVariant?.id ?? ""} />
+          <input type="hidden" name="selected_variant_slug" value={selectedVariant?.slug ?? ""} />
+          <input type="hidden" name="selected_variant_sku" value={selectedVariant?.sku ?? ""} />
+          <input type="hidden" name="selected_color" value={selectedVariant?.colorName ?? ""} />
+          <input type="hidden" name="selected_image" value={selectedVariant?.images.main ?? ""} />
           <button
             type="submit"
             className="button product-card__button"
-            aria-label={`Add ${product.title}${selectedColor ? ` in ${selectedColor}` : ""} to cart`}
+            aria-label={`Add ${product.title}${selectedVariant?.colorName ? ` in ${selectedVariant.colorName}` : ""} to cart`}
           >
             Add to Cart
           </button>
@@ -107,6 +89,7 @@ export function ProductCardCommerce({
         ) : (
           <form action={addToWishlistAction}>
             <input type="hidden" name="product_slug" value={product.slug} />
+            <input type="hidden" name="selected_variant_slug" value={selectedVariant?.slug ?? ""} />
             <input type="hidden" name="next" value={wishlistNext} />
             <button type="submit" className="pill-link product-card__save" aria-label={`Save ${product.title} to wishlist`}>
               Save

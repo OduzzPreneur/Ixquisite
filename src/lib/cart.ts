@@ -5,6 +5,7 @@ import { getProduct, getProductsBySlugs } from "@/lib/catalog";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase/admin";
 import { getAuthenticatedUser } from "@/lib/auth";
 import type { Product } from "@/data/site";
+import { getProductVariants, resolveProductVariant, resolveVariantByColor } from "@/lib/product-variants";
 
 const CART_COOKIE = "ixq_cart_state";
 const CART_TOKEN_COOKIE = "ixq_cart_token";
@@ -12,11 +13,17 @@ const CART_COOKIE_DAYS = 30;
 
 export type CartLine = {
   id: string;
+  productId: string;
+  productName: string;
   productSlug: string;
   product: Product;
+  variantId: string;
+  variantSlug: string;
+  sku: string;
   quantity: number;
   selectedSize: string | null;
   selectedColor: string | null;
+  image: string | null;
   lineTotal: number;
 };
 
@@ -28,10 +35,16 @@ export type CartState = {
 
 type LocalCartItem = {
   id: string;
+  productId: string;
+  productName: string;
   productSlug: string;
+  variantId: string;
+  variantSlug: string;
+  sku: string;
   quantity: number;
   selectedSize: string | null;
   selectedColor: string | null;
+  image: string | null;
 };
 
 type SupabaseCart = {
@@ -45,9 +58,15 @@ type SupabaseCartItem = {
   id: string;
   cart_id: string;
   product_slug: string;
+  product_id: string | null;
+  product_name: string | null;
+  variant_id: string | null;
+  variant_slug: string | null;
+  sku: string | null;
   quantity: number;
   selected_size: string | null;
   selected_color: string | null;
+  image: string | null;
 };
 
 export type CartContext = {
@@ -63,8 +82,26 @@ function parseLocalCart(value: string | undefined): LocalCartItem[] {
   }
 
   try {
-    const parsed = JSON.parse(value) as LocalCartItem[];
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed = JSON.parse(value) as Array<Partial<LocalCartItem>>;
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .map((item) => ({
+        id: String(item.id ?? ""),
+        productId: String(item.productId ?? item.productSlug ?? ""),
+        productName: String(item.productName ?? item.productSlug ?? ""),
+        productSlug: String(item.productSlug ?? ""),
+        variantId: String(item.variantId ?? `${String(item.productSlug ?? "")}-default`),
+        variantSlug: String(item.variantSlug ?? "default"),
+        sku: String(item.sku ?? `${String(item.productSlug ?? "").toUpperCase()}-DEFAULT`),
+        quantity: Number(item.quantity ?? 1),
+        selectedSize: typeof item.selectedSize === "string" ? item.selectedSize : null,
+        selectedColor: typeof item.selectedColor === "string" ? item.selectedColor : null,
+        image: typeof item.image === "string" ? item.image : null,
+      }))
+      .filter((item) => item.id && item.productSlug);
   } catch {
     return [];
   }
@@ -74,8 +111,25 @@ function serializeLocalCart(items: LocalCartItem[]) {
   return JSON.stringify(items);
 }
 
-function buildLocalItemId(productSlug: string, selectedSize: string | null, selectedColor: string | null) {
-  return [productSlug, selectedSize ?? "default-size", selectedColor ?? "default-colour"].join("::");
+function buildLocalItemId(productId: string, variantId: string, selectedSize: string | null) {
+  return [productId, variantId, selectedSize ?? "default-size"].join("::");
+}
+
+function resolveVariantSelection(
+  product: Product,
+  input: {
+    selectedVariantId?: string | null;
+    selectedVariantSlug?: string | null;
+    selectedColor?: string | null;
+  },
+) {
+  const variants = getProductVariants(product);
+  const normalizedId = input.selectedVariantId?.trim();
+  const byId = normalizedId ? variants.find((variant) => variant.id === normalizedId) : null;
+  const bySlug = resolveProductVariant({ ...product, variants }, input.selectedVariantSlug);
+  const byColor = resolveVariantByColor({ ...product, variants }, input.selectedColor);
+  const selected = byId ?? bySlug ?? byColor ?? variants[0] ?? null;
+  return { variants, selected };
 }
 
 async function hydrateCart(items: LocalCartItem[]): Promise<CartState> {
@@ -91,11 +145,17 @@ async function hydrateCart(items: LocalCartItem[]): Promise<CartState> {
 
       return {
         id: item.id,
+        productId: item.productId || product.id || product.slug,
+        productName: item.productName || product.name || product.title,
         productSlug: item.productSlug,
         product,
+        variantId: item.variantId,
+        variantSlug: item.variantSlug,
+        sku: item.sku,
         quantity: item.quantity,
         selectedSize: item.selectedSize,
         selectedColor: item.selectedColor,
+        image: item.image,
         lineTotal: item.quantity * product.price,
       } satisfies CartLine;
     })
@@ -261,20 +321,49 @@ async function readSupabaseCartItems(cartId: string) {
 
   const { data } = await admin
     .from("cart_items")
+    .select("id,cart_id,product_slug,product_id,product_name,variant_id,variant_slug,sku,quantity,selected_size,selected_color,image")
+    .eq("cart_id", cartId)
+    .order("created_at", { ascending: true });
+
+  if (data) {
+    return (data as SupabaseCartItem[] | null) ?? [];
+  }
+
+  const fallback = await admin
+    .from("cart_items")
     .select("id,cart_id,product_slug,quantity,selected_size,selected_color")
     .eq("cart_id", cartId)
     .order("created_at", { ascending: true });
 
-  return (data as SupabaseCartItem[] | null) ?? [];
+  return ((fallback.data as Array<Partial<SupabaseCartItem>> | null) ?? []).map((item) => ({
+    id: String(item.id ?? ""),
+    cart_id: String(item.cart_id ?? cartId),
+    product_slug: String(item.product_slug ?? ""),
+    product_id: null,
+    product_name: null,
+    variant_id: null,
+    variant_slug: null,
+    sku: null,
+    quantity: Number(item.quantity ?? 1),
+    selected_size: (item.selected_size as string | null | undefined) ?? null,
+    selected_color: (item.selected_color as string | null | undefined) ?? null,
+    image: null,
+  }));
 }
 
 function mapSupabaseItems(items: SupabaseCartItem[]): LocalCartItem[] {
   return items.map((item) => ({
     id: item.id,
+    productId: item.product_id ?? item.product_slug,
+    productName: item.product_name ?? item.product_slug,
     productSlug: item.product_slug,
+    variantId: item.variant_id ?? `${item.product_slug}-default`,
+    variantSlug: item.variant_slug ?? "default",
+    sku: item.sku ?? `${item.product_slug.toUpperCase()}-DEFAULT`,
     quantity: item.quantity,
     selectedSize: item.selected_size,
     selectedColor: item.selected_color,
+    image: item.image ?? null,
   }));
 }
 
@@ -310,7 +399,11 @@ export async function addItemToCart(input: {
   productSlug: string;
   quantity: number;
   selectedSize?: string | null;
+  selectedVariantId?: string | null;
+  selectedVariantSlug?: string | null;
+  selectedVariantSku?: string | null;
   selectedColor?: string | null;
+  selectedImage?: string | null;
 }) {
   const product = await getProduct(input.productSlug);
 
@@ -319,7 +412,19 @@ export async function addItemToCart(input: {
   }
 
   const selectedSize = input.selectedSize || product.sizes[0] || null;
-  const selectedColor = input.selectedColor || product.colors[0] || null;
+  const { selected } = resolveVariantSelection(product, {
+    selectedVariantId: input.selectedVariantId,
+    selectedVariantSlug: input.selectedVariantSlug,
+    selectedColor: input.selectedColor,
+  });
+
+  const productId = product.id || product.slug;
+  const productName = product.name || product.title;
+  const variantId = input.selectedVariantId || selected?.id || `${product.slug}-default`;
+  const variantSlug = input.selectedVariantSlug || selected?.slug || "default";
+  const selectedColor = input.selectedColor || selected?.colorName || product.colors[0] || null;
+  const sku = input.selectedVariantSku || selected?.sku || `${product.slug.toUpperCase()}-${variantSlug.toUpperCase()}`;
+  const image = input.selectedImage || selected?.images.main || product.baseImage || product.image?.src || null;
   const quantity = Math.max(1, Math.min(input.quantity || 1, 10));
 
   if (hasSupabaseAdminConfig()) {
@@ -327,14 +432,31 @@ export async function addItemToCart(input: {
     const cart = await getOrCreateSupabaseCart();
 
     if (admin && cart) {
-      const { data: existing } = await admin
+      const existingLookup = await admin
         .from("cart_items")
         .select("id,quantity")
         .eq("cart_id", cart.id)
         .eq("product_slug", input.productSlug)
+        .eq("variant_id", variantId)
         .eq("selected_size", selectedSize)
-        .eq("selected_color", selectedColor)
         .maybeSingle<{ id: string; quantity: number }>();
+
+      let existing = existingLookup.data;
+      let schemaSupportsVariants = !existingLookup.error;
+
+      if (existingLookup.error) {
+        const fallbackLookup = await admin
+          .from("cart_items")
+          .select("id,quantity")
+          .eq("cart_id", cart.id)
+          .eq("product_slug", input.productSlug)
+          .eq("selected_size", selectedSize)
+          .eq("selected_color", selectedColor)
+          .maybeSingle<{ id: string; quantity: number }>();
+
+        existing = fallbackLookup.data;
+        schemaSupportsVariants = false;
+      }
 
       if (existing) {
         await admin
@@ -342,13 +464,29 @@ export async function addItemToCart(input: {
           .update({ quantity: existing.quantity + quantity })
           .eq("id", existing.id);
       } else {
-        await admin.from("cart_items").insert({
-          cart_id: cart.id,
-          product_slug: input.productSlug,
-          quantity,
-          selected_size: selectedSize,
-          selected_color: selectedColor,
-        });
+        if (schemaSupportsVariants) {
+          await admin.from("cart_items").insert({
+            cart_id: cart.id,
+            product_slug: input.productSlug,
+            product_id: productId,
+            product_name: productName,
+            variant_id: variantId,
+            variant_slug: variantSlug,
+            sku,
+            quantity,
+            selected_size: selectedSize,
+            selected_color: selectedColor,
+            image,
+          });
+        } else {
+          await admin.from("cart_items").insert({
+            cart_id: cart.id,
+            product_slug: input.productSlug,
+            quantity,
+            selected_size: selectedSize,
+            selected_color: selectedColor,
+          });
+        }
       }
 
       return;
@@ -356,7 +494,7 @@ export async function addItemToCart(input: {
   }
 
   const items = await readLocalCartItems();
-  const id = buildLocalItemId(input.productSlug, selectedSize, selectedColor);
+  const id = buildLocalItemId(productId, variantId, selectedSize);
   const existing = items.find((item) => item.id === id);
 
   if (existing) {
@@ -364,10 +502,16 @@ export async function addItemToCart(input: {
   } else {
     items.push({
       id,
+      productId,
+      productName,
       productSlug: input.productSlug,
+      variantId,
+      variantSlug,
+      sku,
       quantity,
       selectedSize,
       selectedColor,
+      image,
     });
   }
 
