@@ -22,8 +22,8 @@ with category_updates (slug, image_url, image_alt, image_position) as (
     ),
     (
       'shirts',
-      '/images/ixquisite/ivory-broadcloth-shirt.webp',
-      'Crisp shirting layered under polished blue tailoring.',
+      '/products/shirts/black-ceremony-shirt/black/main.webp',
+      'Black Ceremony Shirt main view used as the shirts category spotlight.',
       'center 18%'
     ),
     (

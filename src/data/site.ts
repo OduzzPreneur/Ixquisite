@@ -327,6 +327,11 @@ export const categories: Category[] = [
     description: "Crisp shirting designed to sit cleanly under jackets or stand alone.",
     caption: "Refined layers",
     tone: "stone",
+    image: {
+      src: "/products/shirts/black-ceremony-shirt/black/main.webp",
+      alt: "Black Ceremony Shirt main view used as the shirts category spotlight.",
+      position: "center 18%",
+    },
   },
   {
     slug: "trousers",

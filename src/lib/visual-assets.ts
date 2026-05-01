@@ -24,8 +24,8 @@ const visualAssets: Record<string, VisualAsset> = {
     "center 18%",
   ),
   shirts: asset(
-    "/images/ixquisite/ivory-broadcloth-shirt.webp",
-    "Crisp shirting layered under polished blue tailoring.",
+    "/products/shirts/black-ceremony-shirt/black/main.webp",
+    "Black Ceremony Shirt main view used as the shirts category spotlight.",
     "center 18%",
   ),
   trousers: asset(
