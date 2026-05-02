@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Product, ProductGalleryImage, ProductImage, ProductVariant } from "@/data/site";
 import { resolveProductGalleryImages } from "@/lib/product-gallery";
 
@@ -103,7 +103,8 @@ export function ProductGallery({
   styledImage?: ProductImage;
 }) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [selectedImageKey, setSelectedImageKey] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const mobileTrackRef = useRef<HTMLDivElement | null>(null);
   const images = useMemo(
     () =>
       resolveProductVariantGalleryImages({
@@ -116,13 +117,8 @@ export function ProductGallery({
     [defaultImage, detailImage, product, selectedVariant, styledImage],
   );
 
-  const resolvedSelectedImageKey =
-    selectedImageKey && images.some((image) => `${image.label}::${image.src}` === selectedImageKey)
-      ? selectedImageKey
-      : images[0]
-        ? `${images[0].label}::${images[0].src}`
-        : "";
-  const activeImage = images.find((image) => `${image.label}::${image.src}` === resolvedSelectedImageKey) ?? images[0];
+  const safeIndex = Math.max(0, Math.min(selectedIndex, Math.max(0, images.length - 1)));
+  const activeImage = images[safeIndex] ?? images[0];
 
   useEffect(() => {
     if (!isLightboxOpen) {
@@ -135,6 +131,12 @@ export function ProductGallery({
       if (event.key === "Escape") {
         setIsLightboxOpen(false);
       }
+      if (event.key === "ArrowLeft") {
+        setSelectedIndex((current) => Math.max(0, current - 1));
+      }
+      if (event.key === "ArrowRight") {
+        setSelectedIndex((current) => Math.min(images.length - 1, current + 1));
+      }
     };
 
     window.addEventListener("keydown", closeOnEscape);
@@ -143,23 +145,65 @@ export function ProductGallery({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", closeOnEscape);
     };
-  }, [isLightboxOpen]);
+  }, [images.length, isLightboxOpen]);
+
+  useEffect(() => {
+    const track = mobileTrackRef.current;
+    if (!track || !images.length) {
+      return;
+    }
+
+    const slideWidth = track.clientWidth;
+    if (!slideWidth) {
+      return;
+    }
+
+    track.scrollTo({
+      left: slideWidth * safeIndex,
+      behavior: "smooth",
+    });
+  }, [images.length, safeIndex]);
+
+  function updateIndex(next: number) {
+    if (!images.length) {
+      return;
+    }
+
+    setSelectedIndex(Math.max(0, Math.min(next, images.length - 1)));
+  }
+
+  function handleMobileTrackScroll() {
+    const track = mobileTrackRef.current;
+    if (!track || !images.length) {
+      return;
+    }
+
+    const slideWidth = track.clientWidth;
+    if (!slideWidth) {
+      return;
+    }
+
+    const nextIndex = Math.round(track.scrollLeft / slideWidth);
+    if (nextIndex !== safeIndex) {
+      setSelectedIndex(Math.max(0, Math.min(nextIndex, images.length - 1)));
+    }
+  }
 
   return (
     <>
       <div className="product-gallery">
         <div className="product-gallery__thumbs" aria-label={`${product.title} image gallery`}>
-          {images.map((image) => {
-            const isActive = activeImage?.src === image.src && activeImage?.label === image.label;
+          {images.map((image, index) => {
+            const isActive = index === safeIndex;
 
             return (
               <button
                 key={`${image.label}-${image.src}`}
                 type="button"
                 className={`product-gallery__thumb${isActive ? " product-gallery__thumb--active" : ""}`}
-                onMouseEnter={() => setSelectedImageKey(`${image.label}::${image.src}`)}
-                onFocus={() => setSelectedImageKey(`${image.label}::${image.src}`)}
-                onClick={() => setSelectedImageKey(`${image.label}::${image.src}`)}
+                onMouseEnter={() => updateIndex(index)}
+                onFocus={() => updateIndex(index)}
+                onClick={() => updateIndex(index)}
                 aria-label={`Show ${image.label}`}
                 aria-pressed={isActive}
               >
@@ -198,6 +242,50 @@ export function ProductGallery({
             <strong className="product-gallery__main-label">{activeImage?.label ?? product.title}</strong>
           </div>
         </button>
+
+        <div className="product-gallery__mobile">
+          <div
+            ref={mobileTrackRef}
+            className="product-gallery__mobile-track"
+            onScroll={handleMobileTrackScroll}
+            aria-label={`${product.title} image carousel`}
+          >
+            {images.map((image, index) => (
+              <button
+                key={`${image.label}-${image.src}-mobile`}
+                type="button"
+                className="product-gallery__mobile-slide"
+                onClick={() => {
+                  updateIndex(index);
+                  setIsLightboxOpen(true);
+                }}
+                aria-label={`Open ${image.label} image`}
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="100vw"
+                  className="product-gallery__main-image"
+                  style={image.position ? { objectPosition: image.position } : undefined}
+                />
+                <span className="product-gallery__main-scrim" />
+              </button>
+            ))}
+          </div>
+          <div className="product-gallery__mobile-dots" aria-label="Slide navigation">
+            {images.map((image, index) => (
+              <button
+                key={`${image.label}-${image.src}-dot`}
+                type="button"
+                className={`product-gallery__mobile-dot${index === safeIndex ? " product-gallery__mobile-dot--active" : ""}`}
+                onClick={() => updateIndex(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                aria-pressed={index === safeIndex}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {isLightboxOpen && activeImage ? (
@@ -218,16 +306,44 @@ export function ProductGallery({
               Close
             </button>
             <div className="product-gallery-lightbox__layout">
+              <div className="product-gallery-lightbox__main">
+                <button
+                  type="button"
+                  className="product-gallery-lightbox__nav product-gallery-lightbox__nav--prev"
+                  onClick={() => updateIndex(safeIndex - 1)}
+                  aria-label="Previous image"
+                  disabled={safeIndex === 0}
+                >
+                  ‹
+                </button>
+                <Image
+                  src={activeImage.src}
+                  alt={activeImage.alt}
+                  fill
+                  sizes="(max-width: 1100px) 100vw, 70vw"
+                  className="product-gallery-lightbox__image"
+                  style={activeImage.position ? { objectPosition: activeImage.position } : undefined}
+                />
+                <button
+                  type="button"
+                  className="product-gallery-lightbox__nav product-gallery-lightbox__nav--next"
+                  onClick={() => updateIndex(safeIndex + 1)}
+                  aria-label="Next image"
+                  disabled={safeIndex === images.length - 1}
+                >
+                  ›
+                </button>
+              </div>
               <div className="product-gallery-lightbox__thumbs" aria-label="Gallery thumbnails">
-                {images.map((image) => {
-                  const isActive = activeImage.src === image.src && activeImage.label === image.label;
+                {images.map((image, index) => {
+                  const isActive = index === safeIndex;
 
                   return (
                     <button
                       key={`${image.label}-${image.src}-lightbox`}
                       type="button"
                       className={`product-gallery__thumb${isActive ? " product-gallery__thumb--active" : ""}`}
-                      onClick={() => setSelectedImageKey(`${image.label}::${image.src}`)}
+                      onClick={() => updateIndex(index)}
                       aria-label={`Show ${image.label}`}
                       aria-pressed={isActive}
                     >
@@ -242,16 +358,6 @@ export function ProductGallery({
                     </button>
                   );
                 })}
-              </div>
-              <div className="product-gallery-lightbox__main">
-                <Image
-                  src={activeImage.src}
-                  alt={activeImage.alt}
-                  fill
-                  sizes="(max-width: 1100px) 100vw, 70vw"
-                  className="product-gallery-lightbox__image"
-                  style={activeImage.position ? { objectPosition: activeImage.position } : undefined}
-                />
               </div>
             </div>
           </div>
