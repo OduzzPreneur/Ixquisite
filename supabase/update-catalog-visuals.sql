@@ -22,8 +22,8 @@ with category_updates (slug, image_url, image_alt, image_position) as (
     ),
     (
       'shirts',
-      '/products/shirts/black-ceremony-shirt/black/main.webp',
-      'Black Ceremony Shirt main view used as the shirts category spotlight.',
+      '/products/shirts/ivory-broadcloth-shirt/white/main.webp',
+      'Ivory Broadcloth Shirt in White - main front view used as the shirts category spotlight.',
       'center 18%'
     ),
     (

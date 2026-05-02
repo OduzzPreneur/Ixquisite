@@ -32,7 +32,7 @@ function buildVariantGallery(product: Product, variant: ProductVariant | null) {
     { key: "completeLook", label: "complete look", alt: `${product.title} in ${variant.colorName} - complete the look outfit` },
   ];
 
-  return ordered
+  const gallery = ordered
     .map((entry) => {
       const src = imageMap[entry.key] ?? main;
       if (!src) {
@@ -46,6 +46,15 @@ function buildVariantGallery(product: Product, variant: ProductVariant | null) {
       } satisfies ProductGalleryImage;
     })
     .filter((image): image is ProductGalleryImage => Boolean(image));
+
+  // If every slot resolves to the same file, this is a synthetic swatch variant
+  // and we should fall back to product.galleryImages instead.
+  const uniqueSources = new Set(gallery.map((image) => image.src));
+  if (uniqueSources.size <= 1) {
+    return [];
+  }
+
+  return gallery;
 }
 
 export function resolveProductVariantGalleryImages({
