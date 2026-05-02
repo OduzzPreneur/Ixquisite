@@ -147,7 +147,15 @@ export function ProductGallery({
     };
   }, [images.length, isLightboxOpen]);
 
-  useEffect(() => {
+  function updateIndex(next: number) {
+    if (!images.length) {
+      return;
+    }
+
+    setSelectedIndex(Math.max(0, Math.min(next, images.length - 1)));
+  }
+
+  function scrollMobileTrackToIndex(next: number, behavior: ScrollBehavior = "smooth") {
     const track = mobileTrackRef.current;
     if (!track || !images.length) {
       return;
@@ -159,17 +167,9 @@ export function ProductGallery({
     }
 
     track.scrollTo({
-      left: slideWidth * safeIndex,
-      behavior: "smooth",
+      left: slideWidth * Math.max(0, Math.min(next, images.length - 1)),
+      behavior,
     });
-  }, [images.length, safeIndex]);
-
-  function updateIndex(next: number) {
-    if (!images.length) {
-      return;
-    }
-
-    setSelectedIndex(Math.max(0, Math.min(next, images.length - 1)));
   }
 
   function handleMobileTrackScroll() {
@@ -279,7 +279,10 @@ export function ProductGallery({
                 key={`${image.label}-${image.src}-dot`}
                 type="button"
                 className={`product-gallery__mobile-dot${index === safeIndex ? " product-gallery__mobile-dot--active" : ""}`}
-                onClick={() => updateIndex(index)}
+                onClick={() => {
+                  updateIndex(index);
+                  scrollMobileTrackToIndex(index);
+                }}
                 aria-label={`Go to slide ${index + 1}`}
                 aria-pressed={index === safeIndex}
               />
