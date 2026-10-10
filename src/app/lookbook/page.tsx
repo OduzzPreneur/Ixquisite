@@ -23,9 +23,9 @@ export default async function LookbookPage() {
   return (
     <>
       <UtilityPageHeader
-        eyebrow="Lookbook"
-        title="Full outfits, not disconnected products."
-        copy="Each look is composed to show how Ixquisite styling should feel in motion: quiet, tailored, and immediately shoppable."
+        eyebrow="Curated Editorial"
+        title="The Ixquisite Lookbook"
+        copy="Complete sartorial ensembles curated for executive authority, quiet confidence, and unforgettable ceremonial presence."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Lookbook" }]}
       />
       <section className="page-section">

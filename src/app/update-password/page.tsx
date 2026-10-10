@@ -11,9 +11,9 @@ export default function UpdatePasswordPage() {
   return (
     <>
       <UtilityPageHeader
-        eyebrow="Update password"
-        title="Set a new password and return to your account."
-        copy="This page is used after a Supabase recovery email redirects you back into the storefront."
+        eyebrow="Account Security"
+        title="Set a New Password"
+        copy="Enter a secure new password to update your Ixquisite account credentials and regain access."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Update password" }]}
       />
       <section className="page-section">

@@ -150,17 +150,21 @@ export function PageHero({
 
 export function CategoryTile({ category }: { category: Category }) {
   return (
-    <Link href={`/category/${category.slug}`} className="tile-link">
-      <VisualPanel
-        title={category.title}
-        kicker={category.caption}
-        tone={category.tone}
-        size="wide"
-        image={category.image ?? getVisualAsset(category.title)}
-      />
-      <div className="tile-link__meta">
-        <h3 className="tile-link__title">{category.title}</h3>
-        <p className="tile-link__copy">{category.description}</p>
+    <Link href={`/category/${category.slug}`} className="tile-link category-card">
+      <div className="category-card__media">
+        <VisualPanel
+          title=""
+          tone={category.tone}
+          size="wide"
+          image={category.image ?? getVisualAsset(category.title)}
+        />
+        <div className="category-card__overlay-tag">
+          <span className="category-card__kicker">{category.caption}</span>
+        </div>
+      </div>
+      <div className="tile-link__meta category-card__meta">
+        <h3 className="tile-link__title category-card__title">{category.title}</h3>
+        <p className="tile-link__copy category-card__copy">{category.description}</p>
       </div>
     </Link>
   );
@@ -208,15 +212,19 @@ export function LatestMosaic({ products }: { products: Product[] }) {
 
 export function OccasionTile({ occasion }: { occasion: Occasion }) {
   return (
-    <Link href={`/occasion/${occasion.slug}`} className="tile-link">
-      <VisualPanel
-        title={occasion.title}
-        kicker="Curated occasion"
-        tone={occasion.tone}
-        size="occasion"
-        image={occasion.image ?? getVisualAsset(occasion.title)}
-      />
-      <div className="tile-link__meta">
+    <Link href={`/occasion/${occasion.slug}`} className="tile-link occasion-card">
+      <div className="occasion-card__media">
+        <VisualPanel
+          title=""
+          tone={occasion.tone}
+          size="occasion"
+          image={occasion.image ?? getVisualAsset(occasion.title)}
+        />
+        <div className="occasion-card__overlay-tag">
+          <span className="occasion-card__kicker">Curated occasion</span>
+        </div>
+      </div>
+      <div className="tile-link__meta occasion-card__meta">
         <h3 className="tile-link__title">{occasion.title}</h3>
         <p className="tile-link__copy">{occasion.description}</p>
       </div>
@@ -329,9 +337,9 @@ export function FilterPanel({ groups }: { groups: Array<{ title: string; items: 
           <h4>{group.title}</h4>
           <div className="filter-row">
             {group.items.map((item) => (
-              <span key={item} className="filter-chip">
+              <button key={item} type="button" className="filter-chip">
                 {item}
-              </span>
+              </button>
             ))}
           </div>
         </div>

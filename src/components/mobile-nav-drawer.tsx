@@ -51,7 +51,14 @@ export function MobileNavDrawer({
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
       >
-        Menu
+        <span className="mobile-drawer__icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="17" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </span>
+        <span className="mobile-drawer__trigger-text">Menu</span>
       </button>
       {open ? <button type="button" className="mobile-drawer__backdrop" aria-label="Close navigation" onClick={() => setOpen(false)} /> : null}
       <div className="mobile-drawer__panel">

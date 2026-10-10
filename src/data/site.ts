@@ -216,8 +216,9 @@ export const announcements = [
 
 export const defaultHomePageSettings: HomePageSettings = {
   heroEyebrow: "Quiet luxury for professionals",
-  heroTitle: "",
-  heroCopy: "",
+  heroTitle: "Signature Tailoring for the Modern Executive",
+  heroCopy:
+    "Structured silhouettes, hand-finished lapels, and quiet luxury menswear engineered for effortless command in boardrooms and ceremonies.",
   heroPrimaryLabel: "Shop Suits",
   heroPrimaryHref: "/category/suits",
   heroSecondaryLabel: "Explore Collection",

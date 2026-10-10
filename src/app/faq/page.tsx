@@ -13,9 +13,9 @@ export default function FaqPage() {
   return (
     <>
       <UtilityPageHeader
-        eyebrow="FAQ"
-        title="Clear answers for the most common purchase questions."
-        copy="FAQs support checkout confidence by answering delivery, sizing, exchange, and wardrobe-planning concerns in one place."
+        eyebrow="Frequently Asked Questions"
+        title="Everything You Need to Know"
+        copy="Find clear guidance on measurements, custom tailoring timelines, nationwide and international delivery, and exchanges."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "FAQ" }]}
       />
       <section className="page-section">

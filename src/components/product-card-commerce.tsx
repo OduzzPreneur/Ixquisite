@@ -65,7 +65,7 @@ export function ProductCardCommerce({
       ) : null}
 
       <div className="product-card__actions">
-        <form action={addToCartAction}>
+        <form action={addToCartAction} className="product-card__cart-form">
           <input type="hidden" name="product_slug" value={product.slug} />
           <input type="hidden" name="quantity" value="1" />
           <input type="hidden" name="selected_variant_id" value={selectedVariant?.id ?? ""} />
@@ -81,21 +81,6 @@ export function ProductCardCommerce({
             Add to Cart
           </button>
         </form>
-
-        {wishlistState === "saved" ? (
-          <span className="pill-link product-card__save" aria-label="Saved to wishlist">
-            Saved
-          </span>
-        ) : (
-          <form action={addToWishlistAction}>
-            <input type="hidden" name="product_slug" value={product.slug} />
-            <input type="hidden" name="selected_variant_slug" value={selectedVariant?.slug ?? ""} />
-            <input type="hidden" name="next" value={wishlistNext} />
-            <button type="submit" className="pill-link product-card__save" aria-label={`Save ${product.title} to wishlist`}>
-              Save
-            </button>
-          </form>
-        )}
       </div>
     </div>
   );

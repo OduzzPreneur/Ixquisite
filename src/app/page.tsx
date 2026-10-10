@@ -102,19 +102,19 @@ export default async function Home() {
         <div className="hero__frame">
           <div className="hero__grid">
             <div className="hero__copy">
-              <p className="eyebrow hero__mobile-hidden">{settings.heroEyebrow}</p>
-              <h1 className="page-title hero__seo-title hero__mobile-hidden">Premium Men&apos;s Corporate Wear, Tailored for Confidence</h1>
-              {settings.heroTitle ? (
-                <p className="display-title hero__mobile-hidden hero__campaign-line">{settings.heroTitle}</p>
-              ) : null}
+              <p className="eyebrow">{settings.heroEyebrow}</p>
+              <h1 className="page-title hero__seo-title">
+                {settings.heroTitle || "Premium Men's Corporate Wear, Tailored for Confidence"}
+              </h1>
               {settings.heroCopy ? (
-                <p className="section-copy hero__mobile-hidden-copy">
+                <p className="section-copy hero__copy-text">
                   {settings.heroCopy}
                 </p>
-              ) : null}
-              <p className="section-copy hero__seo-support hero__mobile-hidden">
-                Shop premium men&apos;s <Link href="/category/suits">suits</Link>, <Link href="/category/shirts">shirts</Link>, <Link href="/category/trousers">trousers</Link>, <Link href="/category/ties">ties</Link>, and <Link href="/groom-package">groom packages</Link> designed for work, weddings, ceremonies, and complete menswear styling.
-              </p>
+              ) : (
+                <p className="section-copy hero__copy-text">
+                  Structured silhouettes, hand-finished lapels, and quiet luxury menswear engineered for effortless command.
+                </p>
+              )}
               <div className="hero__actions">
                 <Link href={settings.heroPrimaryHref} className="button">
                   {settings.heroPrimaryLabel}
@@ -252,8 +252,7 @@ export default async function Home() {
             </h2>
           </div>
           <p className="section-copy">
-            Occasion-led shopping gives the homepage the same commerce clarity as a
-            large retailer, but the edits stay narrow and premium.
+            Curated wardrobes engineered for the boardroom, black-tie galas, weddings, and executive engagements.
           </p>
         </div>
         <div className="grid grid--3 grid--mobile-duo">
@@ -336,7 +335,7 @@ export default async function Home() {
       <section className="page-section">
         <div className="section-head">
           <p className="eyebrow">Why Ixquisite</p>
-          <h2 className="section-title">Trust is part of the merchandising.</h2>
+          <h2 className="section-title">The Ixquisite Standard: Precision Tailoring &amp; Guaranteed Delivery.</h2>
         </div>
         <TrustStrip points={trustPoints} />
       </section>
@@ -346,12 +345,11 @@ export default async function Home() {
           <div>
             <p className="eyebrow">Style guidance</p>
             <h2 className="section-title" style={{ marginTop: "0.75rem" }}>
-              Editorial guidance that still points back to product.
+              Sartorial Insights &amp; Style Notes
             </h2>
           </div>
           <p className="section-copy">
-            The homepage should feel like a luxury menswear magazine that also knows
-            how to convert.
+            Expert guidance on cuts, fabrics, and styling from our master tailors to elevate your daily presence.
           </p>
         </div>
         <div className="grid grid--3 grid--mobile-duo">

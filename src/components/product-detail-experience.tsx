@@ -109,11 +109,27 @@ export function ProductDetailExperience({
                 size="md"
                 showLabel={false}
               />
-              <span className="product-detail__swatch-note">
-                Swatches choose the variant. The gallery updates to show this specific colour in all five views.
-              </span>
             </div>
           </div>
+
+          {product.sizes?.length ? (
+            <div className="field">
+              <div className="product-detail__option-head">
+                <label htmlFor="selected_size" style={{ margin: 0 }}>Size / Fit</label>
+                <Link href="/size-guide" className="pill-link" style={{ minHeight: "1.8rem", fontSize: "0.78rem", padding: "0 0.6rem" }}>
+                  Size Guide
+                </Link>
+              </div>
+              <select id="selected_size" name="selected_size" defaultValue={product.sizes[0]}>
+                {product.sizes.map((size) => (
+                  <option key={size} value={size}>
+                    Size {size} · European Standard
+                  </option>
+                ))}
+                <option value="Custom Bespoke">Custom / Made-to-Measure (Concierge Fitting)</option>
+              </select>
+            </div>
+          ) : null}
 
           <div className="field">
             <label htmlFor="quantity">Quantity</label>
@@ -149,10 +165,36 @@ export function ProductDetailExperience({
           </div>
         </form>
 
+        <div className="bespoke-guarantee-band">
+          <div className="bespoke-guarantee-step">
+            <span className="bespoke-step-num">1</span>
+            <div>
+              <strong>Order with Ease</strong>
+              <p>Select your cut &amp; colour online</p>
+            </div>
+          </div>
+          <div className="bespoke-guarantee-step">
+            <span className="bespoke-step-num">2</span>
+            <div>
+              <strong>Fit Consultation</strong>
+              <p>Confirm sizing with our concierge</p>
+            </div>
+          </div>
+          <div className="bespoke-guarantee-step">
+            <span className="bespoke-step-num">3</span>
+            <div>
+              <strong>Guaranteed Delivery</strong>
+              <p>Hand-finished and dispatched fast</p>
+            </div>
+          </div>
+        </div>
+
         <div className="tab-list">
           <div className="tab-item">
-            <h4>Measurements after payment</h4>
-            <p className="body-copy">Choose the product and your preferred colour now. Measurements can be submitted or requested after checkout.</p>
+            <h4>Bespoke Measurements Guarantee</h4>
+            <p className="body-copy">
+              Order your suit with complete confidence. You can select your standard European size now, or our master tailors will contact you post-purchase via WhatsApp or phone to confirm exact shoulder, chest, and inseam measurements before final tailoring.
+            </p>
           </div>
           <div className="tab-item">
             <h4>Fabric & care</h4>

@@ -33,9 +33,9 @@ export default async function CartPage({
   return (
     <>
       <UtilityPageHeader
-        eyebrow="Cart"
-        title="A calm, premium cart review."
-        copy="The cart should feel decisive, with enough trust and cross-sell depth to finish the outfit without becoming noisy."
+        eyebrow="Shopping Cart"
+        title="Your Curated Wardrobe"
+        copy="Review your selected suits, shirts, and accessories before proceeding to secure checkout."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Cart" }]}
         compactOnMobile
       />

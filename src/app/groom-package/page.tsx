@@ -82,13 +82,21 @@ export default async function GroomPackagePage({
                 <a href="#groom-builder" className="button">
                   Choose Your Package
                 </a>
-                <Link href="/wedding-inquiry" className="button-ghost">
-                  Get Styling Help
+                <a
+                  href="https://wa.me/2348000000000?text=Hello%20Ixquisite,%20I%20would%20like%20to%20inquire%20about%20a%20Groom%20Suit%20Package."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="button-ghost"
+                >
+                  WhatsApp Concierge
+                </a>
+                <Link href="/wedding-inquiry" className="pill-link">
+                  Wedding Inquiry
                 </Link>
               </div>
               <div className="hero__meta">
                 <span className="tag">Curated ceremony bundle</span>
-                <span className="tag">Standard package recommended</span>
+                <span className="tag">Guaranteed ceremony delivery</span>
                 <span className="tag">Groomsmen support available</span>
               </div>
             </div>
@@ -102,8 +110,8 @@ export default async function GroomPackagePage({
                 preload
               />
               <div className="hero__note">
-                <strong>Wedding hub direction</strong>
-                Ceremony-first, emotionally elevated, and still unmistakably Ixquisite.
+                <strong>Wedding Date Protection</strong>
+                Guaranteed 7–10 day dispatch with dedicated bridal party coordination.
               </div>
             </div>
           </div>

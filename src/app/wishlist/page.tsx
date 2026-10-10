@@ -25,8 +25,8 @@ export default async function WishlistPage({
     <>
       <UtilityPageHeader
         eyebrow="Wishlist"
-        title="Saved pieces for later decisions."
-        copy="Wishlists support repeat visits and keep the buying journey calm instead of rushed."
+        title="Your Private Wardrobe Edit"
+        copy="Saved garments and accessories curated for your upcoming occasions, ceremonies, and executive wardrobe updates."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Wishlist" }]}
       />
       <section className="page-section">

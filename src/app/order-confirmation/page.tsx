@@ -37,8 +37,8 @@ export default async function OrderConfirmationPage({
     <>
       <UtilityPageHeader
         eyebrow="Order confirmed"
-        title={order ? "Your order is in and being prepared." : "Payment processed."}
-        copy="This screen closes the purchase with clarity: order number, delivery window, tracking path, and a route back to shopping."
+        title={order ? "Your tailoring order is confirmed." : "Payment received."}
+        copy="Thank you for choosing Ixquisite. Your order has been received and is being prepared with meticulous care by our master tailoring team."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Order confirmation" }]}
       />
       <section className="page-section">

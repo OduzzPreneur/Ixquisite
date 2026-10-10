@@ -12,9 +12,9 @@ export default function HelpPage() {
   return (
     <>
       <UtilityPageHeader
-        eyebrow="Help center"
-        title="Help that keeps the purchase process clear."
-        copy="Find answers on ordering, fit guidance, shipping, returns, care, and other support topics without leaving the shopping flow."
+        eyebrow="Client Concierge"
+        title="Bespoke Care & Assistance"
+        copy="Access guidance on fit consultations, custom sizing, wedding party coordination, express delivery, and garment care."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Help Center" }]}
       />
       <HelpHub />

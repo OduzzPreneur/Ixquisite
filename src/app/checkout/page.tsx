@@ -23,8 +23,8 @@ export default async function CheckoutPage({
     <>
       <UtilityPageHeader
         eyebrow="Checkout"
-        title="Low-friction checkout with visible trust."
-        copy="Contact, delivery, shipping, payment, and review should sit in one calm flow with no unnecessary distractions."
+        title="Secure Checkout"
+        copy="Enter your contact and delivery details to complete your order. Custom tailoring measurements can be confirmed after purchase."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]}
         compactOnMobile
       />
